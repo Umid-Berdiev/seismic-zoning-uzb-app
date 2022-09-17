@@ -1,0 +1,928 @@
+{
+    "type": "FeatureCollection",
+    "name": "kuzatuv_quduqlari",
+    "crs": {
+        "type": "name",
+        "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 1,
+                "quduq_raqa": 118.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,23",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.46
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [67.975817585453839, 40.712493963935373]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 2,
+                "quduq_raqa": 120.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Тошкент СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,88",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.16
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.045659383260727, 40.708402760343283]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 3,
+                "quduq_raqa": 121.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Тошкент СИУ",
+                "UGV_04_21": "240",
+                "MGV_04_21": "2,28",
+                "Veg_21": 248.0,
+                "mgv_07_21": 1.63
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.002910356547474, 40.697323359172977]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 4,
+                "quduq_raqa": 125.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Тошкент СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2,05",
+                "Veg_21": 242.0,
+                "mgv_07_21": 1.44
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.012146651291047, 40.702674663609201]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 5,
+                "quduq_raqa": 126.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Тошкент СИУ",
+                "UGV_04_21": "230",
+                "MGV_04_21": "2,06",
+                "Veg_21": 244.0,
+                "mgv_07_21": 1.5
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.022716801149286, 40.687135224350868]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 6,
+                "quduq_raqa": 127.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Тошкент СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "1,86",
+                "Veg_21": 246.0,
+                "mgv_07_21": 1.62
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.067470806692626, 40.66970122812706]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 7,
+                "quduq_raqa": 128.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Тошкент СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,06",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.07
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.010995244732342, 40.659549130476208]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 8,
+                "quduq_raqa": 129.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "240",
+                "MGV_04_21": "1,93",
+                "Veg_21": 244.0,
+                "mgv_07_21": 1.52
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.040182469100571, 40.69633699005643]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 9,
+                "quduq_raqa": 130.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,8",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.59
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.035994370355141, 40.707335699157838]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 10,
+                "quduq_raqa": 131.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "230",
+                "MGV_04_21": "2,02",
+                "Veg_21": 248.0,
+                "mgv_07_21": 1.89
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.045104700593029, 40.660887626593116]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 11,
+                "quduq_raqa": 132.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,82",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.74
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.005148647512044, 40.71508046812545]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 12,
+                "quduq_raqa": 133.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,17",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.5
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.021519967390105, 40.728227337058094]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 13,
+                "quduq_raqa": 134.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "230",
+                "MGV_04_21": "1,69",
+                "Veg_21": 241.0,
+                "mgv_07_21": 1.36
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.058175207899623, 40.668526988145295]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 14,
+                "quduq_raqa": 135.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "240",
+                "MGV_04_21": "2,31",
+                "Veg_21": 241.0,
+                "mgv_07_21": 2.18
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.013292708728329, 40.698395213591262]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 15,
+                "quduq_raqa": 123.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "1,86",
+                "Veg_21": 248.0,
+                "mgv_07_21": 2.12
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.015048224355851, 40.717730081507867]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 16,
+                "quduq_raqa": 138.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2,26",
+                "Veg_21": 243.0,
+                "mgv_07_21": 1.12
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [67.980288866692916, 40.708429768707767]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 17,
+                "quduq_raqa": 139.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "230",
+                "MGV_04_21": "2,26",
+                "Veg_21": 243.0,
+                "mgv_07_21": 0.97
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.024846040024386, 40.723360993251639]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 18,
+                "quduq_raqa": 140.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,95",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.31
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.018887873324246, 40.731726058069754]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 19,
+                "quduq_raqa": 141.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "225",
+                "MGV_04_21": "2,29",
+                "Veg_21": 240.0,
+                "mgv_07_21": 1.72
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [67.991930113603857, 40.702551640337468]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 20,
+                "quduq_raqa": 143.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "1,81",
+                "Veg_21": 241.0,
+                "mgv_07_21": 1.91
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.0493977499994, 40.683169352377654]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 21,
+                "quduq_raqa": 144.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2,22",
+                "Veg_21": 237.0,
+                "mgv_07_21": 1.55
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.027682274922896, 40.73414654442054]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 22,
+                "quduq_raqa": 137.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "240",
+                "MGV_04_21": "2,7",
+                "Veg_21": 243.0,
+                "mgv_07_21": 1.11
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.031338297763099, 40.713647354773563]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 23,
+                "quduq_raqa": 145.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,8",
+                "Veg_21": 203.0,
+                "mgv_07_21": 1.88
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.053036475721072, 40.670066789265903]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 24,
+                "quduq_raqa": 146.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "230",
+                "MGV_04_21": "1,81",
+                "Veg_21": 240.0,
+                "mgv_07_21": 1.6
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.018821799018909, 40.652615735755326]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 25,
+                "quduq_raqa": 117.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,57",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.3
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.067648978985375, 40.685436155868608]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 26,
+                "quduq_raqa": 147.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,01",
+                "Veg_21": 202.0,
+                "mgv_07_21": 1.46
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.071920563072595, 40.663677431955122]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 27,
+                "quduq_raqa": 148.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "240",
+                "MGV_04_21": "1,74",
+                "Veg_21": 241.0,
+                "mgv_07_21": 2.41
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.033725749975829, 40.648251328360381]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 28,
+                "quduq_raqa": 119.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,9",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.82
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.032655208323149, 40.727809930282632]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 29,
+                "quduq_raqa": 124.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "1,74",
+                "Veg_21": 247.0,
+                "mgv_07_21": 1.76
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.0330594643696, 40.722537907288057]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 30,
+                "quduq_raqa": 149.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,91",
+                "Veg_21": 202.0,
+                "mgv_07_21": 2.48
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.042387923284082, 40.714729532710301]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 31,
+                "quduq_raqa": 150.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "240",
+                "MGV_04_21": "2,5",
+                "Veg_21": 245.0,
+                "mgv_07_21": 1.51
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [67.986836793403342, 40.717736826103589]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 32,
+                "quduq_raqa": 151.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2,15",
+                "Veg_21": 241.0,
+                "mgv_07_21": 2.26
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.019990781396231, 40.706659826540367]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 33,
+                "quduq_raqa": 122.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,28",
+                "Veg_21": 200.0,
+                "mgv_07_21": 2.39
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.018628177946042, 40.712526145783883]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 34,
+                "quduq_raqa": 152.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,1",
+                "Veg_21": 204.0,
+                "mgv_07_21": 1.51
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.036157712089889, 40.686423968008135]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 35,
+                "quduq_raqa": 153.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2,06",
+                "Veg_21": 241.0,
+                "mgv_07_21": 1.37
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [67.995096073362603, 40.689642146789367]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 36,
+                "quduq_raqa": 154.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,74",
+                "Veg_21": 203.0,
+                "mgv_07_21": 2.18
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.008090001633107, 40.710490177027495]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 37,
+                "quduq_raqa": 155.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "1,75",
+                "Veg_21": 246.0,
+                "mgv_07_21": 1.26
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [67.985356180135582, 40.713625696362122]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 38,
+                "quduq_raqa": 156.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "240",
+                "MGV_04_21": "1,72",
+                "Veg_21": 242.0,
+                "mgv_07_21": 1.54
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [67.985519713777691, 40.699826805244435]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 39,
+                "quduq_raqa": 157.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,19",
+                "Veg_21": 201.0,
+                "mgv_07_21": 1.64
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.058344193531369, 40.655207763278369]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 40,
+                "quduq_raqa": 158.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "225",
+                "MGV_04_21": "2,37",
+                "Veg_21": 237.0,
+                "mgv_07_21": 1.34
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.010421677681194, 40.725200940994455]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 41,
+                "quduq_raqa": 159.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,71",
+                "Veg_21": 202.0,
+                "mgv_07_21": 1.05
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [67.999051388350651, 40.722212831490388]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 42,
+                "quduq_raqa": 160.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "230",
+                "MGV_04_21": "2,02",
+                "Veg_21": 242.0,
+                "mgv_07_21": 1.52
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.001300422049653, 40.682458066947305]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 43,
+                "quduq_raqa": 161.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "225",
+                "MGV_04_21": "1,85",
+                "Veg_21": 242.0,
+                "mgv_07_21": 1.13
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.011363804990395, 40.685941254777383]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 44,
+                "quduq_raqa": 162.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2",
+                "Veg_21": 243.0,
+                "mgv_07_21": 1.49
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.033555619421023, 40.670234346105012]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 45,
+                "quduq_raqa": 163.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "230",
+                "MGV_04_21": "2,52",
+                "Veg_21": 242.0,
+                "mgv_07_21": 1.59
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.027077932966947, 40.657970890911159]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 46,
+                "quduq_raqa": 136.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2,18",
+                "Veg_21": 242.0,
+                "mgv_07_21": 1.39
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.047873167747085, 40.664079700741347]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 47,
+                "quduq_raqa": 164.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "230",
+                "MGV_04_21": "1,34",
+                "Veg_21": 239.0,
+                "mgv_07_21": 2.42
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.012879437537507, 40.654702283462782]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 48,
+                "quduq_raqa": 165.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,01",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.38
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.047146135992776, 40.637577996609011]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 49,
+                "quduq_raqa": 166.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,87",
+                "Veg_21": 200.0,
+                "mgv_07_21": 1.68
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.04972429431055, 40.703540390736897]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 50,
+                "quduq_raqa": 167.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "1,86",
+                "Veg_21": 202.0,
+                "mgv_07_21": 1.38
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.07593628489721, 40.67392296336822]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 51,
+                "quduq_raqa": 168.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2,01",
+                "Veg_21": 242.0,
+                "mgv_07_21": 2.7
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.037122527783978, 40.654293133198756]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 52,
+                "quduq_raqa": 169.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "2,34",
+                "Veg_21": 240.0,
+                "mgv_07_21": 1.93
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.03753064142505, 40.701456761097546]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 53,
+                "quduq_raqa": 170.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "200",
+                "MGV_04_21": "2,21",
+                "Veg_21": 206.0,
+                "mgv_07_21": 1.41
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.024010663361622, 40.641892429884571]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "OBJECTID": 54,
+                "quduq_raqa": 142.0,
+                "Tuman_nomi": "Мирзачул тумани",
+                "СИУ_н": "Пахтазор СИУ",
+                "UGV_04_21": "235",
+                "MGV_04_21": "1,95",
+                "Veg_21": 241.0,
+                "mgv_07_21": 1.3
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [68.046275567874147, 40.67464763868081]
+            }
+        }
+    ]
+}
