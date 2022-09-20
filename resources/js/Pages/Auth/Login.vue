@@ -160,7 +160,15 @@ async function onSubmit() {
                                         </div>
                                     </div> -->
                                 </div>
-                                <div class="row justify-content-center">
+                                <div class="row justify-content-md-between">
+                                    <div class="col-lg-6 col-xxl-5">
+                                        <a class="btn" href="/register">
+                                            <i
+                                                class="fa fa-fw fa-sign-in-alt me-1 opacity-50"
+                                            ></i>
+                                            Sign Up
+                                        </a>
+                                    </div>
                                     <div class="col-lg-6 col-xxl-5">
                                         <button
                                             type="submit"

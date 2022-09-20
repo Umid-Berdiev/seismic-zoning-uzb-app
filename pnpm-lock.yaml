@@ -23,6 +23,7 @@ specifiers:
   axios: ^0.27.2
   bootstrap: ^5.2.0
   chart.js: ^3.9.1
+  dom-to-image-more: ^2.12.0
   dropzone: ^6.0.0-beta.2
   highlight.js: ^11.6.0
   laravel-vite-plugin: ^0.6.0
@@ -60,6 +61,7 @@ dependencies:
   '@vueuse/core': 9.2.0_vue@3.2.39
   bootstrap: 5.2.1_@popperjs+core@2.11.6
   chart.js: 3.9.1
+  dom-to-image-more: 2.12.0
   dropzone: 6.0.0-beta.2
   highlight.js: 11.6.0
   leaflet: 1.7.1
@@ -179,8 +181,8 @@ packages:
       nprogress: 0.2.0
     dev: true
 
-  /@intlify/bundle-utils/3.1.0_vue-i18n@9.2.2:
-    resolution: {integrity: sha512-ghlJ0kR2cCQ8D+poKknC0Xx0ncOt3J3os7CcIAqqIWVF7k6AtGoCDnIru+YzlZcvFRNmP9wEZ7jKliojCdAWNg==}
+  /@intlify/bundle-utils/3.1.2_vue-i18n@9.2.2:
+    resolution: {integrity: sha512-amgSo0NN5OKWYdcgFmfJqo2tcUcZ6C66Bxm5ALQnB0m3MUQtS9aJzKoIo+EU9XQiOVmlBFxRtNoZm+psHa5FNA==}
     engines: {node: '>= 12'}
     peerDependencies:
       petite-vue-i18n: '*'
@@ -253,7 +255,7 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/bundle-utils': 3.1.0_vue-i18n@9.2.2
+      '@intlify/bundle-utils': 3.1.2_vue-i18n@9.2.2
       '@intlify/shared': 9.3.0-beta.3
       '@rollup/pluginutils': 4.2.1
       debug: 4.3.4
@@ -860,6 +862,10 @@ packages:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
     dev: true
+
+  /dom-to-image-more/2.12.0:
+    resolution: {integrity: sha512-uMc3lgBu75K5waepExeMawDcNRVGD1Y80Kj6LNe9DJsik8iuajdgeUWhAXG+Vrk3DFMYMiErqPhM0c3X0G3kQg==}
+    dev: false
 
   /dropzone/6.0.0-beta.2:
     resolution: {integrity: sha512-k44yLuFFhRk53M8zP71FaaNzJYIzr99SKmpbO/oZKNslDjNXQsBTdfLs+iONd0U0L94zzlFzRnFdqbLcs7h9fQ==}

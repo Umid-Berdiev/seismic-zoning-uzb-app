@@ -27,130 +27,20 @@ function onChange(event) {
 </script>
 
 <template>
-    <BaseBlock
-        id="vector_layers_control"
-        class="pb-3"
-        title="Vector layers"
-        btn-option-content
-    >
+    <BaseBlock title="Vector layers" class="mb-3 pb-3" btn-option-content>
         <div class="form-check">
             <input
                 class="form-check-input"
                 type="checkbox"
-                id="kuzatuvQuduqlariSwitch"
-                :checked="selectedLayers.includes('kuzatuvQuduqlari')"
-                value="kuzatuvQuduqlari"
+                id="regionsSwitch"
+                :checked="selectedLayers.includes('regions')"
+                value="regions"
                 @change="onChange"
             />
-            <label class="form-check-label w-100" for="kuzatuvQuduqlariSwitch">
+            <label class="form-check-label w-100" for="regionsSwitch">
                 <div class="d-flex">
-                    <span>Observation wells</span>
-                    <i class="fa fa-circle text-secondary ms-auto my-auto"></i>
-                </div>
-            </label>
-        </div>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="kollektorlarSwitch"
-                :checked="selectedLayers.includes('kollektorlar')"
-                value="kollektorlar"
-                @change="onChange"
-            />
-            <label class="form-check-label w-100" for="kollektorlarSwitch">
-                <div class="d-flex">
-                    <span>Collectors</span>
-                    <div
-                        class="border border-success ms-auto my-auto horizontal-line"
-                    ></div>
-                </div>
-            </label>
-        </div>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="sugorishTarmoqlariSwitch"
-                :checked="selectedLayers.includes('sugorishTarmoqlari')"
-                value="sugorishTarmoqlari"
-                @change="onChange"
-            />
-            <label
-                class="form-check-label w-100"
-                for="sugorishTarmoqlariSwitch"
-            >
-                <div class="d-flex">
-                    <span class="me-3">Irrigation networks</span>
-                    <div
-                        class="border border-primary ms-auto my-auto horizontal-line"
-                    ></div>
-                </div>
-            </label>
-        </div>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="boshqaYerlarSwitch"
-                :checked="selectedLayers.includes('boshqaYerlar')"
-                value="boshqaYerlar"
-                @change="onChange"
-            />
-            <label class="form-check-label w-100" for="boshqaYerlarSwitch">
-                <div class="d-flex">
-                    <span>Other fields</span>
-                    <div class="ms-auto my-auto rectangle-boshqayerlar"></div>
-                </div>
-            </label>
-        </div>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="aholiSwitch"
-                :checked="selectedLayers.includes('aholi')"
-                value="aholi"
-                @change="onChange"
-            />
-            <label class="form-check-label w-100" for="aholiSwitch">
-                <div class="d-flex">
-                    <span>Populated areas</span>
-                    <div class="ms-auto my-auto rectangle-aholi"></div>
-                </div>
-            </label>
-        </div>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="chegaralarSwitch"
-                :checked="selectedLayers.includes('chegaralar')"
-                value="chegaralar"
-                @change="onChange"
-            />
-            <label class="form-check-label w-100" for="chegaralarSwitch">
-                <div class="d-flex">
-                    <span>Borders</span>
-                    <div class="ms-auto my-auto rectangle-chegaralar"></div>
-                </div>
-            </label>
-        </div>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="yollarSwitch"
-                :checked="selectedLayers.includes('yollar')"
-                value="yollar"
-                @change="onChange"
-            />
-            <label class="form-check-label w-100" for="yollarSwitch">
-                <div class="d-flex">
-                    <span>Roads</span>
-                    <div
-                        class="border border-secondary bg-white ms-auto my-auto horizontal-yollar"
-                    ></div>
+                    <span>Regions</span>
+                    <div class="ms-auto my-auto rectangle-regions"></div>
                 </div>
             </label>
         </div>
@@ -158,22 +48,13 @@ function onChange(event) {
 </template>
 
 <style lang="scss" scoped>
-#vector_layers_control {
-    border: 2px solid lightgray;
-    position: absolute;
-    top: 5.25rem;
-    left: 0.6rem;
-    z-index: 800;
-    // width: 370px;
-}
-
 .rectangle-chegaralar {
     width: 1.5rem;
     height: 1rem;
     background-color: purple;
 }
 
-.rectangle-aholi {
+.rectangle-regions {
     width: 1.5rem;
     height: 1rem;
     background-color: #beb297;

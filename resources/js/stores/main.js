@@ -6,7 +6,7 @@ export const useMainStore = defineStore("mainStore", {
     state: () => ({
         // App vital details
         app: {
-            name: "AgroEcoSoil",
+            name: "SEYSMO",
             version: "",
             copyright: new Date().getFullYear(),
         },

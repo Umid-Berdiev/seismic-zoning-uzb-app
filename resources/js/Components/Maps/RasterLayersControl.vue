@@ -25,12 +25,7 @@ function onSelect(event) {
 </script>
 
 <template>
-    <BaseBlock
-        id="raster_layers_control"
-        class="pb-3"
-        title="Raster layers"
-        btn-option-content
-    >
+    <BaseBlock title="Raster layers" class="mb-0 pb-3" btn-option-content>
         <div class="form-check">
             <input
                 class="form-check-input"
@@ -160,13 +155,3 @@ function onSelect(event) {
         </div>
     </BaseBlock>
 </template>
-
-<style lang="scss" scoped>
-#raster_layers_control {
-    border: 2px solid lightgray;
-    position: absolute;
-    top: 23rem;
-    left: 0.6rem;
-    z-index: 800;
-}
-</style>

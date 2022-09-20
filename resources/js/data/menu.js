@@ -7,25 +7,33 @@
 export default {
     main: [
         {
-            name: "Dashboard",
+            name: "Statistics",
             to: "/admin/dashboard",
             icon: "si si-speedometer",
         },
         {
-            name: "Soil data",
-            to: "/admin/soil_data",
-            icon: "si si-layers",
+            name: "Map",
+            to: "/admin/map",
+            icon: "si si-map",
         },
         {
-            name: "Groundwater data",
-            to: "/admin/groundwater_data",
-            icon: "si si-drop",
+            name: "Statics",
+            to: "/admin/statics",
+            icon: "si si-flag",
         },
-        // {
-        //     name: "Static data",
-        //     to: "/admin/static_data",
-        //     icon: "si si-flag",
-        // },
+        {
+            name: "Directory",
+            // to: "/admin/directory",
+            subActivePaths: "/admin/directory",
+            icon: "si si-list",
+            sub: [
+                {
+                    name: "Roles",
+                    // icon: "si si-pencil",
+                    to: "/admin/directory/roles",
+                },
+            ],
+        },
         // {
         //     name: "Page Packs",
         //     icon: "si si-layers",

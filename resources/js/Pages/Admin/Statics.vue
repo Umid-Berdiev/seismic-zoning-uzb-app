@@ -1,10 +1,3 @@
-<script>
-import AdminLayout from "@/Layouts/AdminLayout.vue";
-export default {
-    layout: AdminLayout,
-};
-</script>
-
 <script setup>
 import { onMounted, reactive } from "vue";
 import { useForm } from "@inertiajs/inertia-vue3";
@@ -285,6 +278,14 @@ async function onModalSubmit() {
         </div>
     </div>
 </template>
+
+<script>
+import AdminLayout from "@/Layouts/AdminLayout.vue";
+
+export default {
+    layout: AdminLayout,
+};
+</script>
 
 <style lang="scss" scoped>
 //

@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('soil_mobile_phosphorus_pointers', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('location_id');
-            $table->enum('value', [1, 2, 3]);
-            $table->string('mobile_phosphorus')->nullable();
-            $table->unsignedDecimal('area')->nullable();
-            $table->date('formed_at')->nullable();
+            $table->string('name');
+            $table->string('slug');
+            $table->string('details')->nullable();
             $table->timestamps();
         });
     }
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('soil_mobile_phosphorus_pointers');
+        Schema::dropIfExists('roles');
     }
 };

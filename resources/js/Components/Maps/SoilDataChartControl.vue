@@ -61,7 +61,7 @@ const chartPolarPieDonutData = computed(() => ({
 </script>
 
 <template>
-    <BaseBlock id="chart_control_block" class="pb-3" title="Chart">
+    <BaseBlock title="Chart" class="mb-0">
         <PieChart
             ref="pieChartRef"
             :chart-data="chartPolarPieDonutData"
@@ -70,13 +70,3 @@ const chartPolarPieDonutData = computed(() => ({
         />
     </BaseBlock>
 </template>
-
-<style lang="scss" scoped>
-#chart_control_block {
-    border: 2px solid lightgray;
-    position: absolute;
-    top: 18.25rem;
-    right: 0.6rem;
-    z-index: 800;
-}
-</style>
