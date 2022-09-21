@@ -22,7 +22,7 @@ export const useMainStore = defineStore("mainStore", {
         // Default template settings
         // Various of them are also set in each layout variation under layouts/variations/ folder
         settings: {
-            colorTheme: "modern", // 'amethyst', 'city', 'flat', 'modern', 'smooth'
+            colorTheme: "", // 'amethyst', 'city', 'flat', 'modern', 'smooth'
             darkMode: useStorage("dark-mode", false),
             darkModeSystem: useStorage("system-dark-mode", true),
             sidebarLeft: true,

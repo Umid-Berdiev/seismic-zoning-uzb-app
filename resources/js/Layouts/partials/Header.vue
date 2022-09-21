@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useMainStore } from "@/stores/main";
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { useForm, usePage } from "@inertiajs/inertia-vue3";
 
 // Grab example data
 import notifications from "@/data/notifications";
@@ -11,7 +11,7 @@ const store = useMainStore();
 
 // Reactive variables
 const baseSearchTerm = ref("");
-
+const authUser = computed(() => usePage().props.value.auth.user);
 // On form search submit functionality
 function onSubmitSearch() {
     // route("/admin/pages/generic/search?" + baseSearchTerm.value);
@@ -46,58 +46,7 @@ onUnmounted(() => {
                 <slot name="content">
                     <!-- Left Section -->
                     <div class="d-flex align-items-center">
-                        <slot name="content-left">
-                            <!-- Toggle Sidebar -->
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-alt-secondary me-2 d-lg-none"
-                                @click="store.sidebar({ mode: 'toggle' })"
-                            >
-                                <i class="fa fa-fw fa-bars"></i>
-                            </button>
-                            <!-- END Toggle Sidebar -->
-
-                            <!-- Toggle Mini Sidebar -->
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-alt-secondary me-2 d-none d-lg-inline-block"
-                                @click="store.sidebarMini({ mode: 'toggle' })"
-                            >
-                                <i class="fa fa-fw fa-ellipsis-v"></i>
-                            </button>
-                            <!-- END Toggle Mini Sidebar -->
-
-                            <!-- Open Search Section (visible on smaller screens) -->
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-alt-secondary d-md-none"
-                                @click="store.headerSearch({ mode: 'on' })"
-                            >
-                                <i class="fa fa-fw fa-search"></i>
-                            </button>
-                            <!-- END Open Search Section -->
-
-                            <!-- Search Form (visible on larger screens) -->
-                            <form
-                                class="d-none d-md-inline-block"
-                                @submit.prevent="onSubmitSearch"
-                            >
-                                <div class="input-group input-group-sm">
-                                    <input
-                                        type="text"
-                                        class="form-control form-control-alt"
-                                        placeholder="Search.."
-                                        id="page-header-search-input2"
-                                        name="page-header-search-input2"
-                                        v-model="baseSearchTerm"
-                                    />
-                                    <span class="input-group-text border-0">
-                                        <i class="fa fa-fw fa-search"></i>
-                                    </span>
-                                </div>
-                            </form>
-                            <!-- END Search Form -->
-                        </slot>
+                        <slot name="content-left"></slot>
                     </div>
                     <!-- END Left Section -->
 
@@ -108,21 +57,21 @@ onUnmounted(() => {
                             <div class="dropdown d-inline-block ms-2">
                                 <button
                                     type="button"
-                                    class="btn btn-sm btn-alt-secondary d-flex align-items-center"
+                                    class="btn btn-sm btn-alt-secondary"
                                     id="page-header-user-dropdown"
                                     data-bs-toggle="dropdown"
                                     aria-haspopup="true"
                                     aria-expanded="false"
                                 >
-                                    <img
+                                    <!-- <img
                                         class="rounded-circle"
                                         src="/assets/media/avatars/avatar10.jpg"
                                         alt="Header Avatar"
                                         style="width: 21px"
-                                    />
-                                    <span class="d-none d-sm-inline-block ms-2"
-                                        >John</span
-                                    >
+                                    /> -->
+                                    <span class="d-none d-sm-inline-block ms-2">
+                                        {{ authUser.username }}
+                                    </span>
                                     <i
                                         class="fa fa-fw fa-angle-down d-none d-sm-inline-block opacity-50 ms-1 mt-1"
                                     ></i>
@@ -134,13 +83,14 @@ onUnmounted(() => {
                                     <div
                                         class="p-3 text-center bg-body-light border-bottom rounded-top"
                                     >
-                                        <img
+                                        <!-- <img
                                             class="img-avatar img-avatar48 img-avatar-thumb"
                                             src="/assets/media/avatars/avatar10.jpg"
                                             alt="Header Avatar"
-                                        />
+                                        /> -->
                                         <p class="mt-2 mb-0 fw-medium">
-                                            John Smith
+                                            {{ authUser.first_name }}
+                                            {{ authUser.last_name }}
                                         </p>
                                         <p
                                             class="mb-0 text-muted fs-sm fw-medium"
@@ -149,169 +99,25 @@ onUnmounted(() => {
                                         </p>
                                     </div>
                                     <div class="p-2">
-                                        <a
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                            href="javascript:void(0)"
+                                        <form
+                                            @submit.prevent="
+                                                useForm().post(route('logout'))
+                                            "
+                                            method="POST"
                                         >
-                                            <span class="fs-sm fw-medium"
-                                                >Inbox</span
+                                            <button
+                                                type="submit"
+                                                class="btn dropdown-item text-center"
                                             >
-                                            <span
-                                                class="badge rounded-pill bg-primary ms-2"
-                                                >3</span
-                                            >
-                                        </a>
-                                        <Link
-                                            href="#"
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                        >
-                                            <span class="fs-sm fw-medium"
-                                                >Profile</span
-                                            >
-                                            <span
-                                                class="badge rounded-pill bg-primary ms-2"
-                                                >1</span
-                                            >
-                                        </Link>
-                                        <a
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                            href="javascript:void(0)"
-                                        >
-                                            <span class="fs-sm fw-medium"
-                                                >Settings</span
-                                            >
-                                        </a>
-                                    </div>
-                                    <div
-                                        role="separator"
-                                        class="dropdown-divider m-0"
-                                    ></div>
-                                    <div class="p-2">
-                                        <Link
-                                            href="#"
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                        >
-                                            <span class="fs-sm fw-medium"
-                                                >Lock Account</span
-                                            >
-                                        </Link>
-                                        <Link
-                                            href="#"
-                                            class="dropdown-item d-flex align-items-center justify-content-between"
-                                        >
-                                            <span class="fs-sm fw-medium"
-                                                >Log Out</span
-                                            >
-                                        </Link>
+                                                <span class="fs-sm fw-medium"
+                                                    >Log Out</span
+                                                >
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                             <!-- END User Dropdown -->
-
-                            <!-- Notifications Dropdown -->
-                            <div class="dropdown d-inline-block ms-2">
-                                <button
-                                    type="button"
-                                    class="btn btn-sm btn-alt-secondary"
-                                    id="page-header-notifications-dropdown"
-                                    data-bs-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                >
-                                    <i class="fa fa-fw fa-bell"></i>
-                                    <span
-                                        v-if="notifications.length > 0"
-                                        class="text-primary"
-                                        >•</span
-                                    >
-                                </button>
-                                <div
-                                    class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0 border-0 fs-sm"
-                                    aria-labelledby="page-header-notifications-dropdown"
-                                >
-                                    <div
-                                        class="p-2 bg-body-light border-bottom text-center rounded-top"
-                                    >
-                                        <h5
-                                            class="dropdown-header text-uppercase"
-                                        >
-                                            Notifications
-                                        </h5>
-                                    </div>
-                                    <ul class="nav-items mb-0">
-                                        <li
-                                            v-for="(
-                                                notification, index
-                                            ) in notifications"
-                                            :key="`notification-${index}`"
-                                        >
-                                            <a
-                                                class="text-dark d-flex py-2"
-                                                :href="`${notification.href}`"
-                                            >
-                                                <div
-                                                    class="flex-shrink-0 me-2 ms-3"
-                                                >
-                                                    <i
-                                                        :class="`${notification.icon}`"
-                                                    ></i>
-                                                </div>
-                                                <div class="flex-grow-1 pe-2">
-                                                    <div class="fw-semibold">
-                                                        {{ notification.title }}
-                                                    </div>
-                                                    <span
-                                                        class="fw-medium text-muted"
-                                                    >
-                                                        {{ notification.time }}
-                                                    </span>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li
-                                            v-if="!notifications.length"
-                                            class="p-2"
-                                        >
-                                            <div
-                                                class="alert alert-light d-flex align-items-center space-x-2 mb-0"
-                                                role="alert"
-                                            >
-                                                <i
-                                                    class="fa fa-exclamation-triangle opacity-50"
-                                                ></i>
-                                                <p class="mb-0">No new ones!</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <div
-                                        v-if="notifications.length > 0"
-                                        class="p-2 border-top text-center"
-                                    >
-                                        <a
-                                            class="d-inline-block fw-medium"
-                                            href="javascript:void(0)"
-                                        >
-                                            <i
-                                                class="fa fa-fw fa-arrow-down me-1 opacity-50"
-                                            ></i>
-                                            Load More..
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- END Notifications Dropdown -->
-
-                            <!-- Toggle Side Overlay -->
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-alt-secondary ms-2"
-                                @click="store.sideOverlay({ mode: 'toggle' })"
-                            >
-                                <i
-                                    class="fa fa-fw fa-list-ul fa-flip-horizontal"
-                                ></i>
-                            </button>
-                            <!-- END Toggle Side Overlay -->
                         </slot>
                     </div>
                     <!-- END Right Section -->

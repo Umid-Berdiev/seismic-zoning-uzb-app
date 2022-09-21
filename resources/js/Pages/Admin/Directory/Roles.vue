@@ -10,6 +10,7 @@ import helpers from "@/utils/helper.js";
 import { Dataset, DatasetItem } from "vue-dataset";
 import BaseBlock from "@/Components/BaseBlock.vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 
 const props = defineProps({
     roles: {
@@ -18,7 +19,7 @@ const props = defineProps({
     },
 });
 const notyf = useNotyf();
-const modal = computed(() => Modal.getInstance("#roleFormModal"));
+const modal = computed(() => Modal.getOrCreateInstance("#roleFormModal"));
 const columns = reactive([
     {
         name: "Name",
@@ -68,7 +69,7 @@ async function onModalFormSubmit() {
                   modal.value?.hide();
               },
               onError: (errorObj) => {
-                  notyf.error("Error while uploading role!");
+                  notyf.error("Error while updating role!");
               },
           })
         : roleForm.post(route("roles.store"), {
@@ -77,7 +78,7 @@ async function onModalFormSubmit() {
                   modal.value?.hide();
               },
               onError: (errorObj) => {
-                  notyf.error("Error while uploading role!");
+                  notyf.error("Error while creating role!");
               },
           });
 }
@@ -92,14 +93,20 @@ function onEdit(id) {
     modal.value?.toggle();
 }
 
-function onRemove() {
-    roleForm.delete(route("roles.destroy"), {
+function onRemove(id) {
+    role.id = id;
+    const confirmModal = Modal.getOrCreateInstance("#modal-confirm");
+    confirmModal.show();
+}
+
+function deleteAction() {
+    roleForm.delete(route("roles.destroy", role.id), {
         onSuccess: () => {
-            notyf.success("Role successfully updated!");
+            notyf.success("Role successfully removed!");
             modal.value?.hide();
         },
         onError: (errorObj) => {
-            notyf.error("Error while uploading role!");
+            notyf.error("Error while deleting role!");
         },
     });
 }
@@ -155,13 +162,21 @@ function onRemove() {
                                                     )
                                                 }}
                                             </td>
-                                            <td>
-                                                <Button
-                                                    class="w-auto"
+                                            <td class="d-flex gap-2">
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-secondary w-auto"
                                                     @click="onEdit(row.id)"
                                                 >
                                                     <i class="si si-pencil"></i>
-                                                </Button>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-danger w-auto"
+                                                    @click="onRemove(row.id)"
+                                                >
+                                                    <i class="si si-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     </template>
@@ -173,7 +188,7 @@ function onRemove() {
             </Dataset>
         </BaseBlock>
 
-        <!-- Modal -->
+        <!-- Modals -->
         <div
             class="modal fade"
             id="roleFormModal"
@@ -185,7 +200,7 @@ function onRemove() {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="roleFormModalLabel">
-                            Import soil data
+                            {{ isEditing ? "Edit role data" : "Add role data" }}
                         </h5>
                         <button
                             type="button"
@@ -243,6 +258,8 @@ function onRemove() {
                 </div>
             </div>
         </div>
+
+        <ConfirmModal @confirm="deleteAction" />
     </div>
 </template>
 

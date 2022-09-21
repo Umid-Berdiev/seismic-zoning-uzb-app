@@ -22,6 +22,11 @@ export default {
             icon: "si si-flag",
         },
         {
+            name: "Users",
+            to: "/admin/users",
+            icon: "si si-users",
+        },
+        {
             name: "Directory",
             // to: "/admin/directory",
             subActivePaths: "/admin/directory",

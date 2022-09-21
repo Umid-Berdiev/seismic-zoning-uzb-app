@@ -4,8 +4,8 @@ defineProps(["message"]);
 
 <template>
     <div v-show="message">
-        <p class="fs-6 text-danger">
+        <small class="text-danger animated fadeIn">
             {{ message }}
-        </p>
+        </small>
     </div>
 </template>

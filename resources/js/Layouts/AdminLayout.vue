@@ -24,7 +24,7 @@ const store = useMainStore();
 store.setLayout({
     header: true,
     sidebar: true,
-    sideOverlay: true,
+    sideOverlay: false,
     footer: true,
 });
 
