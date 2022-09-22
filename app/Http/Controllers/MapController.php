@@ -34,7 +34,7 @@ class MapController extends Controller
 
         // dd($ballGeodata->getGeometries());
         return Inertia::render('Admin/Map', [
-            'borders' => $borderGeodata->getGeometries()[0]->getCoordinates(),
+            'borders' => count($borderGeodata->getGeometries()) ? $borderGeodata->getGeometries()[0]->getCoordinates() : [],
             'balls' => $balls
         ]);
     }
