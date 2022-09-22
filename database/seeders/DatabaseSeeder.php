@@ -3,7 +3,11 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,9 +20,19 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $adminRole = Role::firstOrCreate([
+            'name' => 'Admin',
+            'slug' => 'admin',
+            'details' => 'This is an admin role'
+        ]);
+
+        $user = User::create([
+            'username' => 'Sarvar',
+            'first_name' => 'Sarvar',
+            'email' => 'sarvar94@test.com',
+            'password' => Hash::make('admin123')
+        ]);
+
+        $user->roles()->attach($adminRole->id);
     }
 }
