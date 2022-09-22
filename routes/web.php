@@ -4,6 +4,7 @@ use App\Http\Controllers\GroundwaterDataController;
 use App\Http\Controllers\GroundwaterLevelPointerController;
 use App\Http\Controllers\GroundwaterMineralizationPointerController;
 use App\Http\Controllers\GumusPointerController;
+use App\Http\Controllers\MapController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SoilActivePotassiumPointerController;
 use App\Http\Controllers\SoilAppraisalPointerController;
@@ -11,12 +12,15 @@ use App\Http\Controllers\SoilDataController;
 use App\Http\Controllers\SoilMineralStructurePointerController;
 use App\Http\Controllers\SoilMobilePhosphorusPointerController;
 use App\Http\Controllers\SoilSalinityPointerController;
+use App\Http\Controllers\UploadShapefileController;
 use App\Http\Controllers\UserController;
 use App\Models\GroundwaterLevelPointer;
 use App\Models\GroundwaterMineralizationPointer;
 use App\Models\GumusPointer;
+use App\Models\ShapeImportLog;
 use App\Models\SoilActivePotassiumPointer;
 use App\Models\SoilAppraisalPointer;
+use App\Models\SoilDataLog;
 use App\Models\SoilMineralStructurePointer;
 use App\Models\SoilMobilePhosphorusPointer;
 use App\Models\SoilSalinityPointer;
@@ -58,9 +62,14 @@ Route::get('/', function () {
 Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
     Route::get('/dashboard', fn () => Inertia::render('Admin/Dashboard'))
         ->name('dashboard');
-    Route::get('/map', fn () => Inertia::render('Admin/Map'))
+    Route::get('/map', [MapController::class, 'index'])
         ->name('map');
-    Route::get('/statics', fn () => Inertia::render('Admin/Statics'))
+    Route::get('/statics', function () {
+        $logs = ShapeImportLog::latest('id')->paginate();
+        return Inertia::render('Admin/Statics', [
+            'logs' => $logs
+        ]);
+    })
         ->name('statics');
     Route::resource('users', UserController::class);
 
@@ -68,6 +77,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         Route::resource('roles', RoleController::class)
             ->only(['index', 'store', 'update', 'destroy']);
     });
+
+    Route::post('balls/import/shapefile', [UploadShapefileController::class, 'ballsImportShapefile'])->name('balls.import.shape_file');
+    Route::post('borders/import/shapefile', [UploadShapefileController::class, 'bordersImportShapefile'])->name('borders.import.shape_file');
 });
 
 require __DIR__ . '/auth.php';

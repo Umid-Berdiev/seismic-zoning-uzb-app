@@ -7,32 +7,9 @@ import Input from "@/Components/Input.vue";
 import Button from "@/Components/Button.vue";
 import helpers from "@/utils/helper.js";
 // Vue Dataset, for more info and examples you can check out https://github.com/kouts/vue-dataset/tree/next
-import {
-    Dataset,
-    DatasetItem,
-    DatasetInfo,
-    DatasetPager,
-    DatasetSearch,
-    DatasetShow,
-} from "vue-dataset";
+import { Dataset, DatasetItem } from "vue-dataset";
 import BaseBlock from "@/Components/BaseBlock.vue";
 import Pagination from "@/Components/Pagination.vue";
-
-// Helper variables
-const columns = reactive([
-    {
-        name: "Data type",
-        field: "type",
-    },
-    {
-        name: "Comment",
-        field: "comment",
-    },
-    {
-        name: "Date",
-        field: "created_at",
-    },
-]);
 
 const props = defineProps({
     logs: {
@@ -55,40 +32,35 @@ const props = defineProps({
     },
 });
 const notyf = useNotyf();
-
-// Vue Select initial values
+const columns = reactive([
+    {
+        name: "Data type",
+        field: "type",
+    },
+    {
+        name: "Comment",
+        field: "comment",
+    },
+    {
+        name: "Date",
+        field: "created_at",
+    },
+]);
 const vueSelectState = reactive({
     options: [
         {
-            label: "Tuproq bonitirovkasi",
-            value: "soil_appraisal_pointers_import",
+            label: "Balls",
+            value: "balls.import.shape_file",
         },
         {
-            label: "Tuproq sho’rlanishi",
-            value: "soil_salinity_pointers_import",
-        },
-        {
-            label: "Tuproqni mehanik tarkibi",
-            value: "soil_mineral_structure_pointers_import",
-        },
-        {
-            label: "Tuproqdagi gumus",
-            value: "gumus_pointers_import",
-        },
-        {
-            label: "Tuproqdagi harakatchan fosfor",
-            value: "soil_mobile_phosphorus_pointers_import",
-        },
-        {
-            label: "Tuproqdagi faol kaliy",
-            value: "soil_active_potassium_pointers_import",
+            label: "Borders",
+            value: "borders.import.shape_file",
         },
     ],
-    selectedOption: "soil_appraisal_pointers_import",
+    selectedOption: "balls.import.shape_file",
 });
-
 const importForm = useForm({
-    import_file: null,
+    zip: null,
 });
 
 // Apply a few Bootstrap 5 optimizations
@@ -111,11 +83,12 @@ async function onModalSubmit() {
     importForm.post(route(vueSelectState.selectedOption), {
         onSuccess: () => {
             notyf.success("Data successfully imported!");
-            const modal = Modal.getInstance("#importSoildataModal");
+            const modal = Modal.getInstance("#importStaticDataModal");
             modal?.hide();
         },
         onError: (errorObj) => {
-            notyf.error("Error while uploading file!");
+            notyf.error(errorObj.zip);
+            // notyf.error("Error while uploading shape file!");
         },
     });
 }
@@ -128,16 +101,16 @@ async function onModalSubmit() {
                 type="button"
                 class="btn btn-alt-primary push"
                 data-bs-toggle="modal"
-                data-bs-target="#importSoildataModal"
+                data-bs-target="#importStaticDataModal"
             >
                 <i class="fa fa-fw fa-download me-1"></i>
                 <span>Import</span>
             </button>
         </div>
 
-        <BaseBlock title="Soil data logs" content-full>
+        <BaseBlock title="Imported shape files' logs" content-full>
             <div v-if="logs.data?.length == 0" class="text-center">No data</div>
-            <Dataset v-else :ds-data="logs.data">
+            <Dataset v-else v-slot="{ ds }" :ds-data="logs.data">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="table-responsive">
@@ -179,8 +152,8 @@ async function onModalSubmit() {
                 <div
                     class="d-flex flex-md-row flex-column align-items-center mt-3"
                 >
-                    <!-- <DatasetInfo class="py-3 fs-sm" /> -->
-                    <!-- <DatasetPager class="flex-wrap py-3 fs-sm" /> -->
+                    <!-- <DatasetInfo class="py-3 fs-sm" />
+                            <DatasetPager class="flex-wrap py-3 fs-sm" /> -->
                     <Pagination :links="logs.links" />
                 </div>
             </Dataset>
@@ -189,16 +162,16 @@ async function onModalSubmit() {
         <!-- Modal -->
         <div
             class="modal fade"
-            id="importSoildataModal"
+            id="importStaticDataModal"
             tabindex="-1"
-            aria-labelledby="importSoildataModalLabel"
+            aria-labelledby="importStaticDataModalLabel"
             aria-hidden="true"
         >
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="importSoildataModalLabel">
-                            Import soil data
+                        <h5 class="modal-title" id="importStaticDataModalLabel">
+                            Import zipped shapefile data
                         </h5>
                         <button
                             type="button"
@@ -230,15 +203,14 @@ async function onModalSubmit() {
                                 <div class="col-12 mb-4">
                                     <Input
                                         type="file"
-                                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                        accept="zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed"
                                         @input="
-                                            importForm.import_file =
+                                            importForm.zip =
                                                 $event.target.files[0]
                                         "
                                         :class="{
                                             'is-invalid':
-                                                importForm.errors?.import_file
-                                                    ?.length,
+                                                importForm.errors?.zip?.length,
                                         }"
                                     />
                                     <progress
@@ -251,7 +223,7 @@ async function onModalSubmit() {
                                     <div
                                         class="invalid-feedback animated fadeIn"
                                     >
-                                        {{ importForm.errors?.import_file }}
+                                        {{ importForm.errors?.zip }}
                                     </div>
                                 </div>
 
@@ -261,18 +233,6 @@ async function onModalSubmit() {
                             </div>
                         </form>
                     </div>
-                    <!-- <div class="modal-footer">
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal"
-                        >
-                            Close
-                        </button>
-                        <button type="button" class="btn btn-primary">
-                            Save changes
-                        </button>
-                    </div> -->
                 </div>
             </div>
         </div>
@@ -281,7 +241,6 @@ async function onModalSubmit() {
 
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-
 export default {
     layout: AdminLayout,
 };

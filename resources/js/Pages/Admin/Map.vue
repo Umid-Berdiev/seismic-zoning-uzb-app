@@ -9,8 +9,8 @@ import Loader from "@/Components/Loader.vue";
 const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
-    // laravelVersion: String,
-    // phpVersion: String,
+    borders: Array,
+    balls: Array,
 });
 
 // Main store
@@ -70,6 +70,11 @@ const layerRegions = computed(() =>
         },
     })
 );
+const layerBorders = computed(() =>
+    L.polyline([props.borders], {
+        color: "#FF0000",
+    })
+);
 
 onMounted(async () => {
     // fetch geojson data
@@ -83,9 +88,35 @@ onMounted(async () => {
 
 watchEffect(() => {
     map.value?.removeLayer(layerRegions.value);
+    map.value?.removeLayer(layerBorders.value);
+    props.balls.forEach((ball) => {
+        map.value?.removeLayer([`layerBalls${ball.level}`]);
+    });
 
     if (selectedLayers.value.includes("regions"))
         map.value?.addLayer(layerRegions.value);
+    if (selectedLayers.value.includes("borders")) {
+        map.value?.addLayer(layerBorders.value);
+        // map.value?.fitBounds(layerBorders.value?.getBounds());
+    }
+    if (selectedLayers.value.includes("balls")) {
+        const obj = {};
+        props.balls.forEach((ball) => {
+            // console.log({ ball });
+            obj[`layerBalls${ball.level}`] = L.polygon(
+                ball.polygon.coordinates,
+                {
+                    // color: "#00ff00",
+                }
+            );
+        });
+
+        // console.log({ obj });
+
+        for (const iterator in obj) {
+            map.value?.addLayer(obj[iterator]);
+        }
+    }
 });
 
 async function fetchStaticLayers() {

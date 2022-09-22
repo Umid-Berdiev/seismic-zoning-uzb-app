@@ -44,6 +44,38 @@ function onChange(event) {
                 </div>
             </label>
         </div>
+        <div class="form-check">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="bordersSwitch"
+                :checked="selectedLayers.includes('borders')"
+                value="borders"
+                @change="onChange"
+            />
+            <label class="form-check-label w-100" for="bordersSwitch">
+                <div class="d-flex">
+                    <span>Borders</span>
+                    <div class="ms-auto my-auto rectangle-borders"></div>
+                </div>
+            </label>
+        </div>
+        <div class="form-check">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="ballsSwitch"
+                :checked="selectedLayers.includes('balls')"
+                value="balls"
+                @change="onChange"
+            />
+            <label class="form-check-label w-100" for="ballsSwitch">
+                <div class="d-flex">
+                    <span>Balls</span>
+                    <div class="ms-auto my-auto rectangle-balls"></div>
+                </div>
+            </label>
+        </div>
     </BaseBlock>
 </template>
 

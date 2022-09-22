@@ -1,12 +1,6 @@
 <script setup>
-import { reactive, computed } from "vue";
-import { useRouter } from "vue-router";
-import { useMainStore } from "@/stores/main";
-
-// Vuelidate, for more info and examples you can check out https://github.com/vuelidate/vuelidate
-import useVuelidate from "@vuelidate/core";
-import { required, minLength } from "@vuelidate/validators";
 import { useForm } from "@inertiajs/inertia-vue3";
+import { useMainStore } from "@/stores/main";
 
 defineProps({
     canResetPassword: Boolean,
@@ -21,47 +15,12 @@ const form = useForm({
 
 // Main store and Router
 const store = useMainStore();
-// const router = useRouter();
-
-// // Input state variables
-// const state = reactive({
-//     username: null,
-//     password: null,
-// });
-
-// Validation rules
-// const rules = computed(() => {
-//     return {
-//         email: {
-//             required,
-//             email,
-//             // minLength: minLength(3),
-//         },
-//         password: {
-//             required,
-//             // minLength: minLength(5),
-//         },
-//     };
-// });
-
-// Use vuelidate
-// const v$ = useVuelidate(rules, form);
 
 // On form submission
 async function onSubmit() {
-    // const result = await v$.value.$validate();
-
-    // if (!result) {
-    //     // notify user form is invalid
-    //     return;
-    // }
-
     form.post(route("login"), {
         onFinish: () => form.reset("password"),
     });
-
-    // Go to dashboard
-    // router.push({ name: "backend-pages-auth" });
 }
 </script>
 
@@ -132,43 +91,8 @@ async function onSubmit() {
                                             {{ form.errors?.password }}
                                         </div>
                                     </div>
-                                    <!-- <div class="mb-4">
-                                        <div
-                                            class="d-md-flex align-items-md-center justify-content-md-between"
-                                        >
-                                            <div class="form-check">
-                                                <input
-                                                    class="form-check-input"
-                                                    type="checkbox"
-                                                    v-model="form.remember"
-                                                    id="login-remember"
-                                                    name="login-remember"
-                                                />
-                                                <label
-                                                    class="form-check-label"
-                                                    for="login-remember"
-                                                    >Remember Me</label
-                                                >
-                                            </div>
-                                            <div class="py-2">
-                                                <Link
-                                                    href="auth/reminder2"
-                                                    class="fs-sm fw-medium"
-                                                    >Forgot Password?
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div> -->
                                 </div>
-                                <div class="row justify-content-md-between">
-                                    <div class="col-lg-6 col-xxl-5">
-                                        <a class="btn" href="/register">
-                                            <i
-                                                class="fa fa-fw fa-sign-in-alt me-1 opacity-50"
-                                            ></i>
-                                            Sign Up
-                                        </a>
-                                    </div>
+                                <div class="row justify-content-center">
                                     <div class="col-lg-6 col-xxl-5">
                                         <button
                                             type="submit"
