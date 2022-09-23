@@ -1,5 +1,6 @@
 <script setup>
 import { indexOf } from "lodash";
+import { computed } from "vue";
 import BaseBlock from "../BaseBlock.vue";
 
 const props = defineProps({
@@ -28,53 +29,115 @@ function onChange(event) {
 
 <template>
     <BaseBlock title="Vector layers" class="mb-3 pb-3" btn-option-content>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="regionsSwitch"
-                :checked="selectedLayers.includes('regions')"
-                value="regions"
-                @change="onChange"
-            />
-            <label class="form-check-label w-100" for="regionsSwitch">
-                <div class="d-flex">
-                    <span>Regions</span>
-                    <div class="ms-auto my-auto rectangle-regions"></div>
+        <!-- accordion -->
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                    <button
+                        class="accordion-button collapsed p-2"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseOne"
+                        aria-expanded="false"
+                        aria-controls="panelsStayOpen-collapseOne"
+                    >
+                        Regions
+                    </button>
+                </h2>
+                <div
+                    id="panelsStayOpen-collapseOne"
+                    class="accordion-collapse collapse show"
+                    aria-labelledby="panelsStayOpen-headingOne"
+                >
+                    <div class="accordion-body p-2">
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="regionsSwitch"
+                                :checked="selectedLayers.includes('regions')"
+                                value="regions"
+                                @change="onChange"
+                            />
+                            <label
+                                class="form-check-label w-100"
+                                for="regionsSwitch"
+                            >
+                                <div class="d-flex">
+                                    <span>Borders</span>
+                                    <div
+                                        class="ms-auto my-auto rectangle-regions"
+                                    ></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-            </label>
-        </div>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="bordersSwitch"
-                :checked="selectedLayers.includes('borders')"
-                value="borders"
-                @change="onChange"
-            />
-            <label class="form-check-label w-100" for="bordersSwitch">
-                <div class="d-flex">
-                    <span>Borders</span>
-                    <div class="ms-auto my-auto rectangle-borders"></div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                    <button
+                        class="accordion-button collapsed p-2"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#panelsStayOpen-collapseTwo"
+                        aria-expanded="false"
+                        aria-controls="panelsStayOpen-collapseTwo"
+                    >
+                        Districts
+                    </button>
+                </h2>
+                <div
+                    id="panelsStayOpen-collapseTwo"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="panelsStayOpen-headingTwo"
+                >
+                    <div class="accordion-body p-2">
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="bordersSwitch"
+                                :checked="selectedLayers.includes('borders')"
+                                value="borders"
+                                @change="onChange"
+                            />
+                            <label
+                                class="form-check-label w-100"
+                                for="bordersSwitch"
+                            >
+                                <div class="d-flex">
+                                    <span>Borders</span>
+                                    <div
+                                        class="ms-auto my-auto rectangle-borders"
+                                    ></div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="ballsSwitch"
+                                :checked="selectedLayers.includes('balls')"
+                                value="balls"
+                                @change="onChange"
+                            />
+                            <label
+                                class="form-check-label w-100"
+                                for="ballsSwitch"
+                            >
+                                <div class="d-flex">
+                                    <span>Balls</span>
+                                    <div
+                                        class="ms-auto my-auto rectangle-balls"
+                                    ></div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-            </label>
-        </div>
-        <div class="form-check">
-            <input
-                class="form-check-input"
-                type="checkbox"
-                id="ballsSwitch"
-                :checked="selectedLayers.includes('balls')"
-                value="balls"
-                @change="onChange"
-            />
-            <label class="form-check-label w-100" for="ballsSwitch">
-                <div class="d-flex">
-                    <span>Balls</span>
-                    <div class="ms-auto my-auto rectangle-balls"></div>
-                </div>
-            </label>
+            </div>
         </div>
     </BaseBlock>
 </template>

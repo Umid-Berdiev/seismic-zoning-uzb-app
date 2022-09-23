@@ -19,9 +19,9 @@ class MapController extends Controller
         $border_geometries = [];
         $ball_geometries = [];
 
-        foreach ($borders as $border) {
-            $border_geometries[] = $border->line->jsonSerialize();
-        }
+        // foreach ($borders as $border) {
+        //   $border_geometries[] = $border->line->jsonSerialize();
+        // }
 
         // foreach ($balls as $key => $ball) {
         //     // dd($ball->polygon->jsonSerialize());
@@ -29,12 +29,13 @@ class MapController extends Controller
         // }
 
         // dd($ball_geometries);
-        $borderGeodata =  new GeometryCollection($border_geometries);
+        // $borderGeodata =  new GeometryCollection($border_geometries);
         // $ballGeodata =  new GeometryCollection($ball_geometries);
 
         // dd($ballGeodata->getGeometries());
         return Inertia::render('Admin/Map', [
-            'borders' => count($borderGeodata->getGeometries()) ? $borderGeodata->getGeometries()[0]->getCoordinates() : [],
+            // 'borders' => count($borderGeodata->getGeometries()) ? $borderGeodata->getGeometries()[0]->getCoordinates() : [],
+            'borders' => $borders,
             'balls' => $balls
         ]);
     }

@@ -70,11 +70,11 @@ const layerRegions = computed(() =>
         },
     })
 );
-const layerBorders = computed(() =>
-    L.polyline([props.borders], {
-        color: "#FF0000",
-    })
-);
+// const layerBorders = computed(() =>
+//     L.polyline([props.borders], {
+//         color: "#FF0000",
+//     })
+// );
 
 onMounted(async () => {
     // fetch geojson data
@@ -87,35 +87,45 @@ onMounted(async () => {
 });
 
 watchEffect(() => {
-    map.value?.removeLayer(layerRegions.value);
-    map.value?.removeLayer(layerBorders.value);
-    props.balls.forEach((ball) => {
-        map.value?.removeLayer([`layerBalls${ball.level}`]);
-    });
+    // map.value?.removeLayer(layerRegions.value);
+    // map.value?.removeLayer(layerBorders.value);
+    // props.balls.forEach((ball) => {
+    //     map.value?.removeLayer([`layerBalls${ball.level}`]);
+    // });
+
+    // console.log("map panes: ", map.value?.getPane("overlayPane"));
+
+    map.value?.ea;
 
     if (selectedLayers.value.includes("regions"))
         map.value?.addLayer(layerRegions.value);
     if (selectedLayers.value.includes("borders")) {
-        map.value?.addLayer(layerBorders.value);
+        // map.value?.addLayer(layerBorders.value);
         // map.value?.fitBounds(layerBorders.value?.getBounds());
+
+        props.borders.forEach((border) => {
+            L.polyline(
+                border.line.map((item) => item.coordinates),
+                {
+                    color: "#FF0000",
+                }
+            ).addTo(map.value);
+        });
     }
     if (selectedLayers.value.includes("balls")) {
-        const obj = {};
+        // const obj = {};
         props.balls.forEach((ball) => {
             // console.log({ ball });
-            obj[`layerBalls${ball.level}`] = L.polygon(
-                ball.polygon.coordinates,
-                {
-                    // color: "#00ff00",
-                }
-            );
+            L.polygon(ball.polygon.coordinates, {
+                // color: "#00ff00",
+            }).addTo(map.value);
         });
 
         // console.log({ obj });
 
-        for (const iterator in obj) {
-            map.value?.addLayer(obj[iterator]);
-        }
+        // for (const iterator in obj) {
+        //     map.value?.addLayer(obj[iterator]);
+        // }
     }
 });
 

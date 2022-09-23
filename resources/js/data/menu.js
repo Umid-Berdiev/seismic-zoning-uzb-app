@@ -6,11 +6,11 @@
 
 export default {
     main: [
-        {
-            name: "Statistics",
-            to: "/admin/dashboard",
-            icon: "si si-speedometer",
-        },
+        // {
+        //     name: "Statistics",
+        //     to: "/admin/dashboard",
+        //     icon: "si si-speedometer",
+        // },
         {
             name: "Map",
             to: "/admin/map",

@@ -56,12 +56,12 @@ Route::get('/', function () {
     //     'canLogin' => Route::has('login'),
     //     'canRegister' => Route::has('register'),
     // ]);
-    return redirect()->route('dashboard');
+    return redirect()->route('map');
 });
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
-    Route::get('/dashboard', fn () => Inertia::render('Admin/Dashboard'))
-        ->name('dashboard');
+    // Route::get('/dashboard', fn () => Inertia::render('Admin/Dashboard'))
+    //     ->name('dashboard');
     Route::get('/map', [MapController::class, 'index'])
         ->name('map');
     Route::get('/statics', function () {
