@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('borders', function (Blueprint $table) {
             $table->id();
             $table->lineString('line', 'GEOMETRY', 4326);
-            $table->integer('soato')->nullable();
+            $table->unsignedInteger('soato')->nullable();
             $table->timestamps();
         });
     }

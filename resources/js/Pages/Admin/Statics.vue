@@ -49,6 +49,10 @@ const columns = reactive([
 const vueSelectState = reactive({
     options: [
         {
+            label: "Zones",
+            value: "zones.import.shape_file",
+        },
+        {
             label: "Balls",
             value: "balls.import.shape_file",
         },

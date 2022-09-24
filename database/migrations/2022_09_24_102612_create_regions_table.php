@@ -13,11 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('balls', function (Blueprint $table) {
+        Schema::create('regions', function (Blueprint $table) {
             $table->id();
-            $table->polygon('polygon', 'GEOMETRY', 4326);
-            $table->unsignedInteger('soato')->nullable();
-            $table->string('level')->nullable();
+            $table->string('soato');
+            $table->string('name_uz')->nullable();
+            $table->string('name_ru')->nullable();
+            $table->string('admincenter_uz')->nullable();
+            $table->string('admincenter_ru')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('balls');
+        Schema::dropIfExists('regions');
     }
 };

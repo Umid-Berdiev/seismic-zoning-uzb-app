@@ -37,6 +37,11 @@ export default {
                     // icon: "si si-pencil",
                     to: "/admin/directory/roles",
                 },
+                {
+                    name: "Regions",
+                    // icon: "si si-pencil",
+                    to: "/admin/directory/regions",
+                },
             ],
         },
         // {

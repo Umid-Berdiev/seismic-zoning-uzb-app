@@ -1,29 +1,12 @@
 <?php
 
-use App\Http\Controllers\GroundwaterDataController;
-use App\Http\Controllers\GroundwaterLevelPointerController;
-use App\Http\Controllers\GroundwaterMineralizationPointerController;
-use App\Http\Controllers\GumusPointerController;
+use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\MapController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SoilActivePotassiumPointerController;
-use App\Http\Controllers\SoilAppraisalPointerController;
-use App\Http\Controllers\SoilDataController;
-use App\Http\Controllers\SoilMineralStructurePointerController;
-use App\Http\Controllers\SoilMobilePhosphorusPointerController;
-use App\Http\Controllers\SoilSalinityPointerController;
 use App\Http\Controllers\UploadShapefileController;
 use App\Http\Controllers\UserController;
-use App\Models\GroundwaterLevelPointer;
-use App\Models\GroundwaterMineralizationPointer;
-use App\Models\GumusPointer;
 use App\Models\ShapeImportLog;
-use App\Models\SoilActivePotassiumPointer;
-use App\Models\SoilAppraisalPointer;
-use App\Models\SoilDataLog;
-use App\Models\SoilMineralStructurePointer;
-use App\Models\SoilMobilePhosphorusPointer;
-use App\Models\SoilSalinityPointer;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -76,8 +59,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
     Route::prefix('directory')->group(function () {
         Route::resource('roles', RoleController::class)
             ->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('regions/{region_soato}/districts', DistrictController::class)
+            ->only(['index', 'update']);
+        Route::get('regions/export', [RegionController::class, 'export'])
+            ->name('regions.export');
+        Route::resource('regions', RegionController::class)
+            ->only(['index', 'update']);
     });
 
+    Route::post('zones/import/shapefile', [UploadShapefileController::class, 'zonesImportShapefile'])->name('zones.import.shape_file');
     Route::post('balls/import/shapefile', [UploadShapefileController::class, 'ballsImportShapefile'])->name('balls.import.shape_file');
     Route::post('borders/import/shapefile', [UploadShapefileController::class, 'bordersImportShapefile'])->name('borders.import.shape_file');
 });

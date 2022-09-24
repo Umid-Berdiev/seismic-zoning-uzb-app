@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ball;
 use App\Models\Border;
+use App\Models\Zone;
 use GeoJson\Geometry\GeometryCollection;
 use GeoJson\Geometry\LineString;
 use Illuminate\Http\Request;
@@ -13,30 +14,16 @@ class MapController extends Controller
 {
     public function index()
     {
+        $balls = Ball::all();
         $borders = Border::latest('id')->get();
-        $balls = Ball::latest('id')->get();
-        // dd($balls);
-        $border_geometries = [];
-        $ball_geometries = [];
+        $zones = Zone::all();
 
-        // foreach ($borders as $border) {
-        //   $border_geometries[] = $border->line->jsonSerialize();
-        // }
+        $gropedBalls = $balls->groupBy('level');
 
-        // foreach ($balls as $key => $ball) {
-        //     // dd($ball->polygon->jsonSerialize());
-        //     $ball_geometries[] = $ball->polygon->jsonSerialize();
-        // }
-
-        // dd($ball_geometries);
-        // $borderGeodata =  new GeometryCollection($border_geometries);
-        // $ballGeodata =  new GeometryCollection($ball_geometries);
-
-        // dd($ballGeodata->getGeometries());
         return Inertia::render('Admin/Map', [
-            // 'borders' => count($borderGeodata->getGeometries()) ? $borderGeodata->getGeometries()[0]->getCoordinates() : [],
+            'balls' => $gropedBalls,
             'borders' => $borders,
-            'balls' => $balls
+            'zones' => $zones
         ]);
     }
 }

@@ -11,6 +11,7 @@ const props = defineProps({
     canRegister: Boolean,
     borders: Array,
     balls: Array,
+    zones: Array,
 });
 
 // Main store
@@ -95,7 +96,11 @@ watchEffect(() => {
 
     // console.log("map panes: ", map.value?.getPane("overlayPane"));
 
-    map.value?.ea;
+    map.value?.eachLayer((layer) => {
+        console.log(`layer: `, layer);
+
+        if (layer._path != undefined) layer.removeFrom(map.value);
+    });
 
     if (selectedLayers.value.includes("regions"))
         map.value?.addLayer(layerRegions.value);
@@ -112,20 +117,28 @@ watchEffect(() => {
             ).addTo(map.value);
         });
     }
-    if (selectedLayers.value.includes("balls")) {
-        // const obj = {};
-        props.balls.forEach((ball) => {
+    if (selectedLayers.value.includes("balls_8")) {
+        props.balls[8]?.forEach((ball) => {
             // console.log({ ball });
             L.polygon(ball.polygon.coordinates, {
-                // color: "#00ff00",
+                color: "#00ffff",
             }).addTo(map.value);
         });
+    }
+    if (selectedLayers.value.includes("balls_9")) {
+        props.balls[9]?.forEach((ball) => {
+            // console.log({ ball });
+            L.polygon(ball.polygon.coordinates, {
+                color: "#0fff00",
+            }).addTo(map.value);
+        });
+    }
+    if (selectedLayers.value.includes("zones_50")) {
+        const zone50 = props.zones?.find((zone) => zone.level == 50);
 
-        // console.log({ obj });
-
-        // for (const iterator in obj) {
-        //     map.value?.addLayer(obj[iterator]);
-        // }
+        L.polygon(zone50.geom?.coordinates, {
+            color: "#0f00f0",
+        }).addTo(map.value);
     }
 });
 

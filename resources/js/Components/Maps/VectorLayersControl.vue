@@ -25,31 +25,54 @@ function onChange(event) {
 
     emits("update:selectedLayers", tempArr);
 }
+
+function linkClicked(e, submenu) {
+    if (submenu) {
+        // Get closest li element
+        let el = e.target.closest("li");
+
+        // Check if we are in a large screen, have horizontal navigation and hover is enabled
+        if (
+            !(
+                window.innerWidth > 991 &&
+                ((props.horizontal && props.horizontalHover) ||
+                    props.disableClick)
+            )
+        ) {
+            if (el.classList.contains("open")) {
+                // If submenu is open, close it..
+                el.classList.remove("open");
+            } else {
+                // .. else if submenu is closed, close all other (same level) submenus first before open it
+                Array.from(el.closest("ul").children).forEach((element) => {
+                    element.classList.remove("open");
+                });
+
+                el.classList.add("open");
+            }
+        }
+    } else {
+        // If we are in mobile, close the sidebar
+        if (window.innerWidth < 992) {
+            store.sidebar({ mode: "close" });
+        }
+    }
+}
 </script>
 
 <template>
     <BaseBlock title="Vector layers" class="mb-3 pb-3" btn-option-content>
-        <!-- accordion -->
-        <div class="accordion" id="accordionPanelsStayOpenExample">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="panelsStayOpen-headingOne">
-                    <button
-                        class="accordion-button collapsed p-2"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseOne"
-                        aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapseOne"
-                    >
-                        Regions
-                    </button>
-                </h2>
-                <div
-                    id="panelsStayOpen-collapseOne"
-                    class="accordion-collapse collapse show"
-                    aria-labelledby="panelsStayOpen-headingOne"
+        <ul class="nav-main">
+            <li class="nav-main-item">
+                <a
+                    href="#"
+                    class="nav-main-link nav-main-link-submenu text-white"
+                    @click.prevent="linkClicked($event, true)"
                 >
-                    <div class="accordion-body p-2">
+                    <span>Regions</span>
+                </a>
+                <ul class="nav-main-submenu">
+                    <li class="nav-main-item">
                         <div class="form-check">
                             <input
                                 class="form-check-input"
@@ -60,39 +83,143 @@ function onChange(event) {
                                 @change="onChange"
                             />
                             <label
-                                class="form-check-label w-100"
+                                class="form-check-label w-100 small"
                                 for="regionsSwitch"
                             >
                                 <div class="d-flex">
                                     <span>Borders</span>
-                                    <div
-                                        class="ms-auto my-auto rectangle-regions"
-                                    ></div>
                                 </div>
                             </label>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
-                    <button
-                        class="accordion-button collapsed p-2"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseTwo"
-                        aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapseTwo"
-                    >
-                        Districts
-                    </button>
-                </h2>
-                <div
-                    id="panelsStayOpen-collapseTwo"
-                    class="accordion-collapse collapse"
-                    aria-labelledby="panelsStayOpen-headingTwo"
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-main-item">
+                <a
+                    href="#"
+                    class="nav-main-link nav-main-link-submenu text-white"
+                    @click.prevent="linkClicked($event, true)"
                 >
-                    <div class="accordion-body p-2">
+                    <span>Districts</span>
+                </a>
+                <ul class="nav-main-submenu">
+                    <li class="nav-main-item">
+                        <a
+                            href="#"
+                            class="nav-main-link nav-main-link-submenu text-white"
+                            @click.prevent="linkClicked($event, true)"
+                        >
+                            <span>Zones</span>
+                        </a>
+                        <ul class="nav-main-submenu">
+                            <li class="nav-main-item">
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="zone50Switch"
+                                        :checked="
+                                            selectedLayers.includes('zones_50')
+                                        "
+                                        value="zones_50"
+                                        @change="onChange"
+                                    />
+                                    <label
+                                        class="form-check-label w-100 small"
+                                        for="zone50Switch"
+                                    >
+                                        <div class="d-flex">
+                                            <span>50</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="nav-main-item">
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="zone45Switch"
+                                        :checked="
+                                            selectedLayers.includes('zones_45')
+                                        "
+                                        value="zones_45"
+                                        @change="onChange"
+                                    />
+                                    <label
+                                        class="form-check-label w-100 small"
+                                        for="zone45Switch"
+                                    >
+                                        <div class="d-flex">
+                                            <span>45</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-main-item">
+                        <a
+                            href="#"
+                            class="nav-main-link nav-main-link-submenu text-white"
+                            @click.prevent="linkClicked($event, true)"
+                        >
+                            <span>Balls</span>
+                        </a>
+                        <ul class="nav-main-submenu">
+                            <li class="nav-main-item">
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="balls8Switch"
+                                        :checked="
+                                            selectedLayers.includes('balls_8')
+                                        "
+                                        value="balls_8"
+                                        @change="onChange"
+                                    />
+                                    <label
+                                        class="form-check-label w-100 small"
+                                        for="balls8Switch"
+                                    >
+                                        <div class="d-flex">
+                                            <span>8</span>
+                                            <!-- <div
+                                                class="ms-auto my-auto rectangle-balls"
+                                            ></div> -->
+                                        </div>
+                                    </label>
+                                </div>
+                            </li>
+                            <li class="nav-main-item">
+                                <div class="form-check">
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="balls9Switch"
+                                        :checked="
+                                            selectedLayers.includes('balls_9')
+                                        "
+                                        value="balls_9"
+                                        @change="onChange"
+                                    />
+                                    <label
+                                        class="form-check-label w-100 small"
+                                        for="balls9Switch"
+                                    >
+                                        <div class="d-flex">
+                                            <span>9</span>
+                                            <!-- <div
+                                                class="ms-auto my-auto rectangle-balls"
+                                            ></div> -->
+                                        </div>
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-main-item">
                         <div class="form-check">
                             <input
                                 class="form-check-input"
@@ -103,42 +230,21 @@ function onChange(event) {
                                 @change="onChange"
                             />
                             <label
-                                class="form-check-label w-100"
+                                class="form-check-label w-100 small"
                                 for="bordersSwitch"
                             >
                                 <div class="d-flex">
                                     <span>Borders</span>
-                                    <div
+                                    <!-- <div
                                         class="ms-auto my-auto rectangle-borders"
-                                    ></div>
+                                    ></div> -->
                                 </div>
                             </label>
                         </div>
-                        <div class="form-check">
-                            <input
-                                class="form-check-input"
-                                type="checkbox"
-                                id="ballsSwitch"
-                                :checked="selectedLayers.includes('balls')"
-                                value="balls"
-                                @change="onChange"
-                            />
-                            <label
-                                class="form-check-label w-100"
-                                for="ballsSwitch"
-                            >
-                                <div class="d-flex">
-                                    <span>Balls</span>
-                                    <div
-                                        class="ms-auto my-auto rectangle-balls"
-                                    ></div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </BaseBlock>
 </template>
 
@@ -169,5 +275,11 @@ function onChange(event) {
 .horizontal-yollar {
     width: 2rem;
     height: 0.25rem;
+}
+
+.nav-main-link:hover,
+.nav-main-link:focus,
+.open {
+    background-color: rgba(0, 0, 0, 0.2);
 }
 </style>

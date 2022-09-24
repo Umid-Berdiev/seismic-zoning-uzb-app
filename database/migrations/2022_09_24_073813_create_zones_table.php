@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('balls', function (Blueprint $table) {
+        Schema::create('zones', function (Blueprint $table) {
             $table->id();
-            $table->polygon('polygon', 'GEOMETRY', 4326);
+            $table->multiPolygon('geom');
             $table->unsignedInteger('soato')->nullable();
             $table->string('level')->nullable();
             $table->timestamps();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('balls');
+        Schema::dropIfExists('zones');
     }
 };
