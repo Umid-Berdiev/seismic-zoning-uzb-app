@@ -64,13 +64,13 @@ class UploadShapefileController extends Controller
                 // dd($polygons);
                 $zone = new Zone();
                 $zone->soato = 1703;
-                $zone->level = 50;
+                $zone->level = 45;
                 $zone->geom = new MultiPolygon($polygons);
                 $zone->save();
 
                 ShapeImportLog::create([
                     'type' => 'Zone',
-                    'comment' => 'Zone data with 50 level imported from shape file'
+                    'comment' => 'Zone data with 45 level imported from shape file'
                 ]);
 
                 File::cleanDirectory($extracted_file_path);
@@ -122,13 +122,13 @@ class UploadShapefileController extends Controller
 
                     $ball = new Ball();
                     $ball->soato = 1703;
-                    $ball->level = 9;
+                    $ball->level = 8;
                     $ball->polygon = new Polygon([$linestring]);
                     $ball->save();
 
                     ShapeImportLog::create([
                         'type' => 'Ball',
-                        'comment' => 'Ball data with 9 level imported from shape file'
+                        'comment' => 'Ball data with 8 level imported from shape file'
                     ]);
                 }
 
