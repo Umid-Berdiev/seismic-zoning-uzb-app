@@ -76,7 +76,14 @@ class RegionController extends Controller
      */
     public function update(UpdateRegionRequest $request, Region $region)
     {
-        dd($region);
+        $region->update([
+            'name_uz' => $request->name_uz,
+            'name_ru' => $request->name_ru,
+            'admincenter_uz' => $request->admincenter_uz,
+            'admincenter_ru' => $request->admincenter_ru
+        ]);
+
+        return redirect(route('regions.index'));
     }
 
     /**

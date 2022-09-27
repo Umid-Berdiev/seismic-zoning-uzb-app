@@ -66,7 +66,7 @@ function linkClicked(e, submenu) {
             <li class="nav-main-item">
                 <a
                     href="#"
-                    class="nav-main-link nav-main-link-submenu text-white"
+                    class="nav-main-link nav-main-link-submenu"
                     @click.prevent="linkClicked($event, true)"
                 >
                     <span>Regions</span>
@@ -97,7 +97,7 @@ function linkClicked(e, submenu) {
             <li class="nav-main-item">
                 <a
                     href="#"
-                    class="nav-main-link nav-main-link-submenu text-white"
+                    class="nav-main-link nav-main-link-submenu"
                     @click.prevent="linkClicked($event, true)"
                 >
                     <span>Districts</span>
@@ -106,7 +106,7 @@ function linkClicked(e, submenu) {
                     <li class="nav-main-item">
                         <a
                             href="#"
-                            class="nav-main-link nav-main-link-submenu text-white"
+                            class="nav-main-link nav-main-link-submenu"
                             @click.prevent="linkClicked($event, true)"
                         >
                             <span>Zones</span>
@@ -161,7 +161,7 @@ function linkClicked(e, submenu) {
                     <li class="nav-main-item">
                         <a
                             href="#"
-                            class="nav-main-link nav-main-link-submenu text-white"
+                            class="nav-main-link nav-main-link-submenu"
                             @click.prevent="linkClicked($event, true)"
                         >
                             <span>Balls</span>
@@ -277,9 +277,9 @@ function linkClicked(e, submenu) {
     height: 0.25rem;
 }
 
-.nav-main-link:hover,
-.nav-main-link:focus,
-.open {
-    background-color: rgba(0, 0, 0, 0.2);
-}
+// .nav-main-link:hover,
+// .nav-main-link:focus,
+// .open {
+//     background-color: rgba(0, 0, 0, 0.2);
+// }
 </style>

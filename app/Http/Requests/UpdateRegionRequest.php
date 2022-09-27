@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Region;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateRegionRequest extends FormRequest
@@ -13,7 +14,10 @@ class UpdateRegionRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        // $region = Region::find($this->route('region'));
+
+        // return $region && $this->user()->can('update', $region);
+        return $this->user()->roles->contains('slug', 'admin');
     }
 
     /**
@@ -24,7 +28,7 @@ class UpdateRegionRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            // 'soato' => 'required'
         ];
     }
 }

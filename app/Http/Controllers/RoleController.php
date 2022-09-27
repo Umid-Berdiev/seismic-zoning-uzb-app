@@ -41,8 +41,8 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:40',
-            'slug' => 'required|string|max:40|unique:roles',
-            'details' => 'string|max:255'
+            // 'slug' => 'required|string|max:40|unique:roles',
+            'details' => 'string|nullable|max:255'
         ]);
 
         Role::create($validated);
@@ -84,8 +84,8 @@ class RoleController extends Controller
         $this->authorize('update', $role);
         $validated = $request->validate([
             'name' => 'required|string|max:40',
-            'slug' => 'required|string|max:40',
-            'details' => 'string|max:255'
+            // 'slug' => 'required|string|max:40',
+            'details' => 'string|nullable|max:255'
         ]);
 
         $role->update($validated);

@@ -7,7 +7,7 @@ import Input from "@/Components/Input.vue";
 import Button from "@/Components/Button.vue";
 import helpers from "@/utils/helper.js";
 // Vue Dataset, for more info and examples you can check out https://github.com/kouts/vue-dataset/tree/next
-import { Dataset, DatasetItem } from "vue-dataset";
+import { Dataset, DatasetItem, DatasetShow, DatasetSearch } from "vue-dataset";
 import BaseBlock from "@/Components/BaseBlock.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
@@ -121,58 +121,61 @@ function exportToExcel() {
 
         <BaseBlock title="Regions table" content-full>
             <div v-if="regions?.length == 0" class="text-center">No data</div>
-            <Dataset v-else :ds-data="regions">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table table-striped mb-0">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th
-                                            v-for="(th, index) in columns"
-                                            :key="th.field"
+            <div v-else class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th
+                                        v-for="(th, index) in columns"
+                                        :key="th.field"
+                                    >
+                                        {{ th.name }}
+                                    </th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <!-- <DatasetItem tag="tbody" class="fs-sm">
+                                    <template #default="{ row, rowIndex }"> -->
+                            <tbody>
+                                <tr
+                                    v-for="(row, rowIndex) in regions"
+                                    :key="row.id"
+                                >
+                                    <th scope="row">
+                                        {{ rowIndex + 1 }}
+                                    </th>
+                                    <td>{{ row.soato }}</td>
+                                    <td>{{ row.name_uz }}</td>
+                                    <td>{{ row.name_ru }}</td>
+                                    <td>{{ row.admincenter_uz }}</td>
+                                    <td>{{ row.admincenter_ru }}</td>
+                                    <td class="d-flex gap-2">
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary w-auto"
+                                            @click="onView(row.soato)"
                                         >
-                                            {{ th.name }}
-                                        </th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <DatasetItem tag="tbody" class="fs-sm">
-                                    <template #default="{ row, rowIndex }">
-                                        <tr>
-                                            <th scope="row">
-                                                {{ rowIndex + 1 }}
-                                            </th>
-                                            <td>{{ row.soato }}</td>
-                                            <td>{{ row.name_uz }}</td>
-                                            <td>{{ row.name_ru }}</td>
-                                            <td>{{ row.admincenter_uz }}</td>
-                                            <td>{{ row.admincenter_ru }}</td>
-                                            <td class="d-flex gap-2">
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-secondary w-auto"
-                                                    @click="onView(row.soato)"
-                                                >
-                                                    <i class="si si-eye"></i>
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    class="btn btn-secondary w-auto"
-                                                    @click="onEdit(row.soato)"
-                                                >
-                                                    <i class="si si-pencil"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                </DatasetItem>
-                            </table>
-                        </div>
+                                            <i class="si si-eye"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-secondary w-auto"
+                                            @click="onEdit(row.soato)"
+                                        >
+                                            <i class="si si-pencil"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <!-- </template>
+                                </DatasetItem> -->
+                        </table>
                     </div>
                 </div>
-            </Dataset>
+            </div>
         </BaseBlock>
 
         <!-- Modals -->
@@ -203,7 +206,8 @@ function exportToExcel() {
                                     <InputLabel value="Soato" />
                                     <Input
                                         type="text"
-                                        v-model="regionForm.soato"
+                                        disabled
+                                        :value="regionForm.soato"
                                     />
                                     <div
                                         class="invalid-feedback animated fadeIn"

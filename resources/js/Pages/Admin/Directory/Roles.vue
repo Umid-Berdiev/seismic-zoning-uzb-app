@@ -11,6 +11,7 @@ import { Dataset, DatasetItem } from "vue-dataset";
 import BaseBlock from "@/Components/BaseBlock.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
+import InputError from "@/Components/InputError.vue";
 
 const props = defineProps({
     roles: {
@@ -19,6 +20,12 @@ const props = defineProps({
     },
 });
 const notyf = useNotyf();
+const role = reactive({
+    name: "",
+    // slug: "",
+    details: "",
+});
+const roleForm = useForm(role);
 const modal = computed(() => Modal.getOrCreateInstance("#roleFormModal"));
 const columns = reactive([
     {
@@ -38,15 +45,15 @@ const columns = reactive([
         field: "updated_at",
     },
 ]);
-const role = reactive({
-    name: "",
-    slug: "",
-    details: "",
-});
-const roleForm = useForm(role);
 const isEditing = ref(false);
 
 onMounted(() => {
+    modal.value?._element.addEventListener("hidden.bs.modal", (event) => {
+        roleForm.reset();
+        roleForm.clearErrors();
+        isEditing.value = false;
+    });
+
     // Remove labels from
     document.querySelectorAll("#datasetLength label").forEach((el) => {
         el.remove();
@@ -67,6 +74,9 @@ async function onModalFormSubmit() {
               onSuccess: () => {
                   notyf.success("Role successfully updated!");
                   modal.value?.hide();
+                  roleForm.reset();
+                  roleForm.clearErrors();
+                  isEditing.value = false;
               },
               onError: (errorObj) => {
                   notyf.error("Error while updating role!");
@@ -76,6 +86,9 @@ async function onModalFormSubmit() {
               onSuccess: () => {
                   notyf.success("Role successfully updated!");
                   modal.value?.hide();
+                  roleForm.reset();
+                  roleForm.clearErrors();
+                  isEditing.value = false;
               },
               onError: (errorObj) => {
                   notyf.error("Error while creating role!");
@@ -88,7 +101,7 @@ function onEdit(id) {
     const selectedRole = props.roles.find((role) => role.id === id);
     Object.assign(role, selectedRole);
     roleForm.name = selectedRole.name;
-    roleForm.slug = selectedRole.slug;
+    // roleForm.slug = selectedRole.slug;
     roleForm.details = selectedRole.details;
     modal.value?.toggle();
 }
@@ -114,7 +127,7 @@ function deleteAction() {
 
 <template>
     <div class="content">
-        <div class="d-flex justify-content-end">
+        <!-- <div class="d-flex justify-content-end">
             <button
                 type="button"
                 class="btn btn-alt-primary push"
@@ -124,7 +137,7 @@ function deleteAction() {
                 <i class="si si-plus me-1"></i>
                 <span>Add</span>
             </button>
-        </div>
+        </div> -->
 
         <BaseBlock title="Roles table" content-full>
             <div v-if="roles?.length == 0" class="text-center">No data</div>
@@ -170,13 +183,13 @@ function deleteAction() {
                                                 >
                                                     <i class="si si-pencil"></i>
                                                 </button>
-                                                <button
+                                                <!-- <button
                                                     type="button"
                                                     class="btn btn-danger w-auto"
                                                     @click="onRemove(row.id)"
                                                 >
                                                     <i class="si si-trash"></i>
-                                                </button>
+                                                </button> -->
                                             </td>
                                         </tr>
                                     </template>
@@ -213,40 +226,46 @@ function deleteAction() {
                         <form @submit.prevent="onModalFormSubmit">
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <InputLabel value="Name" />
+                                    <InputLabel for="name-input">
+                                        <span>Name</span>
+                                        <span class="text-danger">*</span>
+                                    </InputLabel>
                                     <Input
+                                        id="name-input"
                                         type="text"
                                         v-model="roleForm.name"
                                     />
-                                    <div
-                                        class="invalid-feedback animated fadeIn"
-                                    >
-                                        {{ roleForm.errors?.name }}
-                                    </div>
+                                    <InputError
+                                        :message="roleForm.errors?.name"
+                                    />
                                 </div>
-                                <div class="col-12 mb-3">
-                                    <InputLabel value="Slug" />
+                                <!-- <div class="col-12 mb-3">
+                                    <InputLabel for="slug-input">
+                                        <span>Slug</span>
+                                        <span class="text-danger">*</span>
+                                    </InputLabel>
                                     <Input
+                                        id="slug-input"
                                         type="text"
                                         v-model="roleForm.slug"
                                     />
-                                    <div
-                                        class="invalid-feedback animated fadeIn"
-                                    >
-                                        {{ roleForm.errors?.slug }}
-                                    </div>
-                                </div>
+                                    <InputError
+                                        :message="roleForm.errors?.slug"
+                                    />
+                                </div> -->
                                 <div class="col-12 mb-3">
-                                    <InputLabel value="Details" />
+                                    <InputLabel
+                                        for="details-input"
+                                        value="Details"
+                                    />
                                     <textarea
+                                        id="details-input"
                                         class="form-control"
                                         v-model="roleForm.details"
                                     />
-                                    <div
-                                        class="invalid-feedback animated fadeIn"
-                                    >
-                                        {{ roleForm.errors?.details }}
-                                    </div>
+                                    <InputError
+                                        :message="roleForm.errors?.details"
+                                    />
                                 </div>
 
                                 <div class="col-auto ms-auto">

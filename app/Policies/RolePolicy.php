@@ -67,7 +67,7 @@ class RolePolicy
      */
     public function delete(User $user, Role $role)
     {
-        $this->update($user, $role);
+        return $this->update($user, $role);
     }
 
     /**

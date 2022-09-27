@@ -12,6 +12,7 @@ const store = useMainStore();
 // Reactive variables
 const baseSearchTerm = ref("");
 const authUser = computed(() => usePage().props.value.auth.user);
+
 // On form search submit functionality
 function onSubmitSearch() {
     // route("/admin/pages/generic/search?" + baseSearchTerm.value);
@@ -23,6 +24,27 @@ function eventHeaderSearch(event) {
     if (event.which === 27) {
         event.preventDefault();
         store.headerSearch({ mode: "off" });
+    }
+}
+
+function toggleFullScreen() {
+    // UniversalXPConnect privilege is required in Firefox
+    try {
+        if (window.netscape && netscape.security) {
+            // Firefox
+            netscape.security.PrivilegeManager.enablePrivilege(
+                "UniversalXPConnect"
+            );
+        }
+    } catch (e) {
+        alert("UniversalXPConnect privilege is required for this operation!");
+        return;
+    }
+
+    if ("fullScreen" in window) {
+        window.fullScreen = !window.fullScreen;
+    } else {
+        alert("Your browser does not support this example!");
     }
 }
 
@@ -46,13 +68,43 @@ onUnmounted(() => {
                 <slot name="content">
                     <!-- Left Section -->
                     <div class="d-flex align-items-center">
-                        <slot name="content-left"></slot>
+                        <slot name="content-left">
+                            <!-- Toggle Sidebar -->
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-alt-secondary me-2 d-lg-none"
+                                @click="store.sidebar({ mode: 'toggle' })"
+                            >
+                                <i class="fa fa-fw fa-bars"></i>
+                            </button>
+                            <!-- END Toggle Sidebar -->
+
+                            <!-- Toggle Mini Sidebar -->
+                            <button
+                                type="button"
+                                class="btn me-2 d-none d-lg-inline-block"
+                                @click="store.sidebarMini({ mode: 'toggle' })"
+                            >
+                                <i
+                                    v-if="store.settings.sidebarMini"
+                                    class="fa fa-fw fa-chevron-right"
+                                ></i>
+                                <i v-else class="fa fa-fw fa-chevron-left"></i>
+                            </button>
+                            <!-- END Toggle Mini Sidebar -->
+                        </slot>
                     </div>
                     <!-- END Left Section -->
 
                     <!-- Right Section -->
                     <div class="d-flex align-items-center">
                         <slot name="content-right">
+                            Press this button,
+                            <button class="btn" @click="toggleFullScreen">
+                                Change full screen mode!
+                            </button>
+                            or press F11 to toggle between normal and full
+                            screen mode.
                             <!-- User Dropdown -->
                             <div class="dropdown d-inline-block ms-2">
                                 <button

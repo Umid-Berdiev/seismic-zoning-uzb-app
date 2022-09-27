@@ -38,6 +38,7 @@ import BaseBlock from "../BaseBlock.vue";
                             <button
                                 type="button"
                                 class="btn btn-danger"
+                                data-bs-dismiss="modal"
                                 @click="$emit('confirm')"
                             >
                                 Yes

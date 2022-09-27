@@ -9,6 +9,13 @@ class Region extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name_uz',
+        'name_ru',
+        'admincenter_uz',
+        'admincenter_ru',
+    ];
+
     /**
      * Get all of the districts for the Region
      *
