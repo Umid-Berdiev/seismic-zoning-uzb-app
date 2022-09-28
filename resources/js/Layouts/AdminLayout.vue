@@ -46,10 +46,10 @@ const classContainer = computed(() => {
             store.layout.sidebar && store.settings.sidebarVisibleDesktop,
         "sidebar-o-xs":
             store.layout.sidebar && store.settings.sidebarVisibleMobile,
-        "sidebar-dark":
-            store.layout.sidebar &&
-            store.settings.sidebarDark &&
-            !store.settings.darkMode,
+        // "sidebar-dark":
+        //     store.layout.sidebar &&
+        //     store.settings.sidebarDark &&
+        //     !store.settings.darkMode,
         "side-overlay-o":
             store.layout.sideOverlay && store.settings.sideOverlayVisible,
         "side-overlay-hover":
@@ -181,13 +181,12 @@ onMounted(() => {
         <!-- Main Container -->
         <div id="main-container">
             <slot name="page-top-content"></slot>
-            <!-- <RouterView /> -->
             <slot />
         </div>
         <!-- END Main Container -->
 
         <!-- Footer -->
-        <BaseFooter v-if="store.layout.footer">
+        <!-- <BaseFooter v-if="store.layout.footer">
             <template #content-left>
                 <slot name="footer-content-left"></slot>
             </template>
@@ -196,7 +195,7 @@ onMounted(() => {
                 <slot name="footer-content-right"></slot>
             </template>
             <slot name="footer"></slot>
-        </BaseFooter>
+        </BaseFooter> -->
         <!-- END Footer -->
     </div>
 </template>

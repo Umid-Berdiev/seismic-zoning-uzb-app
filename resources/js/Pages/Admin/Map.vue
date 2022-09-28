@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch, watchEffect } from "vue";
+import { useI18n } from "vue-i18n";
 import { useMainStore } from "@/stores/main";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -10,10 +11,10 @@ const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     borders: Array,
-    balls: Array,
+    balls: Object,
     zones: Array,
 });
-
+const { t } = useI18n();
 // Main store
 const store = useMainStore();
 const zoom = ref(6);
@@ -21,13 +22,13 @@ const mapLoader = ref(false);
 const center = ref([40.4111, 66.9]);
 const map = ref(null);
 const tileProviders = reactive({
-    ["Openstreet harita"]: L.tileLayer(
+    [t("Openstreet_map")]: L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
     ),
-    ["Google harita"]: L.tileLayer(
+    [t("Google_map")]: L.tileLayer(
         "http://www.google.com/maps/vt?ROADMAP=s@189&gl=uz&x={x}&y={y}&z={z}"
     ),
-    ["Google harita (sun'iy yo'ldosh)"]: L.tileLayer(
+    [t("Google_map_satellite")]: L.tileLayer(
         "http://www.google.com/maps/vt?lyrs=s,h@189&gl=uz&x={x}&y={y}&z={z}"
     ),
 });
@@ -88,7 +89,7 @@ onMounted(async () => {
 });
 
 watchEffect(() => {
-    // map.value?.removeLayer(layerRegions.value);
+    map.value?.removeLayer(layerRegions.value);
     // map.value?.removeLayer(layerBorders.value);
     // props.balls.forEach((ball) => {
     //     map.value?.removeLayer([`layerBalls${ball.level}`]);
@@ -97,17 +98,12 @@ watchEffect(() => {
     // console.log("map panes: ", map.value?.getPane("overlayPane"));
 
     map.value?.eachLayer((layer) => {
-        console.log(`layer: `, layer);
-
         if (layer._path != undefined) layer.removeFrom(map.value);
     });
 
     if (selectedLayers.value.includes("regions"))
         map.value?.addLayer(layerRegions.value);
     if (selectedLayers.value.includes("borders")) {
-        // map.value?.addLayer(layerBorders.value);
-        // map.value?.fitBounds(layerBorders.value?.getBounds());
-
         props.borders.forEach((border) => {
             L.polyline(
                 border.line.map((item) => item.coordinates),
@@ -161,7 +157,7 @@ function initMap() {
         .on("moveend", function (e) {
             center.value = Object.values(map.value.getBounds().getCenter());
         });
-    tileProviders["Openstreet harita"].addTo(map.value);
+    tileProviders[t("Openstreet_map")].addTo(map.value);
 
     // add layers to map
     L.control

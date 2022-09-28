@@ -61,7 +61,11 @@ function linkClicked(e, submenu) {
 </script>
 
 <template>
-    <BaseBlock title="Vector layers" class="mb-3 pb-3" btn-option-content>
+    <BaseBlock
+        :title="$t('Vector_layers')"
+        class="mb-3 pb-3"
+        btn-option-content
+    >
         <ul class="nav-main">
             <li class="nav-main-item">
                 <a
@@ -69,7 +73,7 @@ function linkClicked(e, submenu) {
                     class="nav-main-link nav-main-link-submenu"
                     @click.prevent="linkClicked($event, true)"
                 >
-                    <span>Regions</span>
+                    <span>{{ $t("Regions") }}</span>
                 </a>
                 <ul class="nav-main-submenu">
                     <li class="nav-main-item">
@@ -87,7 +91,7 @@ function linkClicked(e, submenu) {
                                 for="regionsSwitch"
                             >
                                 <div class="d-flex">
-                                    <span>Borders</span>
+                                    <span>{{ $t("Borders") }}</span>
                                 </div>
                             </label>
                         </div>
@@ -100,7 +104,7 @@ function linkClicked(e, submenu) {
                     class="nav-main-link nav-main-link-submenu"
                     @click.prevent="linkClicked($event, true)"
                 >
-                    <span>Districts</span>
+                    <span>{{ $t("Districts") }}</span>
                 </a>
                 <ul class="nav-main-submenu">
                     <li class="nav-main-item">
@@ -109,7 +113,7 @@ function linkClicked(e, submenu) {
                             class="nav-main-link nav-main-link-submenu"
                             @click.prevent="linkClicked($event, true)"
                         >
-                            <span>Zones</span>
+                            <span>{{ $t("Zones") }}</span>
                         </a>
                         <ul class="nav-main-submenu">
                             <li class="nav-main-item">
@@ -164,7 +168,7 @@ function linkClicked(e, submenu) {
                             class="nav-main-link nav-main-link-submenu"
                             @click.prevent="linkClicked($event, true)"
                         >
-                            <span>Balls</span>
+                            <span>{{ $t("Balls") }}</span>
                         </a>
                         <ul class="nav-main-submenu">
                             <li class="nav-main-item">
@@ -234,7 +238,7 @@ function linkClicked(e, submenu) {
                                 for="bordersSwitch"
                             >
                                 <div class="d-flex">
-                                    <span>Borders</span>
+                                    <span>{{ $t("Borders") }}</span>
                                     <!-- <div
                                         class="ms-auto my-auto rectangle-borders"
                                     ></div> -->

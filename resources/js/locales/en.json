@@ -1,0 +1,60 @@
+{
+    "select-language": "Select language",
+    "auth": {
+        "title": "Join Us Now.",
+        "subtitle": "Start by creating your account",
+        "label": {
+            "promotional": "Receive promotional offers"
+        },
+        "action": {
+            "login": "I already have an account",
+            "signup": "Sign Up"
+        },
+        "placeholder": {
+            "name": "Name",
+            "email": "Email Address",
+            "password": "Password",
+            "passwordCheck": "Password Verification"
+        },
+        "errors": {
+            "name": {
+                "required": "Your first name is required"
+            },
+            "email": {
+                "required": "Enter your email, it will be required to login",
+                "format": "Please, enter a valid email"
+            },
+            "password": {
+                "required": "Enter your password with at least 8 characters, it will be required to login",
+                "length": "The password should contains at leat 8 characters"
+            },
+            "passwordCheck": {
+                "required": "Please, confirm your password",
+                "match": "The password does not match"
+            }
+        }
+    },
+    "logout_text": "Log out",
+    "menu": {
+        "Map": "Map",
+        "Statics": "Statics",
+        "Users": "Users",
+        "Directory": "Directory",
+        "Roles": "Roles",
+        "Regions": "Regions"
+    },
+    "User": "User",
+    "Role": "Role",
+    "Region": "Region",
+    "Regions": "Regions",
+    "District": "District",
+    "Districts": "Districts",
+    "Vector_layers": "Vector layers",
+    "Zones": "Zones",
+    "Balls": "Balls",
+    "Borders": "Borders",
+    "Openstreet_map": "Openstreet map",
+    "Google_map": "Google map",
+    "Google_map_satellite": "Google map (satellite)",
+    "full_screen_mode_text": "Change full screen mode!"
+}

@@ -5,9 +5,14 @@ import { Modal } from "bootstrap";
 import { useNotyf } from "@/composable/useNotyf";
 import Input from "@/Components/Input.vue";
 import Button from "@/Components/Button.vue";
-import helpers from "@/utils/helper.js";
-// Vue Dataset, for more info and examples you can check out https://github.com/kouts/vue-dataset/tree/next
-import { Dataset, DatasetItem } from "vue-dataset";
+import {
+    Dataset,
+    DatasetItem,
+    DatasetShow,
+    DatasetSearch,
+    DatasetInfo,
+    DatasetPager,
+} from "vue-dataset";
 import BaseBlock from "@/Components/BaseBlock.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
@@ -19,7 +24,7 @@ const props = defineProps({
     },
 });
 const notyf = useNotyf();
-const modal = computed(() => Modal.getOrCreateInstance("#roleFormModal"));
+const modal = computed(() => Modal.getOrCreateInstance("#districtFormModal"));
 const columns = reactive([
     {
         name: "Soato",
@@ -47,15 +52,22 @@ const columns = reactive([
     },
 ]);
 
-const role = reactive({
-    name: "",
-    slug: "",
-    details: "",
+const districtObj = reactive({
+    name_uz: "",
+    name_ru: "",
+    admincenter_uz: "",
+    admincenter_ru: "",
 });
-const roleForm = useForm(role);
+const districtForm = useForm(districtObj);
 const isEditing = ref(false);
 
 onMounted(() => {
+    modal.value?._element.addEventListener("hidden.bs.modal", (event) => {
+        districtForm.reset();
+        districtForm.clearErrors();
+        isEditing.value = false;
+    });
+
     // Remove labels from
     document.querySelectorAll("#datasetLength label").forEach((el) => {
         el.remove();
@@ -71,53 +83,33 @@ onMounted(() => {
 });
 
 async function onModalFormSubmit() {
-    isEditing.value
-        ? roleForm.put(route("districts.update", role.id), {
-              onSuccess: () => {
-                  notyf.success("Role successfully updated!");
-                  modal.value?.hide();
-              },
-              onError: (errorObj) => {
-                  notyf.error("Error while updating role!");
-              },
-          })
-        : roleForm.post(route("districts.store"), {
-              onSuccess: () => {
-                  notyf.success("Role successfully updated!");
-                  modal.value?.hide();
-              },
-              onError: (errorObj) => {
-                  notyf.error("Error while creating role!");
-              },
-          });
-}
-
-function onEdit(id) {
-    // isEditing.value = true;
-    // const selectedRole = props.districts.find((role) => role.id === id);
-    // Object.assign(role, selectedRole);
-    // roleForm.name = selectedRole.name;
-    // roleForm.slug = selectedRole.slug;
-    // roleForm.details = selectedRole.details;
-    // modal.value?.toggle();
-}
-
-function onRemove(id) {
-    role.id = id;
-    const confirmModal = Modal.getOrCreateInstance("#modal-confirm");
-    confirmModal.show();
-}
-
-function deleteAction() {
-    roleForm.delete(route("districts.destroy", role.id), {
+    districtForm.put(route("districts.update", districtObj.id), {
         onSuccess: () => {
-            notyf.success("Role successfully removed!");
+            notyf.success("District successfully updated!");
+            districtForm.reset();
+            districtForm.clearErrors();
             modal.value?.hide();
         },
         onError: (errorObj) => {
-            notyf.error("Error while deleting role!");
+            notyf.error("Error while updating district!");
         },
     });
+}
+
+function onEdit(district) {
+    isEditing.value = true;
+
+    Object.assign(districtObj, district);
+    districtForm.name_uz = district.name_uz;
+    districtForm.name_ru = district.name_ru;
+    districtForm.admincenter_uz = district.admincenter_uz;
+    districtForm.admincenter_ru = district.admincenter_ru;
+    modal.value?.toggle();
+}
+
+function exportToExcel() {
+    // console.log(route().params.region);
+    location.href = route("districts.export", route().params.region);
 }
 </script>
 
@@ -126,26 +118,35 @@ function deleteAction() {
         <div class="d-flex">
             <button
                 type="button"
-                class="btn btn-alt-primary push"
-                @click="useForm().get(route('regions.index'))"
+                class="btn btn-alt-primary"
+                @click.prevent="useForm().get(route('regions.index'))"
             >
                 <i class="si si-arrow-left me-1"></i>
                 <span>Back</span>
             </button>
             <button
                 type="button"
-                class="btn btn-alt-primary push ms-auto"
+                class="btn btn-alt-primary ms-auto"
                 data-bs-toggle="modal"
                 data-bs-target="#modal-confirm"
             >
-                <i class="si si-cloud-download me-1"></i>
+                <i class="fa fa-download me-1"></i>
                 <span>Export to excel</span>
             </button>
         </div>
-
+        <br />
         <BaseBlock title="Districts table" content-full>
             <div v-if="districts?.length == 0" class="text-center">No data</div>
-            <Dataset v-else :ds-data="districts">
+            <Dataset v-else v-slot="ds" :ds-data="districts">
+                <div class="row" :data-page-count="ds.dsPagecount">
+                    <div id="datasetLength" class="col-auto py-2">
+                        <DatasetShow />
+                    </div>
+                    <div class="col-auto ms-auto py-2">
+                        <DatasetSearch ds-search-placeholder="Search..." />
+                    </div>
+                </div>
+                <hr />
                 <div class="row">
                     <div class="col-md-12">
                         <div class="table-responsive">
@@ -178,7 +179,7 @@ function deleteAction() {
                                                 <button
                                                     type="button"
                                                     class="btn btn-secondary w-auto"
-                                                    @click="onEdit(row.soato)"
+                                                    @click="onEdit(row)"
                                                 >
                                                     <i class="si si-pencil"></i>
                                                 </button>
@@ -197,22 +198,32 @@ function deleteAction() {
                         </div>
                     </div>
                 </div>
+                <div
+                    class="d-flex flex-md-row flex-column justify-content-between align-items-center"
+                >
+                    <DatasetInfo class="py-3 fs-sm" />
+                    <DatasetPager class="flex-wrap py-3 fs-sm" />
+                </div>
             </Dataset>
         </BaseBlock>
 
         <!-- Modals -->
         <div
             class="modal fade"
-            id="roleFormModal"
+            id="districtFormModal"
             tabindex="-1"
-            aria-labelledby="roleFormModalLabel"
+            aria-labelledby="districtFormModalLabel"
             aria-hidden="true"
         >
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-popout">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="roleFormModalLabel">
-                            {{ isEditing ? "Edit role data" : "Add role data" }}
+                        <h5 class="modal-title" id="districtFormModalLabel">
+                            {{
+                                isEditing
+                                    ? "Edit district data"
+                                    : "Add district data"
+                            }}
                         </h5>
                         <button
                             type="button"
@@ -225,39 +236,55 @@ function deleteAction() {
                         <form @submit.prevent="onModalFormSubmit">
                             <div class="row">
                                 <div class="col-12 mb-3">
-                                    <InputLabel value="Name" />
+                                    <InputLabel value="Name uz" />
                                     <Input
                                         type="text"
-                                        v-model="roleForm.name"
+                                        v-model="districtForm.name_uz"
                                     />
                                     <div
                                         class="invalid-feedback animated fadeIn"
                                     >
-                                        {{ roleForm.errors?.name }}
+                                        {{ districtForm.errors?.name_uz }}
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
-                                    <InputLabel value="Slug" />
+                                    <InputLabel value="Name ru" />
                                     <Input
                                         type="text"
-                                        v-model="roleForm.slug"
+                                        v-model="districtForm.name_ru"
                                     />
                                     <div
                                         class="invalid-feedback animated fadeIn"
                                     >
-                                        {{ roleForm.errors?.slug }}
+                                        {{ districtForm.errors?.name_ru }}
                                     </div>
                                 </div>
                                 <div class="col-12 mb-3">
-                                    <InputLabel value="Details" />
-                                    <textarea
-                                        class="form-control"
-                                        v-model="roleForm.details"
+                                    <InputLabel value="Admincenter uz" />
+                                    <Input
+                                        type="text"
+                                        v-model="districtForm.admincenter_uz"
                                     />
                                     <div
                                         class="invalid-feedback animated fadeIn"
                                     >
-                                        {{ roleForm.errors?.details }}
+                                        {{
+                                            districtForm.errors?.admincenter_uz
+                                        }}
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <InputLabel value="Admincenter ru" />
+                                    <Input
+                                        type="text"
+                                        v-model="districtForm.admincenter_ru"
+                                    />
+                                    <div
+                                        class="invalid-feedback animated fadeIn"
+                                    >
+                                        {{
+                                            districtForm.errors?.admincenter_ru
+                                        }}
                                     </div>
                                 </div>
 
@@ -271,7 +298,7 @@ function deleteAction() {
             </div>
         </div>
 
-        <ConfirmModal @confirm="deleteAction" />
+        <ConfirmModal @confirm="exportToExcel" />
     </div>
 </template>
 

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RegionExport;
 use App\Http\Requests\StoreRegionRequest;
 use App\Http\Requests\UpdateRegionRequest;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RegionController extends Controller
 {
@@ -97,9 +99,9 @@ class RegionController extends Controller
         //
     }
 
-    public function export(Request $request)
+    public function export()
     {
-        dd('ok');
-        # code...
+        // dd('ok');
+        return Excel::download(new RegionExport, 'regions.xlsx');
     }
 }

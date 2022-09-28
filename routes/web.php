@@ -59,8 +59,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
     Route::prefix('directory')->group(function () {
         Route::resource('roles', RoleController::class)
             ->only(['index', 'store', 'update', 'destroy']);
-        Route::resource('regions/{region_soato}/districts', DistrictController::class)
-            ->only(['index', 'update']);
+        Route::get('regions/{region}/districts', [DistrictController::class, 'index'])
+            ->name('districts.index');
+        Route::put('districts/{district}', [DistrictController::class, 'update'])
+            ->name('districts.update');
+        Route::get('districts/{region}', [DistrictController::class, 'export'])
+            ->name('districts.export');
         Route::get('regions/export', [RegionController::class, 'export'])
             ->name('regions.export');
         Route::resource('regions', RegionController::class)

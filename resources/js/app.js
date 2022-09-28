@@ -17,6 +17,7 @@ import { InertiaProgress } from "@inertiajs/progress";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 import { createPinia } from "pinia";
+import i18n from "./plugins/i18n";
 
 // Template directives
 import clickRipple from "@/directives/clickRipple";
@@ -39,10 +40,25 @@ createInertiaApp({
         return createApp({ render: () => h(app, props) })
             .use(plugin)
             .use(ZiggyVue, Ziggy)
+            .use(i18n)
             .directive("click-ripple", clickRipple)
             .use(createPinia())
             .mount(el);
     },
 });
 
-InertiaProgress.init({ color: "#4B5563" });
+// InertiaProgress.init({ color: "#4B5563" });
+InertiaProgress.init({
+    // The delay after which the progress bar will
+    // appear during navigation, in milliseconds.
+    delay: 250,
+
+    // The color of the progress bar.
+    // color: "#4B5563",
+
+    // Whether to include the default NProgress styles.
+    includeCSS: true,
+
+    // Whether the NProgress spinner will be shown.
+    showSpinner: false,
+});

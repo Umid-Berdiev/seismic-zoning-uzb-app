@@ -13,7 +13,7 @@ class UpdateDistrictRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return $this->user()->roles->contains('slug', 'admin');
     }
 
     /**

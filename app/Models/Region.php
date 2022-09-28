@@ -16,6 +16,10 @@ class Region extends Model
         'admincenter_ru',
     ];
 
+    protected $cast = [
+        // 
+    ];
+
     /**
      * Get all of the districts for the Region
      *

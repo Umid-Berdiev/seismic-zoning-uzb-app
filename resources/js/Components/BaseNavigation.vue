@@ -136,7 +136,7 @@ function linkClicked(e, submenu) {
                         :class="`nav-main-link-icon ${node.icon}`"
                     ></i>
                     <span v-if="node.name" class="nav-main-link-name">
-                        {{ node.name }}
+                        {{ $t(`menu.${node.name}`) }}
                     </span>
                     <span
                         v-if="node.badge"
@@ -163,9 +163,9 @@ function linkClicked(e, submenu) {
                     v-if="node.icon"
                     :class="`nav-main-link-icon ${node.icon}`"
                 ></i>
-                <span v-if="node.name" class="nav-main-link-name">{{
-                    node.name
-                }}</span>
+                <span v-if="node.name" class="nav-main-link-name">
+                    {{ $t(`menu.${node.name}`) }}
+                </span>
                 <span
                     v-if="node.badge"
                     class="nav-main-link-badge badge rounded-pill"
@@ -190,7 +190,7 @@ function linkClicked(e, submenu) {
 </template>
 
 <style lang="scss" scoped>
-.active {
-    background-color: rgba(0, 0, 0, 0.2);
-}
+// .active {
+//     background-color: rgba(0, 0, 0, 0.2);
+// }
 </style>

@@ -5,9 +5,6 @@ import { Modal } from "bootstrap";
 import { useNotyf } from "@/composable/useNotyf";
 import Input from "@/Components/Input.vue";
 import Button from "@/Components/Button.vue";
-import helpers from "@/utils/helper.js";
-// Vue Dataset, for more info and examples you can check out https://github.com/kouts/vue-dataset/tree/next
-import { Dataset, DatasetItem, DatasetShow, DatasetSearch } from "vue-dataset";
 import BaseBlock from "@/Components/BaseBlock.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
@@ -44,7 +41,6 @@ const columns = reactive([
 ]);
 
 const regionObj = reactive({
-    soato: "",
     name_uz: "",
     name_ru: "",
     admincenter_uz: "",
@@ -54,6 +50,12 @@ const regionForm = useForm(regionObj);
 const isEditing = ref(false);
 
 onMounted(() => {
+    modal.value?._element.addEventListener("hidden.bs.modal", (event) => {
+        regionForm.reset();
+        regionForm.clearErrors();
+        isEditing.value = false;
+    });
+
     // Remove labels from
     document.querySelectorAll("#datasetLength label").forEach((el) => {
         el.remove();
@@ -72,6 +74,8 @@ async function onModalFormSubmit() {
     regionForm.put(route("regions.update", regionObj.id), {
         onSuccess: () => {
             notyf.success("Region successfully updated!");
+            regionForm.reset();
+            regionForm.clearErrors();
             modal.value?.hide();
         },
         onError: (errorObj) => {
@@ -80,28 +84,23 @@ async function onModalFormSubmit() {
     });
 }
 
-function onEdit(region_soato) {
+function onEdit(region) {
     isEditing.value = true;
 
-    const selectedRegion = props.regions.find(
-        (region) => region.soato === region_soato
-    );
-
-    Object.assign(regionObj, selectedRegion);
-    regionForm.soato = selectedRegion.soato;
-    regionForm.name_uz = selectedRegion.name_uz;
-    regionForm.name_ru = selectedRegion.name_ru;
-    regionForm.admincenter_uz = selectedRegion.admincenter_uz;
-    regionForm.admincenter_ru = selectedRegion.admincenter_ru;
+    Object.assign(regionObj, region);
+    regionForm.name_uz = region.name_uz;
+    regionForm.name_ru = region.name_ru;
+    regionForm.admincenter_uz = region.admincenter_uz;
+    regionForm.admincenter_ru = region.admincenter_ru;
     modal.value?.toggle();
 }
 
-function onView(region_soato) {
-    useForm().get(route("districts.index", region_soato));
+function onView(region_id) {
+    useForm().get(route("districts.index", region_id));
 }
 
 function exportToExcel() {
-    useForm().get(route("regions.export"));
+    location.href = route("regions.export");
 }
 </script>
 
@@ -110,15 +109,15 @@ function exportToExcel() {
         <div class="d-flex justify-content-end">
             <button
                 type="button"
-                class="btn btn-alt-primary push"
+                class="btn btn-alt-primary"
                 data-bs-toggle="modal"
                 data-bs-target="#modal-confirm"
             >
-                <i class="si si-cloud-download me-1"></i>
+                <i class="fa fa-download me-1"></i>
                 <span>Export to excel</span>
             </button>
         </div>
-
+        <br />
         <BaseBlock title="Regions table" content-full>
             <div v-if="regions?.length == 0" class="text-center">No data</div>
             <div v-else class="row">
@@ -137,8 +136,6 @@ function exportToExcel() {
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <!-- <DatasetItem tag="tbody" class="fs-sm">
-                                    <template #default="{ row, rowIndex }"> -->
                             <tbody>
                                 <tr
                                     v-for="(row, rowIndex) in regions"
@@ -156,22 +153,20 @@ function exportToExcel() {
                                         <button
                                             type="button"
                                             class="btn btn-secondary w-auto"
-                                            @click="onView(row.soato)"
+                                            @click="onView(row.id)"
                                         >
                                             <i class="si si-eye"></i>
                                         </button>
                                         <button
                                             type="button"
                                             class="btn btn-secondary w-auto"
-                                            @click="onEdit(row.soato)"
+                                            @click="onEdit(row)"
                                         >
                                             <i class="si si-pencil"></i>
                                         </button>
                                     </td>
                                 </tr>
                             </tbody>
-                            <!-- </template>
-                                </DatasetItem> -->
                         </table>
                     </div>
                 </div>
@@ -190,7 +185,11 @@ function exportToExcel() {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="regionFormModalLabel">
-                            {{ isEditing ? "Edit role data" : "Add role data" }}
+                            {{
+                                isEditing
+                                    ? "Edit region data"
+                                    : "Add region data"
+                            }}
                         </h5>
                         <button
                             type="button"
@@ -202,19 +201,6 @@ function exportToExcel() {
                     <div class="modal-body">
                         <form @submit.prevent="onModalFormSubmit">
                             <div class="row">
-                                <div class="col-12 mb-3">
-                                    <InputLabel value="Soato" />
-                                    <Input
-                                        type="text"
-                                        disabled
-                                        :value="regionForm.soato"
-                                    />
-                                    <div
-                                        class="invalid-feedback animated fadeIn"
-                                    >
-                                        {{ regionForm.errors?.soato }}
-                                    </div>
-                                </div>
                                 <div class="col-12 mb-3">
                                     <InputLabel value="Name uz" />
                                     <Input
