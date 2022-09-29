@@ -1,11 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useMainStore } from "@/stores/main";
-import LocalesDropdown from "@/Components/LocalesDropdown.vue";
+import LocalesDropdown from "@/Components/Dropdowns/LocalesDropdown.vue";
 
 // Grab example data
 import notifications from "@/data/notifications";
-import UserDropdown from "../../Components/UserDropdown.vue";
+import UserDropdown from "@/Components/Dropdowns/UserDropdown.vue";
 
 // Main store and Router
 const store = useMainStore();
@@ -64,7 +64,7 @@ onUnmounted(() => {
     <header id="page-header">
         <slot>
             <!-- Header Content -->
-            <div class="content-header px-0">
+            <div class="content-header px-xl-0">
                 <slot name="content">
                     <!-- Left Section -->
                     <div class="d-flex align-items-center">
@@ -99,18 +99,18 @@ onUnmounted(() => {
                     <!-- Right Section -->
                     <div class="d-flex align-items-center">
                         <slot name="content-right">
-                            <button
+                            <!-- <button
                                 class="btn btn-sm btn-alt-light"
                                 @click="toggleFullScreen"
                             >
                                 {{ $t("full_screen_mode_text") }}
-                            </button>
+                            </button> -->
                             <!-- User Dropdown -->
                             <UserDropdown />
                             <!-- END User Dropdown -->
 
                             <!-- locale dropdown -->
-                            <LocalesDropdown />
+                            <!-- <LocalesDropdown /> -->
                         </slot>
                     </div>
                     <!-- END Right Section -->

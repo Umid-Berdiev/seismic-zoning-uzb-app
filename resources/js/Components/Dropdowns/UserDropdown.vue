@@ -1,12 +1,12 @@
 <script setup>
-import { useForm, usePage } from "@inertiajs/inertia-vue3";
 import { computed } from "vue";
+import { useForm, usePage } from "@inertiajs/inertia-vue3";
 
 const authUser = computed(() => usePage().props.value.auth.user);
 </script>
 
 <template>
-    <div class="dropdown d-inline-block mx-2">
+    <div class="dropdown d-inline-block">
         <button
             type="button"
             class="btn btn-sm btn-alt-secondary"
@@ -15,12 +15,10 @@ const authUser = computed(() => usePage().props.value.auth.user);
             aria-haspopup="true"
             aria-expanded="false"
         >
-            <span class="d-none d-sm-inline-block ms-2">
+            <span class="">
                 {{ authUser.username }}
             </span>
-            <i
-                class="fa fa-fw fa-angle-down d-none d-sm-inline-block opacity-50 ms-1 mt-1"
-            ></i>
+            <i class="fa fa-fw fa-angle-down"></i>
         </button>
         <div
             class="dropdown-menu dropdown-menu-md dropdown-menu-end p-0 border-0"

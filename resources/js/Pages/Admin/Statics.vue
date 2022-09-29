@@ -10,6 +10,8 @@ import helpers from "@/utils/helper.js";
 import { Dataset, DatasetItem } from "vue-dataset";
 import BaseBlock from "@/Components/BaseBlock.vue";
 import Pagination from "@/Components/Pagination.vue";
+import ImportButton from "@/Components/Buttons/ImportButton.vue";
+import SubmitButton from "@/Components/Buttons/SubmitButton.vue";
 
 const props = defineProps({
     logs: {
@@ -46,7 +48,7 @@ const columns = reactive([
         field: "created_at",
     },
 ]);
-const vueSelectState = reactive({
+const typeSelectState = reactive({
     options: [
         {
             label: "Zones",
@@ -84,7 +86,7 @@ onMounted(() => {
 });
 
 async function onModalSubmit() {
-    importForm.post(route(vueSelectState.selectedOption), {
+    importForm.post(route(typeSelectState.selectedOption), {
         onSuccess: () => {
             notyf.success("Data successfully imported!");
             const modal = Modal.getInstance("#importStaticDataModal");
@@ -101,15 +103,7 @@ async function onModalSubmit() {
 <template>
     <div class="content">
         <div class="d-flex justify-content-end">
-            <button
-                type="button"
-                class="btn btn-alt-primary push"
-                data-bs-toggle="modal"
-                data-bs-target="#importStaticDataModal"
-            >
-                <i class="fa fa-fw fa-download me-1"></i>
-                <span>Import</span>
-            </button>
+            <ImportButton modal-id="importStaticDataModal" />
         </div>
 
         <BaseBlock title="Imported shape files' logs" content-full>
@@ -175,7 +169,7 @@ async function onModalSubmit() {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="importStaticDataModalLabel">
-                            Import zipped shapefile data
+                            {{ $t("Import_zipped_shapefile_data") }}
                         </h5>
                         <button
                             type="button"
@@ -190,14 +184,14 @@ async function onModalSubmit() {
                                 <div class="col-12 mb-4">
                                     <select
                                         class="form-select"
-                                        aria-label="Default select example"
-                                        v-model="vueSelectState.selectedOption"
+                                        aria-label="Select layer type"
+                                        v-model="typeSelectState.selectedOption"
                                     >
                                         <option selected disabled :value="null">
-                                            Select one
+                                            {{ $t("Select_layer_type") }}
                                         </option>
                                         <option
-                                            v-for="item in vueSelectState.options"
+                                            v-for="item in typeSelectState.options"
                                             :value="item.value"
                                         >
                                             {{ item.label }}
@@ -208,7 +202,7 @@ async function onModalSubmit() {
                                     <Input
                                         type="file"
                                         accept="zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed"
-                                        @input="
+                                        @change="
                                             importForm.zip =
                                                 $event.target.files[0]
                                         "
@@ -216,6 +210,7 @@ async function onModalSubmit() {
                                             'is-invalid':
                                                 importForm.errors?.zip?.length,
                                         }"
+                                        placeholder="Select a shapefile"
                                     />
                                     <progress
                                         v-if="importForm.progress"
@@ -232,7 +227,7 @@ async function onModalSubmit() {
                                 </div>
 
                                 <div class="col-auto ms-auto">
-                                    <Button>Submit</Button>
+                                    <SubmitButton />
                                 </div>
                             </div>
                         </form>

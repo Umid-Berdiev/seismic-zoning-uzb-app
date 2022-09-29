@@ -6,6 +6,7 @@ use App\Models\Ball;
 use App\Models\Border;
 use App\Models\ShapeImportLog;
 use App\Models\Zone;
+use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
@@ -86,6 +87,10 @@ class UploadShapefileController extends Controller
 
     public function ballsImportShapefile(Request $request)
     {
+        $request->validate([
+            'zip' => 'required|zip'
+        ]);
+
         $extracted_file_path = base_path("storage/app/uploads/unzip");
 
         try {
@@ -136,9 +141,9 @@ class UploadShapefileController extends Controller
 
                 return redirect(route('statics'));
             }
-        } catch (ShapefileException $e) {
+        } catch (Error $e) {
             throw ValidationException::withMessages([
-                'zip' => __($e->getMessage() . "\nDetails: " . $e->getDetails()),
+                'zip' => __($e->getMessage()),
             ]);
         }
     }
