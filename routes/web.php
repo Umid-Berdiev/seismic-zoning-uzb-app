@@ -6,7 +6,9 @@ use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UploadShapefileController;
 use App\Http\Controllers\UserController;
+use App\Models\Region;
 use App\Models\ShapeImportLog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -69,6 +71,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
             ->name('regions.export');
         Route::resource('regions', RegionController::class)
             ->only(['index', 'update']);
+    });
+    Route::get('regions', function (Request $request) {
+        return Region::with('districts')->get(['id', 'soato', 'name_uz']);
     });
 
     Route::post('zones/import/shapefile', [UploadShapefileController::class, 'zonesImportShapefile'])->name('zones.import.shape_file');

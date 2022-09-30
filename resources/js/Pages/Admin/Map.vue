@@ -6,6 +6,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import VectorLayersControl from "@/Components/Maps/VectorLayersControl.vue";
 import Loader from "@/Components/Loader.vue";
+import BorderLayersControl from "@/Components/Maps/BorderLayersControl.vue";
 
 const props = defineProps({
     canLogin: Boolean,
@@ -187,7 +188,8 @@ function initMap() {
         <Loader v-if="mapLoader" />
         <div id="map" style="height: 80vh"></div>
         <div id="left_control_block">
-            <VectorLayersControl v-model:selected-layers="selectedLayers" />
+            <BorderLayersControl />
+            <!-- <VectorLayersControl v-model:selected-layers="selectedLayers" /> -->
             <!-- <RasterLayersControl v-model="selectedRasterLayer" /> -->
         </div>
         <!-- <div
