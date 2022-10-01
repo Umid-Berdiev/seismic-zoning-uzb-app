@@ -1,4 +1,5 @@
 <script setup>
+import { reactive, computed } from "vue";
 import { useForm } from "@inertiajs/inertia-vue3";
 import { useMainStore } from "@/stores/main";
 
@@ -101,7 +102,7 @@ async function onSubmit() {
                                             <i
                                                 class="fa fa-fw fa-sign-in-alt me-1 opacity-50"
                                             ></i>
-                                            Sign In
+                                            Kirish
                                         </button>
                                     </div>
                                 </div>

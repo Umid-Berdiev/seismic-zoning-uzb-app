@@ -1,19 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from "vue";
-import { Link } from "@inertiajs/inertia-vue3";
+import { onMounted, reactive, ref } from "vue";
 import { useMainStore } from "@/stores/main";
-import BaseNavigation from "@/Components/BaseNavigation.vue";
-
-interface AreaData {
-    soato: string;
-    name_uz?: string;
-    name_ru?: string;
-    admincenter_uz?: string;
-    admincenter_ru?: string;
-}
+import { AreaData } from "@/utils/interfaces";
+import { useMapStore } from "@/stores/map";
 
 // Main store and Route
 const store = useMainStore();
+const mapStore = useMapStore();
 
 // Component properties
 const props = defineProps({
@@ -60,44 +53,15 @@ const props = defineProps({
     },
 });
 
-// Set CSS classes accordingly
-const classContainer = computed(() => {
-    return {
-        "nav-main": !props.subMenu,
-        "nav-main-submenu": props.subMenu,
-        "nav-main-dark": props.dark,
-        "nav-main-horizontal": props.horizontal,
-        "nav-main-hover": props.horizontalHover,
-        "nav-main-horizontal-center": props.horizontalCenter,
-        "nav-main-horizontal-justify": props.horizontalJustify,
-    };
-});
 const selectedArea: AreaData = reactive({
     soato: "",
 });
 const regions = ref([]);
-const regionsGeojson = ref([]);
-const districtsGeojson = ref([]);
 
 onMounted(async () => {
     const res = await fetch("/admin/regions");
     regions.value = await res.json();
-
-    const res_regions = await fetch(`/geojson_data/regions-geojson.geojson`);
-    const res_districts = await fetch(`/geojson_data/districts-geojson.geojson`);
-
-    regionsGeojson.value = await res_regions.json();
-    districtsGeojson.value = await res_districts.json();
 });
-
-// Checks if a submenu path is part of the URL path
-function subIsActive(paths: string) {
-    const activePaths = Array.isArray(paths) ? paths : [paths];
-
-    return activePaths.some((path) => {
-        return route().current().indexOf(path) === 0; // current path starts with this path string
-    });
-}
 
 // Main menu toggling and mobile functionality
 function linkClicked(e: Event, submenu: string) {
@@ -136,91 +100,64 @@ function linkClicked(e: Event, submenu: string) {
 function onClickAction(area: AreaData) {
     console.log({ area });
 
-    Object.assign(selectedArea, area);
+    // Object.assign(selectedArea, area);
+    mapStore.$patch({ selectedArea: area });
 }
 </script>
 
 <template>
-    <ul :class="classContainer">
-        <li
-            v-for="(node, index) in nodes"
-            :key="`node-${index}`"
-            :class="{
-                'nav-main-heading': node.heading,
-                'nav-main-item': !node.heading,
-                open:
-                    node.sub && node.subActivePaths
-                        ? subIsActive(node.subActivePaths)
-                        : false,
-            }"
-        >
-            <!-- Heading -->
-            {{ node.heading ? node.name : "" }}
-            <!-- Normal Link -->
-            <div v-if="!node.heading && !node.sub" @click="linkClicked($event)">
-                <button
-                    @click="onClickAction(node)"
-                    class="nav-main-link"
-                    :class="
-                        node.soato && node.soato === selectedArea.soato
-                            ? 'active'
-                            : ''
-                    "
-                >
-                    <i
-                        v-if="node.icon"
-                        :class="`nav-main-link-icon ${node.icon}`"
-                    ></i>
-                    <span v-if="node.name" class="nav-main-link-name">
-                        {{ $t(`menu.${node.name}`) }}
-                    </span>
-                    <span
-                        v-if="node.badge"
-                        class="nav-main-link-badge badge rounded-pill"
-                        :class="
-                            node['badge-variant']
-                                ? `bg-${node['badge-variant']}`
-                                : 'bg-primary'
-                        "
-                        >{{ node.badge }}</span
-                    >
-                </button>
-            </div>
-            <!-- END Normal Link -->
-
+    <ul class="nav-main">
+        <li class="nav-main-item">
             <!-- Submenu Link -->
             <a
-                v-else-if="!node.heading && node.sub"
-                href="#"
+                href="javascript:;"
                 class="nav-main-link nav-main-link-submenu"
                 @click.prevent="linkClicked($event, true)"
             >
-                <i
-                    v-if="node.icon"
-                    :class="`nav-main-link-icon ${node.icon}`"
-                ></i>
-                <span v-if="node.name" class="nav-main-link-name">
-                    {{ $t(`menu.${node.name}`) }}
+                <span class="nav-main-link-name">
+                    {{ "DSR" }}
                 </span>
-                <span
-                    v-if="node.badge"
-                    class="nav-main-link-badge badge rounded-pill"
-                    :class="
-                        node['badge-variant']
-                            ? `bg-${node['badge-variant']}`
-                            : 'bg-primary'
-                    "
-                    >{{ node.badge }}</span
-                >
             </a>
             <!-- END Submenu Link -->
+            <ul class="nav-main-submenu">
+                <li
+                    v-for="(region, index) in regions"
+                    :key="`region-${index}`"
+                    class="nav-main-item"
+                >
+                    <!-- Submenu Link -->
+                    <a
+                        href="javascript:;"
+                        class="nav-main-link nav-main-link-submenu"
+                        @click.prevent="linkClicked($event, true)"
+                    >
+                        <span class="nav-main-link-name">
+                            {{ region.name_uz }}
+                        </span>
+                    </a>
+                    <!-- END Submenu Link -->
 
-            <BaseNavigation
-                v-if="node.sub"
-                :nodes="node.sub"
-                sub-menu
-                :disable-click="props.horizontal && props.horizontalHover"
-            />
+                    <ul class="nav-main-submenu">
+                        <li
+                            v-for="(district, index) in region.districts"
+                            :key="`district-${index}`"
+                            class="nav-main-item"
+                        >
+                            <!-- Submenu Link -->
+                            <a
+                                href="javascript:;"
+                                class="nav-main-link"
+                                @click.prevent="onClickAction(district)"
+                            >
+                                <span class="nav-main-link-name">
+                                    {{ district.name_uz }}
+                                </span>
+                            </a>
+                            <!-- END Submenu Link -->
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </li>
     </ul>
 </template>

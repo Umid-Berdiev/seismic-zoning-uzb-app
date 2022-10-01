@@ -45,8 +45,8 @@ Route::get('/', function () {
 });
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
-    // Route::get('/dashboard', fn () => Inertia::render('Admin/Dashboard'))
-    //     ->name('dashboard');
+    Route::get('/dashboard', fn () => redirect()->route('map'))
+        ->name('dashboard');
     Route::get('/map', [MapController::class, 'index'])
         ->name('map');
     Route::get('/statics', function () {

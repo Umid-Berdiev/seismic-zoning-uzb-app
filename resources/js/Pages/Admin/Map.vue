@@ -18,6 +18,7 @@ const props = defineProps({
 const { t } = useI18n();
 // Main store
 const store = useMainStore();
+const mapStore = useMapStore();
 const zoom = ref(6);
 const mapLoader = ref(false);
 const center = ref([40.4111, 66.9]);
@@ -35,6 +36,24 @@ const tileProviders = reactive({
 });
 const selectedLayers = ref(["regions"]);
 const geojsonRegions = ref(null);
+const regionsGeojson = reactive({
+    type: "FeatureCollection",
+    name: "regions",
+    crs: {
+        type: "name",
+        properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+    },
+    features: [],
+});
+const districtsGeojson = reactive({
+    type: "FeatureCollection",
+    name: "districts",
+    crs: {
+        type: "name",
+        properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+    },
+    features: [],
+});
 
 // layers
 const layerRegions = computed(() =>
@@ -73,11 +92,6 @@ const layerRegions = computed(() =>
         },
     })
 );
-// const layerBorders = computed(() =>
-//     L.polyline([props.borders], {
-//         color: "#FF0000",
-//     })
-// );
 
 onMounted(async () => {
     // fetch geojson data
@@ -139,11 +153,37 @@ watchEffect(() => {
     }
 });
 
+watch(
+    () => mapStore.selectedArea,
+    (newValue, oldValue) => {
+        if (newValue) {
+            console.log({ newValue });
+            const foundArea = districtsGeojson.features?.find(
+                (feature) => feature.properties.soato == newValue.soato
+            );
+
+            if (foundArea) {
+                const districtPolygon = L.polygon(
+                    foundArea.geometry?.coordinates
+                ).addTo(map.value);
+                console.log(districtPolygon.getBounds().getCenter());
+
+                map.value.panTo(districtPolygon.getBounds().getCenter());
+            }
+        }
+    }
+);
+
 async function fetchStaticLayers() {
     const geojson_regions = await fetch(
         "/geojson_data/uzbekistan_regions.geojson"
     );
+    const res_regions = await fetch(`/geojson_data/regions.geojson`);
+    const res_districts = await fetch(`/geojson_data/districts.geojson`);
+
     geojsonRegions.value = await geojson_regions.json();
+    Object.assign(regionsGeojson, await res_regions.json());
+    Object.assign(districtsGeojson, await res_districts.json());
 }
 
 function initMap() {
@@ -211,6 +251,7 @@ function initMap() {
 
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import { useMapStore } from "@/stores/map";
 
 export default {
     layout: AdminLayout,
