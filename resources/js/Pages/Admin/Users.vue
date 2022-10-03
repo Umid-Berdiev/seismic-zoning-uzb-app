@@ -129,7 +129,7 @@ function onEdit(id) {
     isEditing.value = true;
     const selectedUser = props.users.find((user) => user.id === id);
     Object.assign(userObj, selectedUser);
-    userObj.role_id = selectedUser.roles[0].id;
+    userForm.role_id = userObj.role_id = selectedUser.roles[0].id;
     userForm.first_name = selectedUser.first_name;
     userForm.last_name = selectedUser.last_name;
     userForm.username = selectedUser.username;
@@ -203,14 +203,6 @@ function deleteAction() {
                                             <td>{{ row.username }}</td>
                                             <td>{{ row.email }}</td>
                                             <td>{{ row.roles[0].name }}</td>
-                                            <!-- <td>
-                                                {{
-                                                    helpers.formatDate(
-                                                        row.updated_at,
-                                                        "DD-MM-YYYY"
-                                                    )
-                                                }}
-                                            </td> -->
                                             <td class="d-flex gap-2">
                                                 <button
                                                     type="button"
@@ -221,7 +213,7 @@ function deleteAction() {
                                                 >
                                                     <i class="si si-pencil"></i>
                                                 </button>
-                                                <button
+                                                <!-- <button
                                                     type="button"
                                                     class="btn btn-danger w-auto"
                                                     data-bs-toggle="modal"
@@ -229,7 +221,7 @@ function deleteAction() {
                                                     @click="onRemove(row.id)"
                                                 >
                                                     <i class="si si-trash"></i>
-                                                </button>
+                                                </button> -->
                                             </td>
                                         </tr>
                                     </template>

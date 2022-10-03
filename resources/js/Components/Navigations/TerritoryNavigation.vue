@@ -53,14 +53,20 @@ const props = defineProps({
     },
 });
 
-const selectedArea: AreaData = reactive({
-    soato: "",
-});
 const regions = ref([]);
+const cities = ref([]);
 
 onMounted(async () => {
     const res = await fetch("/admin/regions");
     regions.value = await res.json();
+    const res_cities = await fetch(`/geojson_data/cities.geojson`);
+    const citiesJson = await res_cities.json();
+    cities.value = citiesJson.features
+        .map((feature: any) => ({
+            soato: feature.properties.soato,
+            name_uz: feature.properties.name_uz,
+        }))
+        .sort((a, b) => a.soato > b.soato);
 });
 
 // Main menu toggling and mobile functionality
@@ -98,7 +104,7 @@ function linkClicked(e: Event, submenu: string) {
 }
 
 function onClickAction(area: AreaData) {
-    console.log({ area });
+    // console.log({ area });
 
     // Object.assign(selectedArea, area);
     mapStore.$patch({ selectedArea: area });
@@ -108,6 +114,28 @@ function onClickAction(area: AreaData) {
 <template>
     <ul class="nav-main">
         <li class="nav-main-item">
+            <a
+                href="javascript:;"
+                class="nav-main-link"
+                @click.prevent="onClickAction({ soato: 'main' })"
+            >
+                <span class="nav-main-link-name">
+                    {{ "OSR" }}
+                </span>
+            </a>
+        </li>
+        <li class="nav-main-item">
+            <a
+                href="javascript:;"
+                class="nav-main-link"
+                @click.prevent="onClickAction({ soato: 'main' })"
+            >
+                <span class="nav-main-link-name">
+                    {{ "DSR" }}
+                </span>
+            </a>
+        </li>
+        <li class="nav-main-item">
             <!-- Submenu Link -->
             <a
                 href="javascript:;"
@@ -115,7 +143,7 @@ function onClickAction(area: AreaData) {
                 @click.prevent="linkClicked($event, true)"
             >
                 <span class="nav-main-link-name">
-                    {{ "DSR" }}
+                    {{ "SMR (tuman)" }}
                 </span>
             </a>
             <!-- END Submenu Link -->
@@ -156,6 +184,36 @@ function onClickAction(area: AreaData) {
                             <!-- END Submenu Link -->
                         </li>
                     </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-main-item">
+            <!-- Submenu Link -->
+            <a
+                href="javascript:;"
+                class="nav-main-link nav-main-link-submenu"
+                @click.prevent="linkClicked($event, true)"
+            >
+                <span class="nav-main-link-name">
+                    {{ "SMR (shahar)" }}
+                </span>
+            </a>
+            <!-- END Submenu Link -->
+            <ul class="nav-main-submenu">
+                <li
+                    v-for="(city, index) in cities"
+                    :key="`city-${index}`"
+                    class="nav-main-item"
+                >
+                    <a
+                        href="javascript:;"
+                        class="nav-main-link"
+                        @click.prevent="onClickAction(city)"
+                    >
+                        <span class="nav-main-link-name">
+                            {{ city.name_uz }}
+                        </span>
+                    </a>
                 </li>
             </ul>
         </li>

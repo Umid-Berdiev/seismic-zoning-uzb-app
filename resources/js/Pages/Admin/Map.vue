@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref, watch, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMainStore } from "@/stores/main";
-import L from "leaflet";
+import L, { CRS } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import VectorLayersControl from "@/Components/Maps/VectorLayersControl.vue";
 import Loader from "@/Components/Loader.vue";
@@ -16,12 +16,13 @@ const props = defineProps({
     zones: Array,
 });
 const { t } = useI18n();
-// Main store
+const notyf = useNotyf();
 const store = useMainStore();
 const mapStore = useMapStore();
 const zoom = ref(6);
 const mapLoader = ref(false);
-const center = ref([40.4111, 66.9]);
+const initialCenter = ref([40.4111, 66.9]);
+const center = ref(initialCenter.value);
 const map = ref(null);
 const tileProviders = reactive({
     [t("Openstreet_map")]: L.tileLayer(
@@ -48,6 +49,15 @@ const regionsGeojson = reactive({
 const districtsGeojson = reactive({
     type: "FeatureCollection",
     name: "districts",
+    crs: {
+        type: "name",
+        properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
+    },
+    features: [],
+});
+const citiesGeojson = reactive({
+    type: "FeatureCollection",
+    name: "cities",
     crs: {
         type: "name",
         properties: { name: "urn:ogc:def:crs:OGC:1.3:CRS84" },
@@ -104,73 +114,117 @@ onMounted(async () => {
 });
 
 watchEffect(() => {
-    map.value?.removeLayer(layerRegions.value);
+    // map.value?.removeLayer(layerRegions.value);
     // map.value?.removeLayer(layerBorders.value);
     // props.balls.forEach((ball) => {
     //     map.value?.removeLayer([`layerBalls${ball.level}`]);
     // });
-
     // console.log("map panes: ", map.value?.getPane("overlayPane"));
-
-    map.value?.eachLayer((layer) => {
-        if (layer._path != undefined) layer.removeFrom(map.value);
-    });
-
-    if (selectedLayers.value.includes("regions"))
-        map.value?.addLayer(layerRegions.value);
-    if (selectedLayers.value.includes("borders")) {
-        props.borders.forEach((border) => {
-            L.polyline(
-                border.line.map((item) => item.coordinates),
-                {
-                    color: "#FF0000",
-                }
-            ).addTo(map.value);
-        });
-    }
-    if (selectedLayers.value.includes("balls_8")) {
-        props.balls[8]?.forEach((ball) => {
-            // console.log({ ball });
-            L.polygon(ball.polygon.coordinates, {
-                color: "#00ffff",
-            }).addTo(map.value);
-        });
-    }
-    if (selectedLayers.value.includes("balls_9")) {
-        props.balls[9]?.forEach((ball) => {
-            // console.log({ ball });
-            L.polygon(ball.polygon.coordinates, {
-                color: "#0fff00",
-            }).addTo(map.value);
-        });
-    }
-    if (selectedLayers.value.includes("zones_50")) {
-        const zone50 = props.zones?.find((zone) => zone.level == 50);
-
-        L.polygon(zone50.geom?.coordinates, {
-            color: "#0f00f0",
-        }).addTo(map.value);
-    }
+    // map.value?.eachLayer((layer) => {
+    //     if (layer._path != undefined) layer.removeFrom(map.value);
+    // });
+    // if (selectedLayers.value.includes("regions"))
+    //     map.value?.addLayer(layerRegions.value);
+    // if (selectedLayers.value.includes("borders")) {
+    //     props.borders.forEach((border) => {
+    //         L.polyline(
+    //             border.line.map((item) => item.coordinates),
+    //             {
+    //                 color: "#FF0000",
+    //             }
+    //         ).addTo(map.value);
+    //     });
+    // }
+    // if (selectedLayers.value.includes("balls_8")) {
+    //     props.balls[8]?.forEach((ball) => {
+    //         // console.log({ ball });
+    //         L.polygon(ball.polygon.coordinates, {
+    //             color: "#00ffff",
+    //         }).addTo(map.value);
+    //     });
+    // }
+    // if (selectedLayers.value.includes("balls_9")) {
+    //     props.balls[9]?.forEach((ball) => {
+    //         // console.log({ ball });
+    //         L.polygon(ball.polygon.coordinates, {
+    //             color: "#0fff00",
+    //         }).addTo(map.value);
+    //     });
+    // }
+    // if (selectedLayers.value.includes("zones_50")) {
+    //     const zone50 = props.zones?.find((zone) => zone.level == 50);
+    //     L.polygon(zone50.geom?.coordinates, {
+    //         color: "#0f00f0",
+    //     }).addTo(map.value);
+    // }
 });
 
 watch(
     () => mapStore.selectedArea,
     (newValue, oldValue) => {
         if (newValue) {
-            console.log({ newValue });
-            const foundArea = districtsGeojson.features?.find(
-                (feature) => feature.properties.soato == newValue.soato
-            );
+            map.value?.eachLayer((layer) => {
+                if (layer._path != undefined) layer.removeFrom(map.value);
+            });
 
-            if (foundArea) {
-                const districtPolygon = L.polygon(
-                    foundArea.geometry?.coordinates
-                ).addTo(map.value);
-                console.log(districtPolygon.getBounds().getCenter());
+            if (newValue.soato === "main") {
+                // map.value.panTo(initialCenter.value);
+                // map.value.setZoom(6);
+                map.value.flyTo(L.latLng(initialCenter.value), 6);
+            } else {
+                const foundArea =
+                    String(newValue.soato).length > 4
+                        ? districtsGeojson.features?.find(
+                              (feature) =>
+                                  feature.properties.soato ===
+                                  Number(newValue.soato)
+                          )
+                        : citiesGeojson.features?.find(
+                              (feature) =>
+                                  feature.properties.soato ===
+                                  Number(newValue.soato)
+                          );
 
-                map.value.panTo(districtPolygon.getBounds().getCenter());
+                console.log(foundArea);
+
+                if (foundArea) {
+                    const districtPolygon = L.geoJSON(foundArea, {
+                        onEachFeature: function (feature, layer) {
+                            layer
+                                .on("click", async function () {
+                                    //
+                                })
+                                .on("mouseover", function () {
+                                    this.setStyle({
+                                        weight: 2,
+                                    });
+                                })
+                                .on("mouseout", function () {
+                                    this.setStyle({
+                                        weight: 1,
+                                    });
+                                });
+                        },
+                        style: function (feature) {
+                            return {
+                                color: "#0eb297",
+                                weight: 1,
+                                // fillOpacity: 0.0,
+                            };
+                        },
+                    }).addTo(map.value);
+                    const areaBounds = L.latLngBounds(
+                        districtPolygon.getBounds()
+                    );
+                    map.value.flyTo(areaBounds.getCenter(), 10);
+                } else {
+                    notyf.error("Area not found!");
+                }
             }
         }
+    },
+    {
+        deep: true,
     }
 );
 
@@ -180,17 +234,18 @@ async function fetchStaticLayers() {
     );
     const res_regions = await fetch(`/geojson_data/regions.geojson`);
     const res_districts = await fetch(`/geojson_data/districts.geojson`);
+    const res_cities = await fetch(`/geojson_data/cities.geojson`);
 
     geojsonRegions.value = await geojson_regions.json();
     Object.assign(regionsGeojson, await res_regions.json());
     Object.assign(districtsGeojson, await res_districts.json());
+    Object.assign(citiesGeojson, await res_cities.json());
 }
 
 function initMap() {
     map.value = L.map("map", {
         zoom: zoom.value,
         center: center.value,
-        // zoomDelta: 0.5,
     })
         .on("zoomend", function (e) {
             zoom.value = map.value.getZoom();
@@ -198,6 +253,7 @@ function initMap() {
         .on("moveend", function (e) {
             center.value = Object.values(map.value.getBounds().getCenter());
         });
+
     tileProviders[t("Openstreet_map")].addTo(map.value);
 
     // add layers to map
@@ -252,6 +308,7 @@ function initMap() {
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { useMapStore } from "@/stores/map";
+import { useNotyf } from "@/composable/useNotyf";
 
 export default {
     layout: AdminLayout,
@@ -264,7 +321,7 @@ export default {
     position: absolute;
     top: 5.25rem;
     left: 1rem;
-    z-index: 800;
+    z-index: 1000;
 }
 #right_control_block {
     // border: 2px solid lightgray;

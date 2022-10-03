@@ -57,7 +57,12 @@ onMounted(() => {
                     <!-- Logo -->
                     <Link href="/" class="fw-semibold text-dual">
                         <span class="smini-visible">
-                            <i class="fa fa-circle-notch text-primary"></i>
+                            <!-- <i class="fa fa-circle-notch text-primary"></i> -->
+                            <img
+                                src="/images/circle-cropped.png"
+                                alt="main_logo"
+                                width="20"
+                            />
                         </span>
                         <span class="smini-hide fs-5 tracking-wider">
                             {{ store.app.name }}

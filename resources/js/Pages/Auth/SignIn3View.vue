@@ -59,9 +59,7 @@ async function onSubmit() {
                     class="p-4 p-xl-5 d-xl-flex justify-content-between align-items-center fs-sm"
                 >
                     <p class="fw-medium text-white-50 mb-0">
-                        <strong>{{
-                            store.app.name + " " + store.app.version
-                        }}</strong>
+                        <strong>{{ store.app.name }}</strong>
                         &copy; {{ store.app.copyright }}
                     </p>
                     <!-- <ul class="list list-inline mb-0 py-2">
@@ -107,12 +105,24 @@ async function onSubmit() {
                     <div class="w-100">
                         <!-- Header -->
                         <div class="text-center mb-5">
-                            <p class="mb-3">
+                            <!-- <p class="mb-3">
                                 <i
                                     class="fa fa-2x fa-circle-notch text-primary-light"
                                 ></i>
-                            </p>
-                            <h1 class="fw-bold mb-2">Tizimga kirish</h1>
+                            </p> -->
+                            <img
+                                src="/images/circle-cropped.png"
+                                alt="main_logo"
+                                width="100"
+                            />
+                            <br />
+                            <br />
+                            <h3 class="fw-bold mb-2">
+                                <span
+                                    >Online Map “SeismicZoningUzb” <br />
+                                    elektron platformasi axborot tizimi</span
+                                >
+                            </h3>
                             <h3 class="text-muted">Hush kelibsiz!</h3>
                         </div>
                         <!-- END Header -->
