@@ -48,7 +48,7 @@ const columns = reactive([
         field: "created_at",
     },
 ]);
-const typeSelectState = reactive({
+const layerTypeSelectState = reactive({
     options: [
         {
             label: "Zones",
@@ -86,7 +86,7 @@ onMounted(() => {
 });
 
 async function onModalSubmit() {
-    importForm.post(route(typeSelectState.selectedOption), {
+    importForm.post(route(layerTypeSelectState.selectedOption), {
         onSuccess: () => {
             notyf.success("Data successfully imported!");
             const modal = Modal.getInstance("#importStaticDataModal");
@@ -185,13 +185,15 @@ async function onModalSubmit() {
                                     <select
                                         class="form-select"
                                         aria-label="Select layer type"
-                                        v-model="typeSelectState.selectedOption"
+                                        v-model="
+                                            layerTypeSelectState.selectedOption
+                                        "
                                     >
                                         <option selected disabled :value="null">
                                             {{ $t("Select_layer_type") }}
                                         </option>
                                         <option
-                                            v-for="item in typeSelectState.options"
+                                            v-for="item in layerTypeSelectState.options"
                                             :value="item.value"
                                         >
                                             {{ item.label }}
@@ -237,13 +239,6 @@ async function onModalSubmit() {
         </div>
     </div>
 </template>
-
-<script>
-import AdminLayout from "@/Layouts/AdminLayout.vue";
-export default {
-    layout: AdminLayout,
-};
-</script>
 
 <style lang="scss" scoped>
 //

@@ -79,6 +79,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
     Route::post('zones/import/shapefile', [UploadShapefileController::class, 'zonesImportShapefile'])->name('zones.import.shape_file');
     Route::post('balls/import/shapefile', [UploadShapefileController::class, 'ballsImportShapefile'])->name('balls.import.shape_file');
     Route::post('borders/import/shapefile', [UploadShapefileController::class, 'bordersImportShapefile'])->name('borders.import.shape_file');
+    Route::post('dsr/import/shapefile', [UploadShapefileController::class, 'dsrImportShapefile'])->name('dsr.import.shape_file');
 });
 
 require __DIR__ . '/auth.php';

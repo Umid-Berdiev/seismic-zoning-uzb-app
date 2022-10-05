@@ -7,7 +7,7 @@
 // });
 
 interface ButtonProps {
-    type: string;
+    type?: string;
 }
 
 withDefaults(defineProps<ButtonProps>(), {

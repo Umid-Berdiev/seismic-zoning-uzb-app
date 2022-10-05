@@ -16,7 +16,7 @@ const authUser = computed(() => usePage().props.value.auth.user);
             aria-expanded="false"
         >
             <span class="">
-                {{ authUser.username }}
+                {{ authUser?.username }}
             </span>
             <i class="fa fa-fw fa-angle-down"></i>
         </button>
@@ -28,8 +28,8 @@ const authUser = computed(() => usePage().props.value.auth.user);
                 class="p-3 text-center bg-body-light border-bottom rounded-top"
             >
                 <p class="mt-2 mb-0 fw-medium">
-                    {{ authUser.first_name }}
-                    {{ authUser.last_name }}
+                    {{ authUser?.first_name }}
+                    {{ authUser?.last_name }}
                 </p>
                 <p class="mb-0 text-muted fs-sm fw-medium">Web Developer</p>
             </div>
@@ -48,5 +48,3 @@ const authUser = computed(() => usePage().props.value.auth.user);
         </div>
     </div>
 </template>
-
-<style lang="scss" scoped></style>

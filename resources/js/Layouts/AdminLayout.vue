@@ -6,7 +6,6 @@ import { useMainStore } from "@/stores/main";
 import BaseHeader from "@/Layouts/partials/Header.vue";
 import BaseSidebar from "@/Layouts/partials/Sidebar.vue";
 import BaseSideOverlay from "@/Layouts/partials/SideOverlay.vue";
-import BaseFooter from "@/Layouts/partials/Footer.vue";
 
 // Component properties
 defineProps({
@@ -46,10 +45,6 @@ const classContainer = computed(() => {
             store.layout.sidebar && store.settings.sidebarVisibleDesktop,
         "sidebar-o-xs":
             store.layout.sidebar && store.settings.sidebarVisibleMobile,
-        // "sidebar-dark":
-        //     store.layout.sidebar &&
-        //     store.settings.sidebarDark &&
-        //     !store.settings.darkMode,
         "side-overlay-o":
             store.layout.sideOverlay && store.settings.sideOverlayVisible,
         "side-overlay-hover":
@@ -81,18 +76,6 @@ if (store.settings.darkModeSystem) {
         store.darkMode({ mode: "off" });
     }
 }
-
-// window
-//     .matchMedia("(prefers-color-scheme: dark)")
-//     .addEventListener("change", (e) => {
-//         if (store.settings.darkModeSystem) {
-//             if (e.matches) {
-//                 store.darkMode({ mode: "on" });
-//             } else {
-//                 store.darkMode({ mode: "off" });
-//             }
-//         }
-//     });
 
 // Remove side transitions on window resizing
 onMounted(() => {
@@ -184,18 +167,5 @@ onMounted(() => {
             <slot />
         </div>
         <!-- END Main Container -->
-
-        <!-- Footer -->
-        <!-- <BaseFooter v-if="store.layout.footer">
-            <template #content-left>
-                <slot name="footer-content-left"></slot>
-            </template>
-
-            <template #content-right>
-                <slot name="footer-content-right"></slot>
-            </template>
-            <slot name="footer"></slot>
-        </BaseFooter> -->
-        <!-- END Footer -->
     </div>
 </template>

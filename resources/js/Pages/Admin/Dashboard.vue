@@ -1345,11 +1345,3 @@ const newCustomersOptions = reactive({
         <!-- END Page Content -->
     </div>
 </template>
-
-<script>
-import AdminLayout from "@/Layouts/AdminLayout.vue";
-
-export default {
-    layout: AdminLayout,
-};
-</script>

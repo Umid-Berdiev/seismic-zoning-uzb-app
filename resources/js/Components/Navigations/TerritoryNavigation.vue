@@ -95,11 +95,6 @@ function linkClicked(e: Event, submenu: string) {
                 el.classList.add("open");
             }
         }
-    } else {
-        // If we are in mobile, close the sidebar
-        if (window.innerWidth < 992) {
-            store.sidebar({ mode: "close" });
-        }
     }
 }
 

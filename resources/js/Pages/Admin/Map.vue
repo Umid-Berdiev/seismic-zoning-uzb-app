@@ -4,9 +4,11 @@ import { useI18n } from "vue-i18n";
 import { useMainStore } from "@/stores/main";
 import L, { CRS } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import VectorLayersControl from "@/Components/Maps/VectorLayersControl.vue";
+import { useMapStore } from "@/stores/map";
+import { useNotyf } from "@/composable/useNotyf";
 import Loader from "@/Components/Loader.vue";
 import BorderLayersControl from "@/Components/Maps/BorderLayersControl.vue";
+import LayersControl from "@/Components/Maps/LayersControl.vue";
 
 const props = defineProps({
     canLogin: Boolean,
@@ -285,35 +287,25 @@ function initMap() {
         <div id="map" style="height: 80vh"></div>
         <div id="left_control_block">
             <BorderLayersControl />
-            <!-- <VectorLayersControl v-model:selected-layers="selectedLayers" /> -->
-            <!-- <RasterLayersControl v-model="selectedRasterLayer" /> -->
+            <LayersControl />
         </div>
         <!-- <div
             id="right_control_block"
             v-if="selectedRasterData.length && selectedRasterLayer"
         >
-            <SoilDataTableControl
-                :data="selectedRasterData"
-                :label-type="selectedRasterLayer"
-            />
-            <SoilDataChartControl
-                :data="selectedRasterData"
-                :label-type="selectedRasterLayer"
-            />
+            //
         </div> -->
         <p>Center is at {{ center }} and the zoom is: {{ zoom }}</p>
     </div>
 </template>
 
-<script>
+<!-- <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import { useMapStore } from "@/stores/map";
-import { useNotyf } from "@/composable/useNotyf";
 
 export default {
     layout: AdminLayout,
 };
-</script>
+</script> -->
 
 <style lang="scss" scoped>
 #left_control_block {

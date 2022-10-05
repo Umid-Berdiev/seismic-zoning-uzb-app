@@ -24,6 +24,7 @@ import clickRipple from "@/directives/clickRipple";
 
 // Bootstrap framework
 import * as bootstrap from "bootstrap";
+import AdminLayout from "./Layouts/AdminLayout.vue";
 window.bootstrap = bootstrap;
 
 const appName =
@@ -31,11 +32,20 @@ const appName =
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) =>
-        resolvePageComponent(
-            `./Pages/${name}.vue`,
-            import.meta.glob("./Pages/**/*.vue")
-        ),
+    resolve: async (name) => {
+        const page = (
+            await resolvePageComponent(
+                `./Pages/${name}.vue`,
+                import.meta.glob("./Pages/**/*.vue")
+            )
+        ).default;
+
+        if (page.layout === undefined) {
+            page.layout = AdminLayout;
+        }
+
+        return page;
+    },
     setup({ el, app, props, plugin }) {
         return createApp({ render: () => h(app, props) })
             .use(plugin)

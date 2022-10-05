@@ -197,3 +197,10 @@ async function onSubmit() {
     </BaseBackground>
     <!-- END Page Content -->
 </template>
+
+<script>
+import GuestLayout from "@/Layouts/GuestLayout.vue";
+export default {
+    layout: GuestLayout,
+};
+</script>

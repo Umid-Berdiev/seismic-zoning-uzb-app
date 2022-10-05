@@ -78,9 +78,9 @@ class UploadShapefileController extends Controller
 
                 return redirect(route('statics'));
             }
-        } catch (ShapefileException $e) {
+        } catch (Error $e) {
             throw ValidationException::withMessages([
-                'zip' => __($e->getMessage() . "\nDetails: " . $e->getDetails()),
+                'zip' => $e->getMessage(),
             ]);
         }
     }
@@ -143,7 +143,7 @@ class UploadShapefileController extends Controller
             }
         } catch (Error $e) {
             throw ValidationException::withMessages([
-                'zip' => __($e->getMessage()),
+                'zip' => $e->getMessage(),
             ]);
         }
     }
@@ -179,14 +179,52 @@ class UploadShapefileController extends Controller
 
                 return redirect(route('statics'));
             }
-        } catch (ShapefileException $e) {
+        } catch (Error $e) {
             // Print detailed error information
             // echo "Error Type: " . $e->getErrorType()
             //     . "\nMessage: " . $e->getMessage()
             //     . "\nDetails: " . $e->getDetails();
 
             throw ValidationException::withMessages([
-                'zip' => __($e->getMessage() . "\nDetails: " . $e->getDetails()),
+                'zip' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function dsrImportShapefile(Request $request)
+    {
+        $extracted_file_path = base_path("storage/app/uploads/unzip");
+
+        try {
+            $zipfile = $request->file("zip");
+            $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
+            $is_extracted = extractUploadedZip($zipfile);
+            $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
+
+            if ($is_extracted) {
+                $Shapefile = new ShapefileReader($shape_file);
+                $points = $Shapefile->fetchRecord()->getArray()['points'];
+                $linestring = [];
+
+                foreach ($points as $key => $value) {
+                    $linestring[] = new Point($value['x'], $value['y']);
+                }
+
+                $border = new Border();
+                $border->soato = 1703;
+                $border->line = new LineString($linestring);
+                $border->save();
+
+                ShapeImportLog::create([
+                    'type' => 'Border',
+                    'comment' => 'Border data imported from shape file'
+                ]);
+
+                return redirect(route('statics'));
+            }
+        } catch (Error $e) {
+            throw ValidationException::withMessages([
+                'zip' => $e->getMessage(),
             ]);
         }
     }
