@@ -4,27 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use MStaack\LaravelPostgis\Eloquent\PostgisTrait;
 
-class Border extends Model
+class Segment extends Model
 {
-    // use HasFactory;
-
-    use PostgisTrait;
+    use HasFactory;
 
     protected $fillable = [
-        'soato',
+        'name',
+        'soatos',
         'geom'
     ];
 
     protected $postgisFields = [
-        'geom',
+        'geom'
     ];
 
     protected $postgisTypes = [
         'geom' => [
             'geomtype' => 'geometry',
             'srid' => 4326
-        ],
+        ]
     ];
 }

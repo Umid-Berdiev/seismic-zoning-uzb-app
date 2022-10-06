@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Ball;
 use App\Models\Border;
+use App\Models\Segment;
 use App\Models\ShapeImportLog;
 use App\Models\Zone;
 use Error;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
 use MStaack\LaravelPostgis\Geometries\LineString;
@@ -26,6 +28,10 @@ class UploadShapefileController extends Controller
 {
     public function zonesImportShapefile(Request $request)
     {
+        $request->validate([
+            'zip' => 'required|file:zip'
+        ]);
+
         $extracted_file_path = base_path("storage/app/uploads/unzip");
 
         try {
@@ -36,43 +42,40 @@ class UploadShapefileController extends Controller
 
             if ($is_extracted) {
                 $Shapefile = new ShapefileReader($shape_file);
-                $polygons = [];
 
                 while ($Geometry = $Shapefile->fetchRecord()) {
-                    $points = [];
-
                     // Skip the record if marked as "deleted"
                     if ($Geometry->isDeleted()) {
                         continue;
                     }
 
-                    // dd($Shapefile->getShapeType(Shapefile::FORMAT_STR));
-                    // dd($Geometry->getArray());
+                    $soato = $Geometry->getDataArray()['SOATO'];
+                    $level = $Geometry->getDataArray()['ZONE_VALUE'];
 
-                    foreach ($Geometry->getArray()['rings'] as $key1 => $value1) {
-                        $points = [];
-                        foreach ($value1['points'] as $key2 => $value2) {
-                            $points[] = new Point($value2['x'], $value2['y']);
-                        }
-                        $polygons[] = new Polygon([new LineString($points)]);
+                    $zone = Zone::updateOrCreate(
+                        [
+                            'soato' => $soato,
+                            'level' => $level
+                        ],
+                        [
+                            'geom' => $Geometry->getWKT()
+                        ]
+                    );
+
+                    foreach (explode(',', $soato) as $key => $value) {
+                        DB::table('area_layer')->insert([
+                            'area_soato' => $value,
+                            'layer_id' => $zone->id,
+                            'layer_type' => 'zone'
+                        ]);
                     }
 
-                    // dd($points);
-                    // $linestring = new LineString($points);
-
+                    ShapeImportLog::create([
+                        'type' => 'Zona',
+                        'comment' => "$level daraja va $soato soato kod bn zona sheypfayli yuklandi!"
+                    ]);
                 }
 
-                // dd($polygons);
-                $zone = new Zone();
-                $zone->soato = 1703;
-                $zone->level = 45;
-                $zone->geom = new MultiPolygon($polygons);
-                $zone->save();
-
-                ShapeImportLog::create([
-                    'type' => 'Zone',
-                    'comment' => 'Zone data with 45 level imported from shape file'
-                ]);
 
                 File::cleanDirectory($extracted_file_path);
 
@@ -88,7 +91,7 @@ class UploadShapefileController extends Controller
     public function ballsImportShapefile(Request $request)
     {
         $request->validate([
-            'zip' => 'required|zip'
+            'zip' => 'required|file:zip'
         ]);
 
         $extracted_file_path = base_path("storage/app/uploads/unzip");
@@ -103,37 +106,36 @@ class UploadShapefileController extends Controller
                 $Shapefile = new ShapefileReader($shape_file);
 
                 while ($Geometry = $Shapefile->fetchRecord()) {
-                    // $linestring = [];
-                    $points = [];
-
                     // Skip the record if marked as "deleted"
                     if ($Geometry->isDeleted()) {
                         continue;
                     }
 
-                    // dd($Shapefile->getShapeType(Shapefile::FORMAT_STR));
-                    // dd($Geometry->getArray());
+                    // dd($Geometry->getDataArray()['BALL_VALUE']);
+                    $soato = $Geometry->getDataArray()['SOATO'];
+                    $level = $Geometry->getDataArray()['BALL_VALUE'];
 
-                    foreach ($Geometry->getArray()['rings'] as $key1 => $value1) {
-                        $points = [];
-                        foreach ($value1['points'] as $key2 => $value2) {
-                            $points[] = new Point($value2['x'], $value2['y']);
-                        }
-                        // $points[] = new LineString($points);
+                    $ball = Ball::updateOrCreate(
+                        [
+                            'soato' => $soato,
+                            'level' => $level
+                        ],
+                        [
+                            'geom' => $Geometry->getWKT()
+                        ]
+                    );
+
+                    foreach (explode(',', $soato) as $key => $value) {
+                        DB::table('area_layer')->insert([
+                            'area_soato' => $value,
+                            'layer_id' => $ball->id,
+                            'layer_type' => 'ball'
+                        ]);
                     }
-
-                    // dd($points);
-                    $linestring = new LineString($points);
-
-                    $ball = new Ball();
-                    $ball->soato = 1703;
-                    $ball->level = 8;
-                    $ball->polygon = new Polygon([$linestring]);
-                    $ball->save();
 
                     ShapeImportLog::create([
                         'type' => 'Ball',
-                        'comment' => 'Ball data with 8 level imported from shape file'
+                        'comment' => "$level daraja va $soato soato kod bn ball sheypfayli yuklandi!"
                     ]);
                 }
 
@@ -150,6 +152,10 @@ class UploadShapefileController extends Controller
 
     public function bordersImportShapefile(Request $request)
     {
+        $request->validate([
+            'zip' => 'required|file:zip'
+        ]);
+
         $extracted_file_path = base_path("storage/app/uploads/unzip");
 
         try {
@@ -160,22 +166,102 @@ class UploadShapefileController extends Controller
 
             if ($is_extracted) {
                 $Shapefile = new ShapefileReader($shape_file);
-                $points = $Shapefile->fetchRecord()->getArray()['points'];
-                $linestring = [];
 
-                foreach ($points as $key => $value) {
-                    $linestring[] = new Point($value['x'], $value['y']);
+                while ($Geometry = $Shapefile->fetchRecord()) {
+                    // Skip the record if marked as "deleted"
+                    if ($Geometry->isDeleted()) {
+                        continue;
+                    }
+
+                    // dd($Geometry->getDataArray()['BALL_VALUE']);
+                    $soato = $Geometry->getDataArray()['SOATO'];
+
+                    $border = Border::updateOrCreate(
+                        [
+                            'soato' => $soato,
+                        ],
+                        [
+                            'geom' => $Geometry->getWKT()
+                        ]
+                    );
+
+                    foreach (explode(',', $soato) as $key => $value) {
+                        DB::table('area_layer')->insert([
+                            'area_soato' => $value,
+                            'layer_id' => $border->id,
+                            'layer_type' => 'border'
+                        ]);
+                    }
+
+                    ShapeImportLog::create([
+                        'type' => 'Chegara',
+                        'comment' => "$soato soato kod bn chegara sheypfayli yuklandi!"
+                    ]);
                 }
 
-                $border = new Border();
-                $border->soato = 1703;
-                $border->line = new LineString($linestring);
-                $border->save();
+                File::cleanDirectory($extracted_file_path);
 
-                ShapeImportLog::create([
-                    'type' => 'Border',
-                    'comment' => 'Border data imported from shape file'
-                ]);
+                return redirect(route('statics'));
+            }
+        } catch (Error $e) {
+            throw ValidationException::withMessages([
+                'zip' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function segmentsImportShapefile(Request $request)
+    {
+        $request->validate([
+            'zip' => 'required|file:zip'
+        ]);
+
+        $extracted_file_path = base_path("storage/app/uploads/unzip");
+
+        try {
+            $zipfile = $request->file("zip");
+            $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
+            $is_extracted = extractUploadedZip($zipfile);
+            $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
+
+            if ($is_extracted) {
+                $Shapefile = new ShapefileReader($shape_file);
+
+                while ($Geometry = $Shapefile->fetchRecord()) {
+                    // Skip the record if marked as "deleted"
+                    if ($Geometry->isDeleted()) {
+                        continue;
+                    }
+
+                    // dd($Geometry->getDataArray()['BALL_VALUE']);
+                    $soato = $Geometry->getDataArray()['SOATO'];
+                    $name = $Geometry->getDataArray()['NAME'];
+
+                    $segment = Segment::updateOrCreate(
+                        [
+                            'soato' => $soato,
+                            'name' => $name,
+                        ],
+                        [
+                            'geom' => $Geometry->getWKT()
+                        ]
+                    );
+
+                    foreach (explode(',', $soato) as $key => $value) {
+                        DB::table('area_layer')->insert([
+                            'area_soato' => $value,
+                            'layer_id' => $segment->id,
+                            'layer_type' => 'segment'
+                        ]);
+                    }
+
+                    ShapeImportLog::create([
+                        'type' => 'DSR',
+                        'comment' => "$soato soato kod bn DSR sheypfayli yuklandi!"
+                    ]);
+                }
+
+                File::cleanDirectory($extracted_file_path);
 
                 return redirect(route('statics'));
             }
@@ -185,44 +271,6 @@ class UploadShapefileController extends Controller
             //     . "\nMessage: " . $e->getMessage()
             //     . "\nDetails: " . $e->getDetails();
 
-            throw ValidationException::withMessages([
-                'zip' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function dsrImportShapefile(Request $request)
-    {
-        $extracted_file_path = base_path("storage/app/uploads/unzip");
-
-        try {
-            $zipfile = $request->file("zip");
-            $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
-            $is_extracted = extractUploadedZip($zipfile);
-            $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
-
-            if ($is_extracted) {
-                $Shapefile = new ShapefileReader($shape_file);
-                $points = $Shapefile->fetchRecord()->getArray()['points'];
-                $linestring = [];
-
-                foreach ($points as $key => $value) {
-                    $linestring[] = new Point($value['x'], $value['y']);
-                }
-
-                $border = new Border();
-                $border->soato = 1703;
-                $border->line = new LineString($linestring);
-                $border->save();
-
-                ShapeImportLog::create([
-                    'type' => 'Border',
-                    'comment' => 'Border data imported from shape file'
-                ]);
-
-                return redirect(route('statics'));
-            }
-        } catch (Error $e) {
             throw ValidationException::withMessages([
                 'zip' => $e->getMessage(),
             ]);

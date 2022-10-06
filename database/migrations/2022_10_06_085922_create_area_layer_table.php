@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('zones', function (Blueprint $table) {
+        Schema::create('area_layer', function (Blueprint $table) {
             $table->id();
-            $table->multiPolygon('geom');
-            $table->string('soato')->nullable();
-            $table->string('level')->nullable();
+            $table->string('area_soato');
+            $table->unsignedInteger('layer_id');
+            $table->string('layer_type');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('zones');
+        Schema::dropIfExists('area_layer');
     }
 };

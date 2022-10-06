@@ -25,4 +25,16 @@ class District extends Model
     {
         return $this->belongsTo(Region::class, 'region_soato', 'soato');
     }
+
+    /**
+     * The zones that belong to the District
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function zones()
+    {
+        return $this
+            ->belongsToMany(Zone::class, 'area_layer', 'area_soato', 'layer_id', 'soato', 'id')
+            ->wherePivot('layer_type', 'zone');
+    }
 }

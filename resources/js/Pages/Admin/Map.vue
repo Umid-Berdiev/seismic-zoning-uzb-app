@@ -140,7 +140,7 @@ watchEffect(() => {
     // if (selectedLayers.value.includes("balls_8")) {
     //     props.balls[8]?.forEach((ball) => {
     //         // console.log({ ball });
-    //         L.polygon(ball.polygon.coordinates, {
+    //         L.geoJSON(ball.geom.coordinates, {
     //             color: "#00ffff",
     //         }).addTo(map.value);
     //     });
@@ -148,14 +148,14 @@ watchEffect(() => {
     // if (selectedLayers.value.includes("balls_9")) {
     //     props.balls[9]?.forEach((ball) => {
     //         // console.log({ ball });
-    //         L.polygon(ball.polygon.coordinates, {
+    //         L.geoJSON(ball.geom.coordinates, {
     //             color: "#0fff00",
     //         }).addTo(map.value);
     //     });
     // }
     // if (selectedLayers.value.includes("zones_50")) {
     //     const zone50 = props.zones?.find((zone) => zone.level == 50);
-    //     L.polygon(zone50.geom?.coordinates, {
+    //     L.geoJSON(zone50.geom?.coordinates, {
     //         color: "#0f00f0",
     //     }).addTo(map.value);
     // }

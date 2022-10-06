@@ -316,6 +316,7 @@ function deleteAction() {
                                         id="user_role"
                                         class="form-select"
                                         aria-label="Role select"
+                                        :disabled="userForm.role_id === 1"
                                         v-model="userForm.role_id"
                                     >
                                         <option selected disabled :value="null">

@@ -214,9 +214,3 @@ function onClickAction(area: AreaData) {
         </li>
     </ul>
 </template>
-
-<style lang="scss" scoped>
-// .active {
-//     background-color: rgba(0, 0, 0, 0.2);
-// }
-</style>

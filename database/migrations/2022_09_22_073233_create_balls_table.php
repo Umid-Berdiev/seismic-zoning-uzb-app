@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('balls', function (Blueprint $table) {
             $table->id();
-            $table->polygon('polygon', 'GEOMETRY', 4326);
-            $table->unsignedInteger('soato')->nullable();
+            $table->multiPolygon('geom');
+            $table->string('soato')->nullable();
             $table->string('level')->nullable();
             $table->timestamps();
         });

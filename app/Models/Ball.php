@@ -15,15 +15,15 @@ class Ball extends Model
     protected $fillable = [
         'soato',
         'level',
-        'polygon'
+        'geom'
     ];
 
     protected $postgisFields = [
-        'polygon'
+        'geom'
     ];
 
     protected $postgisTypes = [
-        'polygon' => [
+        'geom' => [
             'geomtype' => 'geometry',
             'srid' => 4326
         ]
