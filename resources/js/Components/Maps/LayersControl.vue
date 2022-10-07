@@ -91,7 +91,7 @@ function onClickAction(type: LayerTypeData) {
 </script>
 
 <template>
-    <BaseBlock :title="$t('Hududlar')" class="mb-3 pb-3" btn-option-content>
+    <BaseBlock :title="$t('Layers')" class="mb-3 pb-3" btn-option-content>
         <ul class="nav-main">
             <li class="nav-main-item mb-3 d-flex">
                 <label class="form-check-label ms-3 ps-1" for="border_checkbox">
