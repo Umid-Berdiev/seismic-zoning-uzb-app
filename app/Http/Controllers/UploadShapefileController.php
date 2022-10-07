@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
 use MStaack\LaravelPostgis\Geometries\LineString;
+use MStaack\LaravelPostgis\Geometries\MultiLineString;
 use MStaack\LaravelPostgis\Geometries\Point;
 use MStaack\LaravelPostgis\Geometries\Polygon;
 use MStaack\LaravelPostgis\Geometries\MultiPolygon;
@@ -166,6 +167,7 @@ class UploadShapefileController extends Controller
 
             if ($is_extracted) {
                 $Shapefile = new ShapefileReader($shape_file);
+                $linestrings = [];
 
                 while ($Geometry = $Shapefile->fetchRecord()) {
                     // Skip the record if marked as "deleted"
@@ -173,31 +175,37 @@ class UploadShapefileController extends Controller
                         continue;
                     }
 
-                    // dd($Geometry->getDataArray()['BALL_VALUE']);
+                    // dd($Shapefile->getShapeType(Shapefile::FORMAT_STR));
+                    // dd($Geometry->getArray()['points']);
                     $soato = $Geometry->getDataArray()['SOATO'];
-
-                    $border = Border::updateOrCreate(
-                        [
-                            'soato' => $soato,
-                        ],
-                        [
-                            'geom' => $Geometry->getWKT()
-                        ]
-                    );
-
-                    foreach (explode(',', $soato) as $key => $value) {
-                        DB::table('area_layer')->insert([
-                            'area_soato' => $value,
-                            'layer_id' => $border->id,
-                            'layer_type' => 'border'
-                        ]);
+                    $points = [];
+                    foreach ($Geometry->getArray()['points'] as $key => $value) {
+                        $points[] = new Point($value['x'], $value['y']);
                     }
+                    $linestrings[] = new LineString($points);
+                }
 
-                    ShapeImportLog::create([
-                        'type' => 'Chegara',
-                        'comment' => "$soato soato kod bn chegara sheypfayli yuklandi!"
+                $border = Border::updateOrCreate(
+                    [
+                        'soato' => $soato,
+                    ],
+                    [
+                        'geom' => new MultiLineString($linestrings)
+                    ]
+                );
+
+                foreach (explode(',', $soato) as $key => $value) {
+                    DB::table('area_layer')->insert([
+                        'area_soato' => $value,
+                        'layer_id' => $border->id,
+                        'layer_type' => 'border'
                     ]);
                 }
+
+                ShapeImportLog::create([
+                    'type' => 'Chegara',
+                    'comment' => "$soato soato kod bn chegara sheypfayli yuklandi!"
+                ]);
 
                 File::cleanDirectory($extracted_file_path);
 
