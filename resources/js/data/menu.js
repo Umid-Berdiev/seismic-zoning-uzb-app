@@ -42,6 +42,11 @@ export default {
                     // icon: "si si-pencil",
                     to: "/admin/directory/regions",
                 },
+                {
+                    name: "DsrSections",
+                    // icon: "si si-pencil",
+                    to: "/admin/directory/dsr-sections",
+                },
             ],
         },
         // {

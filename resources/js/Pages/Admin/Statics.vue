@@ -62,10 +62,10 @@ const layerTypeSelectState = reactive({
             label: "Borders",
             value: "borders.import.shape_file",
         },
-        {
-            label: "DSR",
-            value: "segments.import.shape_file",
-        },
+        // {
+        //     label: "DSR",
+        //     value: "segments.import.shape_file",
+        // },
     ],
     selectedOption: "balls.import.shape_file",
 });

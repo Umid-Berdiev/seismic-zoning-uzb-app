@@ -90,6 +90,19 @@ onMounted(() => {
             store.setSideTransitions({ transitions: true });
         }, 500);
     });
+
+    // Remove labels from
+    document.querySelectorAll("#datasetLength label").forEach((el) => {
+        el.remove();
+    });
+
+    // Replace select classes
+    let selectLength = document.querySelector("#datasetLength select");
+
+    if (selectLength) {
+        selectLength.classList = "";
+        selectLength.classList.add("form-select");
+    }
 });
 </script>
 

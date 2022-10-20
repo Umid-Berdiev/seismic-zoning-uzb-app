@@ -119,7 +119,7 @@ function onClickAction(type: LayerTypeData) {
                     </span>
                 </a>
                 <!-- END Submenu Link -->
-                <ul class="nav-main-submenu">
+                <ul class="nav-main-submenu row row-cols-3">
                     <li
                         v-for="index in 14"
                         :key="`region-${index}`"
@@ -154,9 +154,9 @@ function onClickAction(type: LayerTypeData) {
                     </span>
                 </a>
                 <!-- END Submenu Link -->
-                <ul class="nav-main-submenu">
+                <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="index in 4"
+                        v-for="index in 50"
                         :key="`region-${index}`"
                         class="nav-main-item"
                     >
@@ -171,7 +171,7 @@ function onClickAction(type: LayerTypeData) {
                             <label
                                 class="form-check-label small"
                                 :for="`zone_${index}`"
-                                >{{ index * 5 + 30 }}</label
+                                >{{ index }}</label
                             >
                         </div>
                     </li>

@@ -10,14 +10,16 @@ class Region extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'name_uz',
         'name_ru',
         'admincenter_uz',
         'admincenter_ru',
+        'soato'
     ];
 
     protected $cast = [
-        // 
+        //
     ];
 
     /**

@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\DsrSectionController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UploadShapefileController;
 use App\Http\Controllers\UserController;
+use App\Models\DsrSection;
 use App\Models\Region;
 use App\Models\ShapeImportLog;
 use Illuminate\Http\Request;
@@ -42,6 +44,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
     Route::resource('users', UserController::class);
 
     Route::prefix('directory')->group(function () {
+        Route::get('dsr-sections/list', function (Request $request) {
+            return DsrSection::with('regions')->get(['id', 'soatos', 'name']);
+        });
+        Route::resource('dsr-sections', DsrSectionController::class)
+            ->only(['index', 'store', 'update', 'destroy']);
         Route::resource('roles', RoleController::class)
             ->only(['index', 'store', 'update', 'destroy']);
         Route::get('regions/{region}/districts', [DistrictController::class, 'index'])

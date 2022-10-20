@@ -36,11 +36,12 @@
     },
     "logout_text": "Tizimdan chiqish",
     "menu": {
-        "Map": "Harita",
+        "Map": "Xarita",
         "Statics": "Statik ma'lumotlar",
-        "Directory": "Qullanma",
+        "Directory": "Qo'llanma",
         "Users": "Foydalanuvchilar",
         "Roles": "Rollar",
+        "DsrSections": "DSR qatlamlar",
         "Regions": "Viloyatlar"
     },
     "Import_shapefile": "Sheypfayl yuklash",

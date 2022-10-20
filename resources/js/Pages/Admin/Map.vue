@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch, watchEffect } from "vue";
+import { computed, onMounted, reactive, ref, watch, watchEffect, h } from "vue";
 import { useI18n } from "vue-i18n";
 import { useMainStore } from "@/stores/main";
 import L, { CRS } from "leaflet";
@@ -9,6 +9,7 @@ import { useNotyf } from "@/composable/useNotyf";
 import Loader from "@/Components/Loader.vue";
 import BorderLayersControl from "@/Components/Maps/BorderLayersControl.vue";
 import LayersControl from "@/Components/Maps/LayersControl.vue";
+import { InertiaProgress } from "@inertiajs/progress";
 
 const props = defineProps({
     canLogin: Boolean,
@@ -121,7 +122,6 @@ watchEffect(() => {
     // props.balls.forEach((ball) => {
     //     map.value?.removeLayer([`layerBalls${ball.level}`]);
     // });
-    // console.log("map panes: ", map.value?.getPane("overlayPane"));
     // map.value?.eachLayer((layer) => {
     //     if (layer._path != undefined) layer.removeFrom(map.value);
     // });
@@ -139,7 +139,6 @@ watchEffect(() => {
     // }
     // if (selectedLayers.value.includes("balls_8")) {
     //     props.balls[8]?.forEach((ball) => {
-    //         // console.log({ ball });
     //         L.geoJSON(ball.geom.coordinates, {
     //             color: "#00ffff",
     //         }).addTo(map.value);
@@ -147,7 +146,6 @@ watchEffect(() => {
     // }
     // if (selectedLayers.value.includes("balls_9")) {
     //     props.balls[9]?.forEach((ball) => {
-    //         // console.log({ ball });
     //         L.geoJSON(ball.geom.coordinates, {
     //             color: "#0fff00",
     //         }).addTo(map.value);
@@ -163,7 +161,9 @@ watchEffect(() => {
 
 watch(
     () => mapStore.selectedArea,
-    (newValue, oldValue) => {
+    async (newValue, oldValue) => {
+        mapLoader.value = true;
+
         if (newValue) {
             map.value?.eachLayer((layer) => {
                 if (layer._path != undefined) layer.removeFrom(map.value);
@@ -172,8 +172,58 @@ watch(
             if (newValue.soato === "main") {
                 // map.value.panTo(initialCenter.value);
                 // map.value.setZoom(6);
-                map.value.flyTo(L.latLng(initialCenter.value), 6);
-            } else {
+                L.geoJSON(regionsGeojson, {
+                    onEachFeature: function (feature, layer) {
+                        layer
+                            .on("click", async function () {
+                                //
+                            })
+                            .on("mouseover", function () {
+                                this.setStyle({
+                                    weight: 2,
+                                });
+                            })
+                            .on("mouseout", function () {
+                                this.setStyle({
+                                    weight: 1,
+                                });
+                            })
+                            .bindPopup(
+                                `
+                                    <ul class="list-group mt-4">
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <span class="fw-bold">
+                                                Nomi
+                                            </span>
+                                            <span class="ms-auto">
+                                                ${feature.properties?.name_uz}
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <span class="fw-bold">
+                                                SOATO kodi
+                                            </span>
+                                            <span class="ms-auto">
+                                                ${feature.properties?.soato}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                    `,
+                                {
+                                    minWidth: 300,
+                                }
+                            );
+                    },
+                    style: function (feature) {
+                        return {
+                            color: "#0eb297",
+                            weight: 1,
+                            // fillOpacity: 0.0,
+                        };
+                    },
+                }).addTo(map.value);
+                await map.value.flyTo(L.latLng(initialCenter.value), 6);
+            } else if (Number(newValue.soato)) {
                 const foundArea =
                     String(newValue.soato).length > 4
                         ? districtsGeojson.features?.find(
@@ -186,8 +236,6 @@ watch(
                                   feature.properties.soato ===
                                   Number(newValue.soato)
                           );
-
-                console.log(foundArea);
 
                 if (foundArea) {
                     const districtPolygon = L.geoJSON(foundArea, {
@@ -205,7 +253,32 @@ watch(
                                     this.setStyle({
                                         weight: 1,
                                     });
-                                });
+                                })
+                                .bindPopup(
+                                    `
+                                    <ul class="list-group mt-4">
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <span class="fw-bold">
+                                                Nomi
+                                            </span>
+                                            <span class="ms-auto">
+                                                ${feature.properties?.name_uz}
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <span class="fw-bold">
+                                                SOATO kodi
+                                            </span>
+                                            <span class="ms-auto">
+                                                ${feature.properties?.soato}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                    `,
+                                    {
+                                        minWidth: 300,
+                                    }
+                                );
                         },
                         style: function (feature) {
                             return {
@@ -222,8 +295,75 @@ watch(
                 } else {
                     notyf.error("Area not found!");
                 }
+            } else if (newValue.regions?.length) {
+                const soatoArr = newValue.regions.map((region) =>
+                    Number(region.soato)
+                );
+                const foundAreas = regionsGeojson.features?.filter((feature) =>
+                    soatoArr.includes(feature.properties.soato)
+                );
+
+                if (foundAreas.length) {
+                    const dsrSectionPolygon = L.geoJSON(foundAreas, {
+                        onEachFeature: function (feature, layer) {
+                            layer
+                                .on("click", async function () {
+                                    //
+                                })
+                                .on("mouseover", function () {
+                                    this.setStyle({
+                                        weight: 2,
+                                    });
+                                })
+                                .on("mouseout", function () {
+                                    this.setStyle({
+                                        weight: 1,
+                                    });
+                                })
+                                .bindPopup(
+                                    `
+                                    <ul class="list-group mt-4">
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <span class="fw-bold">
+                                                Nomi
+                                            </span>
+                                            <span class="ms-auto">
+                                                ${feature.properties?.name_uz}
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <span class="fw-bold">
+                                                SOATO kodi
+                                            </span>
+                                            <span class="ms-auto">
+                                                ${feature.properties?.soato}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                    `,
+                                    {
+                                        minWidth: 300,
+                                    }
+                                );
+                        },
+                        style: function (feature) {
+                            return {
+                                color: "#0eb297",
+                                weight: 1,
+                                // fillOpacity: 0.0,
+                            };
+                        },
+                    }).addTo(map.value);
+                    const areaBounds = L.latLngBounds(
+                        dsrSectionPolygon.getBounds()
+                    );
+                    map.value.flyTo(areaBounds.getCenter(), 7);
+                } else {
+                    notyf.error("Area not found!");
+                }
             }
         }
+        mapLoader.value = false;
     },
     {
         deep: true,
@@ -279,6 +419,38 @@ function initMap() {
 
     map.value.attributionControl.setPrefix(""); // Don't show the 'Powered by Leaflet' text.
 }
+
+function setLayerContent(obj) {
+    if (typeof obj === "object") {
+        return h(
+            "ol",
+            { class: "list-group list-group-numbered" },
+            Array.from(obj).map((prop) => {
+                return h(
+                    "li",
+                    { class: "list-group-item d-flex align-items-start" },
+                    prop
+                );
+            })
+        );
+        // return (
+        //     <ol class="list-group list-group-numbered">
+        //         {for (const key in obj) {
+        //             if (Object.hasOwnProperty.call(obj, key)) {
+        //                 return <li class="list-group-item d-flex align-items-start">
+        //                     <span class="">
+        //                         { key }
+        //                     </span>
+        //                     <span class="ms-auto">
+        //                         { obj[key] }
+        //                     </span>
+        //                 </li>;
+        //             }
+        //         }}
+        //     </ul>
+        // )
+    }
+}
 </script>
 
 <template>
@@ -314,6 +486,9 @@ export default {
     top: 5.25rem;
     left: 1rem;
     z-index: 1000;
+    // min-width: 100px;
+    width: 100%;
+    max-width: 20vw;
 }
 #right_control_block {
     // border: 2px solid lightgray;

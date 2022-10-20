@@ -10,6 +10,7 @@
         "@popperjs/core": "^2.11.5",
         "@tiptap/starter-kit": "^2.0.0-beta.183",
         "@tiptap/vue-3": "^2.0.0-beta.90",
+        "@vueform/multiselect": "^2.5.6",
         "@vueform/slider": "^2.1.2",
         "@vuelidate/core": "^2.0.0-alpha.34",
         "@vuelidate/validators": "^2.0.0-alpha.26",
