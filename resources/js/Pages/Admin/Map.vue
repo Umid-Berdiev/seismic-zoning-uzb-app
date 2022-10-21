@@ -105,6 +105,7 @@ const layerRegions = computed(() =>
         },
     })
 );
+const selectedSoatos = ref([]);
 
 onMounted(async () => {
     // fetch geojson data
@@ -116,55 +117,13 @@ onMounted(async () => {
     mapLoader.value = false;
 });
 
-watchEffect(() => {
-    // map.value?.removeLayer(layerRegions.value);
-    // map.value?.removeLayer(layerBorders.value);
-    // props.balls.forEach((ball) => {
-    //     map.value?.removeLayer([`layerBalls${ball.level}`]);
-    // });
-    // map.value?.eachLayer((layer) => {
-    //     if (layer._path != undefined) layer.removeFrom(map.value);
-    // });
-    // if (selectedLayers.value.includes("regions"))
-    //     map.value?.addLayer(layerRegions.value);
-    // if (selectedLayers.value.includes("borders")) {
-    //     props.borders.forEach((border) => {
-    //         L.polyline(
-    //             border.line.map((item) => item.coordinates),
-    //             {
-    //                 color: "#FF0000",
-    //             }
-    //         ).addTo(map.value);
-    //     });
-    // }
-    // if (selectedLayers.value.includes("balls_8")) {
-    //     props.balls[8]?.forEach((ball) => {
-    //         L.geoJSON(ball.geom.coordinates, {
-    //             color: "#00ffff",
-    //         }).addTo(map.value);
-    //     });
-    // }
-    // if (selectedLayers.value.includes("balls_9")) {
-    //     props.balls[9]?.forEach((ball) => {
-    //         L.geoJSON(ball.geom.coordinates, {
-    //             color: "#0fff00",
-    //         }).addTo(map.value);
-    //     });
-    // }
-    // if (selectedLayers.value.includes("zones_50")) {
-    //     const zone50 = props.zones?.find((zone) => zone.level == 50);
-    //     L.geoJSON(zone50.geom?.coordinates, {
-    //         color: "#0f00f0",
-    //     }).addTo(map.value);
-    // }
-});
-
 watch(
     () => mapStore.selectedArea,
     async (newValue, oldValue) => {
         mapLoader.value = true;
 
         if (newValue) {
+            selectedSoatos.value = [];
             map.value?.eachLayer((layer) => {
                 if (layer._path != undefined) layer.removeFrom(map.value);
             });
@@ -238,6 +197,7 @@ watch(
                           );
 
                 if (foundArea) {
+                    selectedSoatos.value = [Number(newValue.soato)];
                     const districtPolygon = L.geoJSON(foundArea, {
                         onEachFeature: function (feature, layer) {
                             layer
@@ -304,6 +264,7 @@ watch(
                 );
 
                 if (foundAreas.length) {
+                    selectedSoatos.value = soatoArr;
                     const dsrSectionPolygon = L.geoJSON(foundAreas, {
                         onEachFeature: function (feature, layer) {
                             layer
@@ -369,6 +330,11 @@ watch(
         deep: true,
     }
 );
+watch(selectedSoatos, async (newVal, oldVal) => {
+    if (newVal) {
+        fetchLayerDataBySelectedArea();
+    }
+});
 
 async function fetchStaticLayers() {
     const geojson_regions = await fetch(
@@ -450,6 +416,18 @@ function setLayerContent(obj) {
         //     </ul>
         // )
     }
+}
+
+async function fetchLayerDataBySelectedArea() {
+    const res = await fetch(
+        "/admin/map/layers-data?" +
+            new URLSearchParams({
+                soatos: selectedSoatos.value,
+            })
+    );
+
+    const result = res.json();
+    console.log({ result });
 }
 </script>
 

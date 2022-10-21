@@ -26,4 +26,32 @@ class MapController extends Controller
             'zones' => $zones
         ]);
     }
+
+    public function fetchLayersBySelectedArea(Request $request)
+    {
+        // dd($request->all());
+        $arr = explode(',', $request->soatos);
+        // dd($arr);
+        $balls = Ball::all();
+        $filteredBalls = [];
+
+        foreach ($arr as $key => $value) {
+            $data = $balls->where(function ($query) use ($value) {
+                return str_starts_with($query->soato, $value);
+            });
+
+            if ($data->count()) {
+                $filteredBalls[] = $data;
+            }
+        }
+
+        $filteredBalls = array_unique($filteredBalls, 'soato');
+        dd($filteredBalls);
+        $borders = Border::whereIn('soato', $arr)->get();
+        $zones = Zone::whereIn('soato', $arr)->get();
+
+        // $gropedBalls = $balls->groupBy('level');
+
+        return response()->json([$balls, $borders, $zones]);
+    }
 }
