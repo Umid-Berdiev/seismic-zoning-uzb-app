@@ -114,7 +114,7 @@ function onClickAction(area: AreaData) {
         <li class="nav-main-item">
             <a
                 href="javascript:;"
-                class="nav-main-link"
+                class="nav-main-link active"
                 @click.prevent="onClickAction({ soato: 'main' })"
             >
                 <span class="nav-main-link-name">

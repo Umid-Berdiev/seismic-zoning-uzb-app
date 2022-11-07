@@ -29,29 +29,67 @@ class MapController extends Controller
 
     public function fetchLayersBySelectedArea(Request $request)
     {
-        // dd($request->all());
+        $soatos = $request->soatos || [
+            1735,
+            1733,
+            1712,
+            1706,
+            1718,
+            1722,
+            1708,
+            1724,
+            1703,
+            1714,
+            1730,
+            1727,
+            1710,
+        ];
         $arr = explode(',', $request->soatos);
         // dd($arr);
         $balls = Ball::all();
+        $zones = Zone::all();
+        $borders = Border::all();
         $filteredBalls = [];
+        $filteredZones = [];
+        $filteredBorders = [];
 
         foreach ($arr as $key => $value) {
-            $data = $balls->where(function ($query) use ($value) {
+            $balls_data = $balls->where(function ($query) use ($value) {
                 return str_starts_with($query->soato, $value);
             });
 
-            if ($data->count()) {
-                $filteredBalls[] = $data;
+            $zones_data = $zones->where(function ($query) use ($value) {
+                return str_starts_with($query->soato, $value);
+            });
+
+            $borders_data = $borders->where(function ($query) use ($value) {
+                return str_starts_with($query->soato, $value);
+            });
+
+            if ($balls_data->count()) {
+                $filteredBalls[] = $balls_data;
+            }
+
+            if ($zones_data->count()) {
+                $filteredZones[] = $zones_data;
+            }
+
+            if ($borders_data->count()) {
+                $filteredBorders[] = $borders_data;
             }
         }
 
-        $filteredBalls = array_unique($filteredBalls, 'soato');
-        dd($filteredBalls);
-        $borders = Border::whereIn('soato', $arr)->get();
-        $zones = Zone::whereIn('soato', $arr)->get();
+        // $filteredBalls = array_unique(array_column($filteredBalls, 'soato'));
+        // dd($filteredBalls);
+        // $borders = Border::whereIn('soato', $arr)->get();
+        // $zones = Zone::whereIn('soato', $arr)->get();
 
         // $gropedBalls = $balls->groupBy('level');
 
-        return response()->json([$balls, $borders, $zones]);
+        return response()->json([
+            'balls' => $filteredBalls,
+            'zones' => $filteredZones,
+            'borders' => $filteredZones
+        ]);
     }
 }

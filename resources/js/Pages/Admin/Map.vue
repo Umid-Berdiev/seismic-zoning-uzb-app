@@ -129,58 +129,7 @@ watch(
             });
 
             if (newValue.soato === "main") {
-                // map.value.panTo(initialCenter.value);
-                // map.value.setZoom(6);
-                L.geoJSON(regionsGeojson, {
-                    onEachFeature: function (feature, layer) {
-                        layer
-                            .on("click", async function () {
-                                //
-                            })
-                            .on("mouseover", function () {
-                                this.setStyle({
-                                    weight: 2,
-                                });
-                            })
-                            .on("mouseout", function () {
-                                this.setStyle({
-                                    weight: 1,
-                                });
-                            })
-                            .bindPopup(
-                                `
-                                    <ul class="list-group mt-4">
-                                        <li class="list-group-item d-flex align-items-start">
-                                            <span class="fw-bold">
-                                                Nomi
-                                            </span>
-                                            <span class="ms-auto">
-                                                ${feature.properties?.name_uz}
-                                            </span>
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-start">
-                                            <span class="fw-bold">
-                                                SOATO kodi
-                                            </span>
-                                            <span class="ms-auto">
-                                                ${feature.properties?.soato}
-                                            </span>
-                                        </li>
-                                    </ul>
-                                    `,
-                                {
-                                    minWidth: 300,
-                                }
-                            );
-                    },
-                    style: function (feature) {
-                        return {
-                            color: "#0eb297",
-                            weight: 1,
-                            // fillOpacity: 0.0,
-                        };
-                    },
-                }).addTo(map.value);
+                initializeDefaultLayersToMap();
                 await map.value.flyTo(L.latLng(initialCenter.value), 6);
             } else if (Number(newValue.soato)) {
                 const foundArea =
@@ -252,7 +201,6 @@ watch(
                         districtPolygon.getBounds()
                     );
                     map.value.flyTo(areaBounds.getCenter(), 10);
-                    await fetchLayerDataBySelectedArea;
                 } else {
                     notyf.error("Area not found!");
                 }
@@ -325,18 +273,13 @@ watch(
                 }
             }
         }
+        await fetchLayerDataBySelectedArea();
         mapLoader.value = false;
     },
     {
         deep: true,
     }
 );
-
-watch(selectedSoatos, async (newVal, oldVal) => {
-    if (newVal) {
-        fetchLayerDataBySelectedArea();
-    }
-});
 
 async function fetchStaticLayers() {
     const geojson_regions = await fetch(
@@ -352,7 +295,7 @@ async function fetchStaticLayers() {
     Object.assign(citiesGeojson, await res_cities.json());
 }
 
-function initMap() {
+async function initMap() {
     map.value = L.map("map", {
         zoom: zoom.value,
         center: center.value,
@@ -386,6 +329,8 @@ function initMap() {
         .addTo(map.value);
 
     map.value.attributionControl.setPrefix(""); // Don't show the 'Powered by Leaflet' text.
+    await fetchLayerDataBySelectedArea();
+    initializeDefaultLayersToMap();
 }
 
 function setLayerContent(obj) {
@@ -428,8 +373,60 @@ async function fetchLayerDataBySelectedArea() {
             })
     );
 
-    const result = res.json();
-    console.log({ result });
+    const result = await res.json();
+}
+
+function initializeDefaultLayersToMap() {
+    L.geoJSON(regionsGeojson, {
+        onEachFeature: function (feature, layer) {
+            layer
+                .on("click", async function () {
+                    //
+                })
+                .on("mouseover", function () {
+                    this.setStyle({
+                        weight: 2,
+                    });
+                })
+                .on("mouseout", function () {
+                    this.setStyle({
+                        weight: 1,
+                    });
+                })
+                .bindPopup(
+                    `
+                        <ul class="list-group mt-4">
+                            <li class="list-group-item d-flex align-items-start">
+                                <span class="fw-bold">
+                                    Nomi
+                                </span>
+                                <span class="ms-auto">
+                                    ${feature.properties?.name_uz}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex align-items-start">
+                                <span class="fw-bold">
+                                    SOATO kodi
+                                </span>
+                                <span class="ms-auto">
+                                    ${feature.properties?.soato}
+                                </span>
+                            </li>
+                        </ul>
+                        `,
+                    {
+                        minWidth: 300,
+                    }
+                );
+        },
+        style: function (feature) {
+            return {
+                color: "#0eb297",
+                weight: 1,
+                // fillOpacity: 0.0,
+            };
+        },
+    }).addTo(map.value);
 }
 </script>
 
@@ -439,7 +436,7 @@ async function fetchLayerDataBySelectedArea() {
         <div id="map" style="height: 80vh"></div>
         <div id="left_control_block">
             <BorderLayersControl />
-            <LayersControl />
+            <LayersControl :balls="balls" :borders="borders" :zones="zones" />
         </div>
         <!-- <div
             id="right_control_block"

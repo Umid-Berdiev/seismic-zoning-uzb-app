@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useMapStore } from "@/stores/map";
 import BaseBlock from "../BaseBlock.vue";
-import InputLabel from "../InputLabel.vue";
 import Input from "../Input.vue";
 
 interface LayerTypeData {
@@ -50,6 +49,18 @@ const props = defineProps({
         default: false,
         description:
             "Disables submenu click on 2+ level when we are in horizontal and hover mode",
+    },
+    borders: {
+        type: Array,
+        default: () => [],
+    },
+    balls: {
+        type: Object,
+        default: () => ({}),
+    },
+    zones: {
+        type: Array,
+        default: () => [],
     },
 });
 
@@ -121,8 +132,8 @@ function onClickAction(type: LayerTypeData) {
                 <!-- END Submenu Link -->
                 <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="index in 14"
-                        :key="`region-${index}`"
+                        v-for="(ball, ballIndex) in balls"
+                        :key="`region-${ballIndex}`"
                         class="nav-main-item"
                     >
                         <div class="form-check">
@@ -130,13 +141,13 @@ function onClickAction(type: LayerTypeData) {
                                 class="form-check-input"
                                 type="checkbox"
                                 value=""
-                                :id="`ball_${index}`"
-                                :name="`ball_${index}`"
+                                :id="`ball_${ballIndex}`"
+                                :name="`ball_${ballIndex}`"
                             />
                             <label
                                 class="form-check-label small"
-                                :for="`ball_${index}`"
-                                >{{ index }}</label
+                                :for="`ball_${ballIndex}`"
+                                >{{ ball.level }}</label
                             >
                         </div>
                     </li>
@@ -156,8 +167,8 @@ function onClickAction(type: LayerTypeData) {
                 <!-- END Submenu Link -->
                 <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="index in 50"
-                        :key="`region-${index}`"
+                        v-for="(zone, zoneIndex) in zones"
+                        :key="`region-${zoneIndex}`"
                         class="nav-main-item"
                     >
                         <div class="form-check">
@@ -165,13 +176,13 @@ function onClickAction(type: LayerTypeData) {
                                 class="form-check-input"
                                 type="checkbox"
                                 value=""
-                                :id="`zone_${index}`"
-                                :name="`zone_${index}`"
+                                :id="`zone_${zoneIndex}`"
+                                :name="`zone_${zoneIndex}`"
                             />
                             <label
                                 class="form-check-label small"
-                                :for="`zone_${index}`"
-                                >{{ index }}</label
+                                :for="`zone_${zoneIndex}`"
+                                >{{ zone.level }}</label
                             >
                         </div>
                     </li>
