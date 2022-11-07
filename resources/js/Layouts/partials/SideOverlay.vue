@@ -227,7 +227,7 @@ onUnmounted(() => {
                                                             alt="User Photo"
                                                         />
                                                         <span
-                                                            :class="`overlay-item item item-tiny item-circle border border-2 border-white bg-${user.statusColor}`"
+                                                            :class="`overlay-item item item-tiny item-circle border border-white bg-${user.statusColor}`"
                                                         ></span>
                                                     </div>
                                                     <div
