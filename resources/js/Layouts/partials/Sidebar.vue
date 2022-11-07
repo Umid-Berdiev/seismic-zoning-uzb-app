@@ -55,8 +55,8 @@ onMounted(() => {
             <div class="content-header">
                 <slot name="header">
                     <!-- Logo -->
-                    <Link href="/" class="fw-semibold text-dual">
-                        <span class="smini-visible">
+                    <Link href="/" class="d-flex gap-2 fw-semibold text-dual">
+                        <span class="">
                             <!-- <i class="fa fa-circle-notch text-primary"></i> -->
                             <img
                                 src="/images/circle-cropped.png"

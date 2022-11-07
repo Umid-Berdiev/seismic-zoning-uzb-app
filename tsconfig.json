@@ -34,6 +34,5 @@
         "resources/js/**/*.d.ts",
         "resources/js/**/*.tsx",
         "resources/js/**/*.vue"
-    ],
-    "exclude": ["bulma-colors.ts"]
+    ]
 }

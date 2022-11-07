@@ -252,6 +252,7 @@ watch(
                         districtPolygon.getBounds()
                     );
                     map.value.flyTo(areaBounds.getCenter(), 10);
+                    await fetchLayerDataBySelectedArea;
                 } else {
                     notyf.error("Area not found!");
                 }
@@ -330,6 +331,7 @@ watch(
         deep: true,
     }
 );
+
 watch(selectedSoatos, async (newVal, oldVal) => {
     if (newVal) {
         fetchLayerDataBySelectedArea();

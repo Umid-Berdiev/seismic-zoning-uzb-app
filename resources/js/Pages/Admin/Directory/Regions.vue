@@ -26,18 +26,18 @@ const columns = reactive([
         name: "Name uz",
         field: "name_uz",
     },
-    {
-        name: "Name ru",
-        field: "name_ru",
-    },
-    {
-        name: "Admincenter uz",
-        field: "admincenter_uz",
-    },
-    {
-        name: "Admincenter ru",
-        field: "admincenter_ru",
-    },
+    // {
+    //     name: "Name ru",
+    //     field: "name_ru",
+    // },
+    // {
+    //     name: "Admincenter uz",
+    //     field: "admincenter_uz",
+    // },
+    // {
+    //     name: "Admincenter ru",
+    //     field: "admincenter_ru",
+    // },
 ]);
 
 const regionObj = reactive({
@@ -114,12 +114,14 @@ function exportToExcel() {
                 data-bs-target="#modal-confirm"
             >
                 <i class="fa fa-download me-1"></i>
-                <span>Export to excel</span>
+                <span>{{ $t("Export_to_excel") }}</span>
             </button>
         </div>
         <br />
-        <BaseBlock title="Regions table" content-full>
-            <div v-if="regions?.length == 0" class="text-center">No data</div>
+        <BaseBlock :title="$t('Regions_table')" content-full>
+            <div v-if="regions?.length == 0" class="text-center">
+                {{ $t("No_data") }}
+            </div>
             <div v-else class="row">
                 <div class="col-md-12">
                     <div class="table-responsive">
@@ -133,7 +135,7 @@ function exportToExcel() {
                                     >
                                         {{ th.name }}
                                     </th>
-                                    <th>Actions</th>
+                                    <th>{{ $t("Actions") }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -146,9 +148,9 @@ function exportToExcel() {
                                     </th>
                                     <td>{{ row.soato }}</td>
                                     <td>{{ row.name_uz }}</td>
-                                    <td>{{ row.name_ru }}</td>
+                                    <!-- <td>{{ row.name_ru }}</td>
                                     <td>{{ row.admincenter_uz }}</td>
-                                    <td>{{ row.admincenter_ru }}</td>
+                                    <td>{{ row.admincenter_ru }}</td> -->
                                     <td class="d-flex gap-2">
                                         <button
                                             type="button"
@@ -187,8 +189,8 @@ function exportToExcel() {
                         <h5 class="modal-title" id="regionFormModalLabel">
                             {{
                                 isEditing
-                                    ? "Edit region data"
-                                    : "Add region data"
+                                    ? $t("Edit_region_data")
+                                    : $t("Add_region_data")
                             }}
                         </h5>
                         <button
@@ -251,7 +253,7 @@ function exportToExcel() {
                                 </div>
 
                                 <div class="col-auto ms-auto">
-                                    <Button>Submit</Button>
+                                    <Button>{{ $t("Submit") }}</Button>
                                 </div>
                             </div>
                         </form>

@@ -25,7 +25,7 @@ export default defineConfig({
          * @see https://github.com/intlify/bundle-tools/tree/main/packages/vite-plugin-vue-i18n
          */
         vueI18n({
-            include: path.resolve(__dirname, "./src/locales/**"),
+            include: path.resolve(__dirname, "./resources/js/locales/**"),
         }),
     ],
 });

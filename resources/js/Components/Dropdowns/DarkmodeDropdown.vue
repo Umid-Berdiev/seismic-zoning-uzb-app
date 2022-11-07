@@ -26,7 +26,7 @@ watch(
 // Sets default dark mode preferences for radios
 function setDarkModeRadioDefault() {
     if (store.settings.darkModeSystem) {
-        radioDarkMode.value = "system";
+        radioDarkMode.value = "light";
     } else {
         if (store.settings.darkMode) {
             radioDarkMode.value = "dark";

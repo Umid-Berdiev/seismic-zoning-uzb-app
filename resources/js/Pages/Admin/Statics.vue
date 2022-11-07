@@ -110,8 +110,10 @@ async function onModalSubmit() {
             <ImportButton modal-id="importStaticDataModal" />
         </div>
 
-        <BaseBlock title="Imported shape files' logs" content-full>
-            <div v-if="logs.data?.length == 0" class="text-center">No data</div>
+        <BaseBlock :title="$t('Imported_shape_files_logs')" content-full>
+            <div v-if="logs.data?.length == 0" class="text-center">
+                {{ $t("No_data") }}
+            </div>
             <Dataset v-else v-slot="{ ds }" :ds-data="logs.data">
                 <div class="row">
                     <div class="col-md-12">

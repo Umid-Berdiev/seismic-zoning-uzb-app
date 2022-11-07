@@ -174,7 +174,9 @@ function deleteAction() {
         </div>
 
         <BaseBlock title="Users table" content-full>
-            <div v-if="users?.length == 0" class="text-center">No data</div>
+            <div v-if="users?.length == 0" class="text-center">
+                {{ $t("No_data") }}
+            </div>
             <Dataset v-else :ds-data="users">
                 <div class="row">
                     <div class="col-md-12">
@@ -189,7 +191,7 @@ function deleteAction() {
                                         >
                                             {{ th.name }}
                                         </th>
-                                        <th>Actions</th>
+                                        <th>{{ $t("Actions") }}</th>
                                     </tr>
                                 </thead>
                                 <DatasetItem tag="tbody" class="fs-sm">
@@ -342,7 +344,7 @@ function deleteAction() {
                                             role="status"
                                             aria-hidden="true"
                                         ></span>
-                                        <span v-else>Submit</span>
+                                        <span v-else>{{ $t("Submit") }}</span>
                                     </Button>
                                 </div>
                             </div>

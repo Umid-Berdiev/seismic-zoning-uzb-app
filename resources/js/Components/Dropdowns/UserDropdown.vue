@@ -16,7 +16,7 @@ const authUser = computed(() => usePage().props.value.auth.user);
             aria-expanded="false"
         >
             <span class="">
-                {{ authUser?.username }}
+                {{ authUser?.email }}
             </span>
             <i class="fa fa-fw fa-angle-down"></i>
         </button>
@@ -24,7 +24,7 @@ const authUser = computed(() => usePage().props.value.auth.user);
             class="dropdown-menu dropdown-menu-md dropdown-menu-end p-0 border-0"
             aria-labelledby="page-header-user-dropdown"
         >
-            <div
+            <!-- <div
                 class="p-3 text-center bg-body-light border-bottom rounded-top"
             >
                 <p class="mt-2 mb-0 fw-medium">
@@ -32,7 +32,7 @@ const authUser = computed(() => usePage().props.value.auth.user);
                     {{ authUser?.last_name }}
                 </p>
                 <p class="mb-0 text-muted fs-sm fw-medium">Web Developer</p>
-            </div>
+            </div> -->
             <div class="p-2">
                 <form
                     @submit.prevent="useForm().post(route('logout'))"

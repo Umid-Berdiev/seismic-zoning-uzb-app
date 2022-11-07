@@ -1,5 +1,9 @@
-import { useStorage } from "@vueuse/core";
-import { defineStore } from "pinia";
+import {
+    useStorage
+} from "@vueuse/core";
+import {
+    defineStore
+} from "pinia";
 
 // Main Pinia Store
 export const useMainStore = defineStore("mainStore", {
@@ -24,7 +28,7 @@ export const useMainStore = defineStore("mainStore", {
         settings: {
             colorTheme: "", // 'amethyst', 'city', 'flat', 'modern', 'smooth'
             darkMode: useStorage("dark-mode", false),
-            darkModeSystem: useStorage("system-dark-mode", true),
+            darkModeSystem: useStorage("system-dark-mode", false),
             sidebarLeft: true,
             sidebarMini: false,
             sidebarDark: true,
@@ -59,8 +63,7 @@ export const useMainStore = defineStore("mainStore", {
                 } else if (payload.mode === "close") {
                     this.settings.sidebarVisibleDesktop = false;
                 } else if (payload.mode === "toggle") {
-                    this.settings.sidebarVisibleDesktop =
-                        !this.settings.sidebarVisibleDesktop;
+                    this.settings.sidebarVisibleDesktop = !this.settings.sidebarVisibleDesktop;
                 }
             } else {
                 if (payload.mode === "open") {
@@ -68,8 +71,7 @@ export const useMainStore = defineStore("mainStore", {
                 } else if (payload.mode === "close") {
                     this.settings.sidebarVisibleMobile = false;
                 } else if (payload.mode === "toggle") {
-                    this.settings.sidebarVisibleMobile =
-                        !this.settings.sidebarVisibleMobile;
+                    this.settings.sidebarVisibleMobile = !this.settings.sidebarVisibleMobile;
                 }
             }
         },
@@ -112,8 +114,7 @@ export const useMainStore = defineStore("mainStore", {
             } else if (payload.mode === "close") {
                 this.settings.sideOverlayVisible = false;
             } else if (payload.mode === "toggle") {
-                this.settings.sideOverlayVisible =
-                    !this.settings.sideOverlayVisible;
+                this.settings.sideOverlayVisible = !this.settings.sideOverlayVisible;
             }
         },
         // Sets side overlay hover mode (on, off, toggle)
@@ -123,8 +124,7 @@ export const useMainStore = defineStore("mainStore", {
             } else if (payload.mode === "off") {
                 this.settings.sideOverlayHoverable = false;
             } else if (payload.mode === "toggle") {
-                this.settings.sideOverlayHoverable =
-                    !this.settings.sideOverlayHoverable;
+                this.settings.sideOverlayHoverable = !this.settings.sideOverlayHoverable;
             }
         },
         // Sets page overlay visibility (on, off, toggle)

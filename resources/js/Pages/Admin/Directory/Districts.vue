@@ -38,18 +38,18 @@ const columns = reactive([
         name: "Name uz",
         field: "name_uz",
     },
-    {
-        name: "Name ru",
-        field: "name_ru",
-    },
-    {
-        name: "Admincenter uz",
-        field: "admincenter_uz",
-    },
-    {
-        name: "Admincenter ru",
-        field: "admincenter_ru",
-    },
+    // {
+    //     name: "Name ru",
+    //     field: "name_ru",
+    // },
+    // {
+    //     name: "Admincenter uz",
+    //     field: "admincenter_uz",
+    // },
+    // {
+    //     name: "Admincenter ru",
+    //     field: "admincenter_ru",
+    // },
 ]);
 
 const districtObj = reactive({
@@ -122,7 +122,7 @@ function exportToExcel() {
                 @click.prevent="useForm().get(route('regions.index'))"
             >
                 <i class="si si-arrow-left me-1"></i>
-                <span>Back</span>
+                <span>{{ $t("Back") }}</span>
             </button>
             <button
                 type="button"
@@ -131,19 +131,24 @@ function exportToExcel() {
                 data-bs-target="#modal-confirm"
             >
                 <i class="fa fa-download me-1"></i>
-                <span>Export to excel</span>
+                <span>{{ $t("Export_to_excel") }}</span>
             </button>
         </div>
         <br />
-        <BaseBlock title="Districts table" content-full>
-            <div v-if="districts?.length == 0" class="text-center">No data</div>
+
+        <BaseBlock :title="$t('Districts_table')" content-full>
+            <div v-if="districts?.length == 0" class="text-center">
+                {{ $t("No_data") }}
+            </div>
             <Dataset v-else v-slot="ds" :ds-data="districts">
                 <div class="row" :data-page-count="ds.dsPagecount">
                     <div id="datasetLength" class="col-auto py-2">
                         <DatasetShow />
                     </div>
                     <div class="col-auto ms-auto py-2">
-                        <DatasetSearch ds-search-placeholder="Search..." />
+                        <DatasetSearch
+                            :ds-search-placeholder="$t('Search') + '...'"
+                        />
                     </div>
                 </div>
                 <hr />
@@ -160,7 +165,7 @@ function exportToExcel() {
                                         >
                                             {{ th.name }}
                                         </th>
-                                        <th>Actions</th>
+                                        <th>{{ $t("Actions") }}</th>
                                     </tr>
                                 </thead>
                                 <DatasetItem tag="tbody" class="fs-sm">
@@ -172,9 +177,9 @@ function exportToExcel() {
                                             <td>{{ row.soato }}</td>
                                             <td>{{ row.region_soato }}</td>
                                             <td>{{ row.name_uz }}</td>
-                                            <td>{{ row.name_ru }}</td>
+                                            <!-- <td>{{ row.name_ru }}</td>
                                             <td>{{ row.admincenter_uz }}</td>
-                                            <td>{{ row.admincenter_ru }}</td>
+                                            <td>{{ row.admincenter_ru }}</td> -->
                                             <td class="d-flex gap-2">
                                                 <button
                                                     type="button"
@@ -289,7 +294,7 @@ function exportToExcel() {
                                 </div>
 
                                 <div class="col-auto ms-auto">
-                                    <Button>Submit</Button>
+                                    <Button>{{ $t("Submit") }}</Button>
                                 </div>
                             </div>
                         </form>

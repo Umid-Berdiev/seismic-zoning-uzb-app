@@ -133,12 +133,14 @@ function deleteAction() {
                 :disabled="regions.length === 0"
             >
                 <i class="si si-plus me-1"></i>
-                <span>Add</span>
+                <span>{{ $t("Add") }}</span>
             </button>
         </div>
 
-        <BaseBlock title="Roles table" content-full>
-            <div v-if="list?.length == 0" class="text-center">No data</div>
+        <BaseBlock :title="$t('Dsr_table')" content-full>
+            <div v-if="list?.length == 0" class="text-center">
+                {{ $t("No_data") }}
+            </div>
             <Dataset v-else :ds-data="list">
                 <div class="row">
                     <div class="col-md-12">
@@ -153,7 +155,7 @@ function deleteAction() {
                                         >
                                             {{ th.name }}
                                         </th>
-                                        <th>Amallar</th>
+                                        <th>{{ $t("Actions") }}</th>
                                     </tr>
                                 </thead>
                                 <DatasetItem tag="tbody" class="fs-sm">
@@ -238,7 +240,7 @@ function deleteAction() {
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     <InputLabel for="name-input">
-                                        <span>Name</span>
+                                        <span>{{ $t("Name") }}</span>
                                         <span class="text-danger">*</span>
                                     </InputLabel>
                                     <Input
@@ -252,7 +254,7 @@ function deleteAction() {
                                 </div>
                                 <div class="col-12 mb-3">
                                     <InputLabel for="soatos-input">
-                                        <span>Select regions</span>
+                                        <span>{{ $t("Select_regions") }}</span>
                                         <span class="text-danger">*</span>
                                     </InputLabel>
                                     <Multiselect
@@ -285,7 +287,7 @@ function deleteAction() {
                                 </div>
 
                                 <div class="col-auto ms-auto">
-                                    <Button>Submit</Button>
+                                    <Button>{{ $t("Submit") }}</Button>
                                 </div>
                             </div>
                         </form>

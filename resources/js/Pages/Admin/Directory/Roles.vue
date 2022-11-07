@@ -139,8 +139,10 @@ function deleteAction() {
             </button>
         </div> -->
 
-        <BaseBlock title="Roles table" content-full>
-            <div v-if="roles?.length == 0" class="text-center">No data</div>
+        <BaseBlock :title="$t('Roles_table')" content-full>
+            <div v-if="roles?.length == 0" class="text-center">
+                {{ $t("No_data") }}
+            </div>
             <Dataset v-else :ds-data="roles">
                 <div class="row">
                     <div class="col-md-12">
@@ -155,7 +157,7 @@ function deleteAction() {
                                         >
                                             {{ th.name }}
                                         </th>
-                                        <th>Actions</th>
+                                        <th>{{ $t("Actions") }}</th>
                                     </tr>
                                 </thead>
                                 <DatasetItem tag="tbody" class="fs-sm">
@@ -227,7 +229,7 @@ function deleteAction() {
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     <InputLabel for="name-input">
-                                        <span>Name</span>
+                                        <span>{{ $t("Name") }}</span>
                                         <span class="text-danger">*</span>
                                     </InputLabel>
                                     <Input
@@ -269,7 +271,7 @@ function deleteAction() {
                                 </div>
 
                                 <div class="col-auto ms-auto">
-                                    <Button>Submit</Button>
+                                    <Button>{{ $t("Submit") }}</Button>
                                 </div>
                             </div>
                         </form>
