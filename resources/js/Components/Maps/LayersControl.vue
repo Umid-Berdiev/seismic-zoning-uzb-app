@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useMapStore } from "@/stores/map";
+import { computed } from "vue";
 import BaseBlock from "../BaseBlock.vue";
 import Input from "../Input.vue";
 
@@ -9,21 +10,6 @@ interface LayerTypeData {
 const mapStore = useMapStore();
 // Component properties
 const props = defineProps({
-    nodes: {
-        type: Array,
-        default: () => [],
-        description: "The nodes of the navigation",
-    },
-    subMenu: {
-        type: Boolean,
-        default: false,
-        description: "If true, a submenu will be rendered",
-    },
-    dark: {
-        type: Boolean,
-        default: false,
-        description: "Dark mode for menu",
-    },
     horizontal: {
         type: Boolean,
         default: false,
@@ -33,16 +19,6 @@ const props = defineProps({
         type: Boolean,
         default: false,
         description: "Hover mode for horizontal menu",
-    },
-    horizontalCenter: {
-        type: Boolean,
-        default: false,
-        description: "Center mode for horizontal menu",
-    },
-    horizontalJustify: {
-        type: Boolean,
-        default: false,
-        description: "Justify mode for horizontal menu",
     },
     disableClick: {
         type: Boolean,
@@ -61,6 +37,20 @@ const props = defineProps({
     zones: {
         type: Array,
         default: () => [],
+    },
+});
+const emits = defineEmits([
+    "updateBallLayers",
+    "updateZoneLayers",
+    "updateBorderLayers",
+]);
+
+const selectedBallLayers = computed({
+    get() {
+        return [];
+    },
+    set(val) {
+        emits("updateBallLayers", val);
     },
 });
 
@@ -93,10 +83,7 @@ function linkClicked(e: Event, submenu: string) {
     }
 }
 
-function onClickAction(type: LayerTypeData) {
-    // console.log({ area });
-
-    // Object.assign(selectedArea, area);
+function onLayerSelect(type: LayerTypeData) {
     mapStore.$patch({ selectedLayerType: type });
 }
 </script>
@@ -138,9 +125,9 @@ function onClickAction(type: LayerTypeData) {
                     >
                         <div class="form-check">
                             <input
+                                v-model="selectedBallLayers"
                                 class="form-check-input"
                                 type="checkbox"
-                                value=""
                                 :id="`ball_${ballIndex}`"
                                 :name="`ball_${ballIndex}`"
                             />

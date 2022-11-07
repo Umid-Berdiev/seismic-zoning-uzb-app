@@ -333,38 +333,6 @@ async function initMap() {
     initializeDefaultLayersToMap();
 }
 
-function setLayerContent(obj) {
-    if (typeof obj === "object") {
-        return h(
-            "ol",
-            { class: "list-group list-group-numbered" },
-            Array.from(obj).map((prop) => {
-                return h(
-                    "li",
-                    { class: "list-group-item d-flex align-items-start" },
-                    prop
-                );
-            })
-        );
-        // return (
-        //     <ol class="list-group list-group-numbered">
-        //         {for (const key in obj) {
-        //             if (Object.hasOwnProperty.call(obj, key)) {
-        //                 return <li class="list-group-item d-flex align-items-start">
-        //                     <span class="">
-        //                         { key }
-        //                     </span>
-        //                     <span class="ms-auto">
-        //                         { obj[key] }
-        //                     </span>
-        //                 </li>;
-        //             }
-        //         }}
-        //     </ul>
-        // )
-    }
-}
-
 async function fetchLayerDataBySelectedArea() {
     const res = await fetch(
         "/admin/map/layers-data?" +
@@ -428,6 +396,21 @@ function initializeDefaultLayersToMap() {
         },
     }).addTo(map.value);
 }
+
+function updateBallLayers(arr) {
+    L.geoJSON(arr, {
+        style: function (geoJsonFeature) {
+            return {
+                stroke: true,
+                fill: true,
+                color: "#beb297",
+                fillColor: "#beb297",
+                fillOpacity: 0,
+                weight: 1,
+            };
+        },
+    });
+}
 </script>
 
 <template>
@@ -436,7 +419,12 @@ function initializeDefaultLayersToMap() {
         <div id="map" style="height: 80vh"></div>
         <div id="left_control_block">
             <BorderLayersControl />
-            <LayersControl :balls="balls" :borders="borders" :zones="zones" />
+            <LayersControl
+                :balls="balls"
+                :borders="borders"
+                :zones="zones"
+                @updateBallLayers="updateBallLayers"
+            />
         </div>
         <!-- <div
             id="right_control_block"
