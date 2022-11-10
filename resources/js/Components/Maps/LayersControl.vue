@@ -27,16 +27,16 @@ const props = defineProps({
             "Disables submenu click on 2+ level when we are in horizontal and hover mode",
     },
     borders: {
-        type: Array,
-        default: () => [],
+        type: Object,
+        default: () => ({}),
     },
     balls: {
         type: Object,
         default: () => ({}),
     },
     zones: {
-        type: Array,
-        default: () => [],
+        type: Object,
+        default: () => ({}),
     },
 });
 const emits = defineEmits([
@@ -119,7 +119,9 @@ function onLayerSelect(type: LayerTypeData) {
                 <!-- END Submenu Link -->
                 <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="(ball, ballIndex) in balls"
+                        v-for="(ball, ballIndex) in Object.getOwnPropertyNames(
+                            balls
+                        )"
                         :key="`region-${ballIndex}`"
                         class="nav-main-item"
                     >
@@ -134,7 +136,7 @@ function onLayerSelect(type: LayerTypeData) {
                             <label
                                 class="form-check-label small"
                                 :for="`ball_${ballIndex}`"
-                                >{{ ball.level }}</label
+                                >{{ ball }}</label
                             >
                         </div>
                     </li>

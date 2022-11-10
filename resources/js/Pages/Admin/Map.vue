@@ -38,7 +38,11 @@ const tileProviders = reactive({
         "http://www.google.com/maps/vt?lyrs=s,h@189&gl=uz&x={x}&y={y}&z={z}"
     ),
 });
-const selectedLayers = ref(["regions"]);
+const selectedLayers = reactive({
+    balls: {},
+    borders: {},
+    zones: {},
+});
 const geojsonRegions = ref(null);
 const regionsGeojson = reactive({
     type: "FeatureCollection",
@@ -334,14 +338,11 @@ async function initMap() {
 }
 
 async function fetchLayerDataBySelectedArea() {
-    const res = await fetch(
-        "/admin/map/layers-data?" +
-            new URLSearchParams({
-                soatos: selectedSoatos.value,
-            })
-    );
+    const res = await axios.get("/admin/map/layers-data", {
+        params: { soatos: selectedSoatos.value },
+    });
 
-    const result = await res.json();
+    Object.assign(selectedLayers, await res.data);
 }
 
 function initializeDefaultLayersToMap() {
@@ -420,9 +421,9 @@ function updateBallLayers(arr) {
         <div id="left_control_block">
             <BorderLayersControl />
             <LayersControl
-                :balls="balls"
-                :borders="borders"
-                :zones="zones"
+                :balls="selectedLayers.balls"
+                :borders="selectedLayers.borders"
+                :zones="selectedLayers.zones"
                 @updateBallLayers="updateBallLayers"
             />
         </div>
