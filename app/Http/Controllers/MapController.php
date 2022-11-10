@@ -14,22 +14,23 @@ class MapController extends Controller
 {
     public function index()
     {
-        $balls = Ball::all();
-        $borders = Border::latest('id')->get();
-        $zones = Zone::all();
+        // $balls = Ball::all();
+        // $borders = Border::all();
+        // $zones = Zone::all();
 
-        $gropedBalls = $balls->groupBy('level');
+        // $gropedBalls = $balls->groupBy('level');
 
         return Inertia::render('Admin/Map', [
-            'balls' => $gropedBalls,
-            'borders' => $borders,
-            'zones' => $zones
+            // 'balls' => $gropedBalls,
+            // 'borders' => $borders,
+            // 'zones' => $zones
         ]);
     }
 
     public function fetchLayersBySelectedArea(Request $request)
     {
-        $soatos = $request->soatos || [
+        $arr = $request->soatos ? array_map(fn ($item) => (int)$item, $request->soatos) : [];
+        $soatos = count($arr) ? $arr : [
             1735,
             1733,
             1712,
@@ -44,52 +45,45 @@ class MapController extends Controller
             1727,
             1710,
         ];
-        $arr = explode(',', $request->soatos);
-        // dd($arr);
+        // dd($soatos);
+
         $balls = Ball::all();
         $zones = Zone::all();
         $borders = Border::all();
-        $filteredBalls = [];
-        $filteredZones = [];
-        $filteredBorders = [];
+        $filtered_balls = [];
+        $filtered_zones = [];
+        $filtered_borders = [];
 
-        foreach ($arr as $key => $value) {
-            $balls_data = $balls->where(function ($query) use ($value) {
-                return str_starts_with($query->soato, $value);
+        foreach ($soatos as $key => $soato) {
+            $temp_balls = $balls->where(function ($query) use ($soato) {
+                return str_starts_with($query->soato, $soato);
             });
 
-            $zones_data = $zones->where(function ($query) use ($value) {
-                return str_starts_with($query->soato, $value);
-            });
-
-            $borders_data = $borders->where(function ($query) use ($value) {
-                return str_starts_with($query->soato, $value);
-            });
-
-            if ($balls_data->count()) {
-                $filteredBalls[] = $balls_data;
+            if (count($temp_balls)) {
+                $filtered_balls[$soato] = $temp_balls;
             }
 
-            if ($zones_data->count()) {
-                $filteredZones[] = $zones_data;
+            $temp_zones = $zones->where(function ($query) use ($soato) {
+                return str_starts_with($query->soato, $soato);
+            });
+
+            if (count($temp_zones)) {
+                $filtered_zones[$soato] = $temp_zones;
             }
 
-            if ($borders_data->count()) {
-                $filteredBorders[] = $borders_data;
+            $temp_borders = $borders->where(function ($query) use ($soato) {
+                return str_starts_with($query->soato, $soato);
+            });
+
+            if (count($temp_borders)) {
+                $filtered_borders[$soato] = $temp_borders;
             }
         }
 
-        // $filteredBalls = array_unique(array_column($filteredBalls, 'soato'));
-        // dd($filteredBalls);
-        // $borders = Border::whereIn('soato', $arr)->get();
-        // $zones = Zone::whereIn('soato', $arr)->get();
-
-        // $gropedBalls = $balls->groupBy('level');
-
         return response()->json([
-            'balls' => $filteredBalls,
-            'zones' => $filteredZones,
-            'borders' => $filteredZones
+            'balls' => $filtered_balls,
+            'zones' => $filtered_zones,
+            'borders' => $filtered_borders
         ]);
     }
 }
