@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMapStore } from "@/stores/map";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import BaseBlock from "../BaseBlock.vue";
 import Input from "../Input.vue";
 
@@ -31,8 +31,8 @@ const props = defineProps({
         default: () => ({}),
     },
     balls: {
-        type: Object,
-        default: () => ({}),
+        type: Array,
+        default: () => [],
     },
     zones: {
         type: Object,
@@ -45,14 +45,18 @@ const emits = defineEmits([
     "updateBorderLayers",
 ]);
 
-const selectedBallLayers = computed({
-    get() {
-        return [];
-    },
-    set(val) {
-        emits("updateBallLayers", val);
-    },
+const computedBalls = computed(() => {
+    //
 });
+
+const selectedBallLayers = ref([]);
+
+watch(
+    () => selectedBallLayers.value,
+    (newVal) => {
+        emits("updateBallLayers", newVal);
+    }
+);
 
 // Main menu toggling and mobile functionality
 function linkClicked(e: Event, submenu: string) {
@@ -119,9 +123,7 @@ function onLayerSelect(type: LayerTypeData) {
                 <!-- END Submenu Link -->
                 <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="(ball, ballIndex) in Object.getOwnPropertyNames(
-                            balls
-                        )"
+                        v-for="(ball, ballIndex) in balls[0]"
                         :key="`region-${ballIndex}`"
                         class="nav-main-item"
                     >
@@ -130,13 +132,14 @@ function onLayerSelect(type: LayerTypeData) {
                                 v-model="selectedBallLayers"
                                 class="form-check-input"
                                 type="checkbox"
+                                :value="ballIndex"
                                 :id="`ball_${ballIndex}`"
                                 :name="`ball_${ballIndex}`"
                             />
                             <label
                                 class="form-check-label small"
                                 :for="`ball_${ballIndex}`"
-                                >{{ ball }}</label
+                                >{{ ballIndex }}</label
                             >
                         </div>
                     </li>

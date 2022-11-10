@@ -57,10 +57,10 @@ class MapController extends Controller
         foreach ($soatos as $key => $soato) {
             $temp_balls = $balls->where(function ($query) use ($soato) {
                 return str_starts_with($query->soato, $soato);
-            });
+            })->groupBy('level');
 
             if (count($temp_balls)) {
-                $filtered_balls[$soato] = $temp_balls;
+                $filtered_balls[] = $temp_balls;
             }
 
             $temp_zones = $zones->where(function ($query) use ($soato) {
@@ -68,7 +68,7 @@ class MapController extends Controller
             });
 
             if (count($temp_zones)) {
-                $filtered_zones[$soato] = $temp_zones;
+                $filtered_zones[] = $temp_zones;
             }
 
             $temp_borders = $borders->where(function ($query) use ($soato) {
@@ -76,7 +76,7 @@ class MapController extends Controller
             });
 
             if (count($temp_borders)) {
-                $filtered_borders[$soato] = $temp_borders;
+                $filtered_borders[] = $temp_borders;
             }
         }
 

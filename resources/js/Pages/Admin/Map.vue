@@ -39,9 +39,9 @@ const tileProviders = reactive({
     ),
 });
 const selectedLayers = reactive({
-    balls: {},
-    borders: {},
-    zones: {},
+    balls: [],
+    borders: [],
+    zones: [],
 });
 const geojsonRegions = ref(null);
 const regionsGeojson = reactive({
@@ -73,42 +73,43 @@ const citiesGeojson = reactive({
 });
 
 // layers
-const layerRegions = computed(() =>
-    L.geoJSON(geojsonRegions.value, {
-        style: function (geoJsonFeature) {
-            return {
-                stroke: true,
-                fill: true,
-                color: "#beb297",
-                fillColor: "#beb297",
-                fillOpacity: 0,
-                weight: 1,
-            };
-        },
-        onEachFeature: function (feature, layer) {
-            layer
-                .on("click", async function () {
-                    mapLoader.value = true;
-                    const bounds = await this.getBounds();
-                    const activeBounds = L.latLngBounds(bounds);
-                    await map.value.flyToBounds(activeBounds);
-                    mapLoader.value = false;
-                })
-                .on("mouseover", function (e) {
-                    this.setStyle({
-                        color: "#0eb297",
-                        weight: 2,
-                    });
-                })
-                .on("mouseout", function (e) {
-                    this.setStyle({
-                        color: "#beb297",
-                        weight: 1,
-                    });
-                });
-        },
-    })
-);
+// const layerRegions = computed(() =>
+//     L.geoJSON(geojsonRegions.value, {
+//         style: function (geoJsonFeature) {
+//             return {
+//                 stroke: true,
+//                 fill: true,
+//                 color: "#beb297",
+//                 fillColor: "#beb297",
+//                 fillOpacity: 0,
+//                 weight: 1,
+//             };
+//         },
+//         onEachFeature: function (feature, layer) {
+//             layer
+//                 .on("click", async function () {
+//                     mapLoader.value = true;
+//                     const bounds = await this.getBounds();
+//                     const activeBounds = L.latLngBounds(bounds);
+//                     await map.value.flyToBounds(activeBounds);
+//                     mapLoader.value = false;
+//                 })
+//                 .on("mouseover", function (e) {
+//                     this.setStyle({
+//                         color: "#0eb297",
+//                         weight: 2,
+//                     });
+//                 })
+//                 .on("mouseout", function (e) {
+//                     this.setStyle({
+//                         color: "#beb297",
+//                         weight: 1,
+//                     });
+//                 });
+//         },
+//     })
+// );
+
 const selectedSoatos = ref([]);
 
 onMounted(async () => {
@@ -197,7 +198,7 @@ watch(
                             return {
                                 color: "#0eb297",
                                 weight: 1,
-                                // fillOpacity: 0.0,
+                                fillOpacity: 0.0,
                             };
                         },
                     }).addTo(map.value);
@@ -264,7 +265,7 @@ watch(
                             return {
                                 color: "#0eb297",
                                 weight: 1,
-                                // fillOpacity: 0.0,
+                                fillOpacity: 0.0,
                             };
                         },
                     }).addTo(map.value);
@@ -392,25 +393,46 @@ function initializeDefaultLayersToMap() {
             return {
                 color: "#0eb297",
                 weight: 1,
-                // fillOpacity: 0.0,
+                fillOpacity: 0,
             };
         },
     }).addTo(map.value);
 }
 
 function updateBallLayers(arr) {
-    L.geoJSON(arr, {
+    // console.log({ arr });
+    const filteredArr = [];
+    map.value?.eachLayer((layer) => {
+        if (layer.options?.pane === "ballPane") layer.removeFrom(map.value);
+    });
+    map.value.createPane("ballPane");
+    map.value.getPane("ballPane").style.zIndex = 400;
+
+    arr.forEach((element) => {
+        selectedLayers.balls[0][element] &&
+            filteredArr.push(
+                ...selectedLayers.balls[0][element].map((ball) => ({
+                    ...ball.geom,
+                    level: ball.level,
+                }))
+            );
+    });
+
+    L.geoJSON(filteredArr, {
+        pane: "ballPane",
         style: function (geoJsonFeature) {
+            const randomColor =
+                "#" + Math.floor(Math.random() * 16777215).toString(16);
             return {
                 stroke: true,
                 fill: true,
-                color: "#beb297",
-                fillColor: "#beb297",
-                fillOpacity: 0,
+                color: randomColor,
+                fillColor: randomColor,
+                fillOpacity: 1,
                 weight: 1,
             };
         },
-    });
+    }).addTo(map.value);
 }
 </script>
 
