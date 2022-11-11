@@ -65,7 +65,7 @@ class MapController extends Controller
 
             $temp_zones = $zones->where(function ($query) use ($soato) {
                 return str_starts_with($query->soato, $soato);
-            });
+            })->groupBy('level');
 
             if (count($temp_zones)) {
                 $filtered_zones[] = $temp_zones;

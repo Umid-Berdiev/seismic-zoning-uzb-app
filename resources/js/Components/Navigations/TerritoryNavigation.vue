@@ -105,6 +105,7 @@ function onClickAction(area: AreaData) {
     // console.log({ area });
 
     // Object.assign(selectedArea, area);
+    mapStore.$reset();
     mapStore.$patch({ selectedArea: area });
 }
 </script>

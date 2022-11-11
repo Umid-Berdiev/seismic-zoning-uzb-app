@@ -50,11 +50,29 @@ const computedBalls = computed(() => {
 });
 
 const selectedBallLayers = ref([]);
+const selectedZoneLayers = ref([]);
+
+watch(
+    () => mapStore.selectedArea,
+    (newVal) => {
+        if (newVal) {
+            selectedBallLayers.value = [];
+            selectedZoneLayers.value = [];
+        }
+    }
+);
 
 watch(
     () => selectedBallLayers.value,
     (newVal) => {
         emits("updateBallLayers", newVal);
+    }
+);
+
+watch(
+    () => selectedZoneLayers.value,
+    (newVal) => {
+        emits("updateZoneLayers", newVal);
     }
 );
 
@@ -87,9 +105,9 @@ function linkClicked(e: Event, submenu: string) {
     }
 }
 
-function onLayerSelect(type: LayerTypeData) {
-    mapStore.$patch({ selectedLayerType: type });
-}
+// function onLayerSelect(type: LayerTypeData) {
+//     mapStore.$patch({ selectedLayerType: type });
+// }
 </script>
 
 <template>
@@ -123,8 +141,8 @@ function onLayerSelect(type: LayerTypeData) {
                 <!-- END Submenu Link -->
                 <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="(ball, ballIndex) in balls[0]"
-                        :key="`region-${ballIndex}`"
+                        v-for="(ball, ballKey) in balls[0]"
+                        :key="`region-${ballKey}`"
                         class="nav-main-item"
                     >
                         <div class="form-check">
@@ -132,14 +150,13 @@ function onLayerSelect(type: LayerTypeData) {
                                 v-model="selectedBallLayers"
                                 class="form-check-input"
                                 type="checkbox"
-                                :value="ballIndex"
-                                :id="`ball_${ballIndex}`"
-                                :name="`ball_${ballIndex}`"
+                                :value="ballKey"
+                                :id="`ball_${ballKey}`"
                             />
                             <label
                                 class="form-check-label small"
-                                :for="`ball_${ballIndex}`"
-                                >{{ ballIndex }}</label
+                                :for="`ball_${ballKey}`"
+                                >{{ ballKey }}</label
                             >
                         </div>
                     </li>
@@ -159,22 +176,22 @@ function onLayerSelect(type: LayerTypeData) {
                 <!-- END Submenu Link -->
                 <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="(zone, zoneIndex) in zones"
-                        :key="`region-${zoneIndex}`"
+                        v-for="(zone, zoneKey) in zones[0]"
+                        :key="`region-${zoneKey}`"
                         class="nav-main-item"
                     >
                         <div class="form-check">
                             <input
+                                v-model="selectedZoneLayers"
                                 class="form-check-input"
                                 type="checkbox"
-                                value=""
-                                :id="`zone_${zoneIndex}`"
-                                :name="`zone_${zoneIndex}`"
+                                :value="zoneKey"
+                                :id="`zone_${zoneKey}`"
                             />
                             <label
                                 class="form-check-label small"
-                                :for="`zone_${zoneIndex}`"
-                                >{{ zone.level }}</label
+                                :for="`zone_${zoneKey}`"
+                                >{{ zoneKey }}</label
                             >
                         </div>
                     </li>

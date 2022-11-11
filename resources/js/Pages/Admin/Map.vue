@@ -72,44 +72,6 @@ const citiesGeojson = reactive({
     features: [],
 });
 
-// layers
-// const layerRegions = computed(() =>
-//     L.geoJSON(geojsonRegions.value, {
-//         style: function (geoJsonFeature) {
-//             return {
-//                 stroke: true,
-//                 fill: true,
-//                 color: "#beb297",
-//                 fillColor: "#beb297",
-//                 fillOpacity: 0,
-//                 weight: 1,
-//             };
-//         },
-//         onEachFeature: function (feature, layer) {
-//             layer
-//                 .on("click", async function () {
-//                     mapLoader.value = true;
-//                     const bounds = await this.getBounds();
-//                     const activeBounds = L.latLngBounds(bounds);
-//                     await map.value.flyToBounds(activeBounds);
-//                     mapLoader.value = false;
-//                 })
-//                 .on("mouseover", function (e) {
-//                     this.setStyle({
-//                         color: "#0eb297",
-//                         weight: 2,
-//                     });
-//                 })
-//                 .on("mouseout", function (e) {
-//                     this.setStyle({
-//                         color: "#beb297",
-//                         weight: 1,
-//                     });
-//                 });
-//         },
-//     })
-// );
-
 const selectedSoatos = ref([]);
 
 onMounted(async () => {
@@ -434,6 +396,42 @@ function updateBallLayers(arr) {
         },
     }).addTo(map.value);
 }
+
+function updateZoneLayers(arr) {
+    // console.log({ arr });
+    const filteredArr = [];
+    map.value?.eachLayer((layer) => {
+        if (layer.options?.pane === "zonePane") layer.removeFrom(map.value);
+    });
+    map.value.createPane("zonePane");
+    map.value.getPane("zonePane").style.zIndex = 400;
+
+    arr.forEach((element) => {
+        selectedLayers.zones[0][element] &&
+            filteredArr.push(
+                ...selectedLayers.zones[0][element].map((zone) => ({
+                    ...zone.geom,
+                    level: zone.level,
+                }))
+            );
+    });
+
+    L.geoJSON(filteredArr, {
+        pane: "zonePane",
+        style: function (geoJsonFeature) {
+            const randomColor =
+                "#" + Math.floor(Math.random() * 16777215).toString(16);
+            return {
+                stroke: true,
+                fill: true,
+                color: randomColor,
+                fillColor: randomColor,
+                fillOpacity: 1,
+                weight: 1,
+            };
+        },
+    }).addTo(map.value);
+}
 </script>
 
 <template>
@@ -446,15 +444,11 @@ function updateBallLayers(arr) {
                 :balls="selectedLayers.balls"
                 :borders="selectedLayers.borders"
                 :zones="selectedLayers.zones"
-                @updateBallLayers="updateBallLayers"
+                @update-ball-layers="updateBallLayers"
+                @update-zone-layers="updateZoneLayers"
             />
         </div>
-        <!-- <div
-            id="right_control_block"
-            v-if="selectedRasterData.length && selectedRasterLayer"
-        >
-            //
-        </div> -->
+
         <p>Center is at {{ center }} and the zoom is: {{ zoom }}</p>
     </div>
 </template>
