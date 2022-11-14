@@ -431,6 +431,30 @@ function updateZoneLayers(geomArr) {
                 @update-zone-layers="updateZoneLayers"
             />
         </div>
+        <div id="right_bottom_block">
+            <BaseBlock
+                :title="$t('Conventional_designation')"
+                class="mb-3 pb-3"
+                btn-option-content
+            >
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>{{ $t("Balls") }}</td>
+                            <td>
+                                <i class="fa-solid fa-circle text-danger" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ $t("Zones") }}</td>
+                            <td>
+                                <i class="fa-solid fa-circle text-info" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </BaseBlock>
+        </div>
 
         <!-- <p>Center is at {{ center }} and the zoom is: {{ zoom }}</p> -->
     </div>
@@ -462,5 +486,14 @@ export default {
     right: 1rem;
     z-index: 800;
     width: 370px;
+}
+#right_bottom_block {
+    background-color: white;
+    position: absolute;
+    bottom: 3rem;
+    right: 1rem;
+    z-index: 800;
+    width: 370px;
+    padding: 1rem;
 }
 </style>
