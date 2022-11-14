@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use MStaack\LaravelPostgis\Eloquent\PostgisTrait;
 
 class Zone extends Model
@@ -30,11 +31,11 @@ class Zone extends Model
     ];
 
     /**
-     * The areas that belong to the Ball
+     * The districts that belong to the Zone
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function districts()
+    public function districts(): BelongsToMany
     {
         return $this
             ->belongsToMany(District::class, 'area_layer', 'layer_id', 'area_soato', 'id', 'soato')

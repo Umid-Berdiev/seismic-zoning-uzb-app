@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { useMapStore } from "@/stores/map";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import BaseBlock from "../BaseBlock.vue";
 import Input from "../Input.vue";
 
 interface LayerTypeData {
     id: string;
 }
+
 const mapStore = useMapStore();
+
 // Component properties
 const props = defineProps({
     horizontal: {
@@ -35,31 +37,38 @@ const props = defineProps({
         default: () => [],
     },
     zones: {
-        type: Object,
-        default: () => ({}),
+        type: Array,
+        default: () => [],
     },
 });
+
 const emits = defineEmits([
     "updateBallLayers",
     "updateZoneLayers",
     "updateBorderLayers",
 ]);
 
-const computedBalls = computed(() => {
-    //
-});
-
 const selectedBallLayers = ref([]);
 const selectedZoneLayers = ref([]);
 
+// onMounted(() => {
+//     selectedBallLayers.value = props.balls[0]
+// })
+
 watch(
-    () => mapStore.selectedArea,
+    () => props.balls,
     (newVal) => {
-        if (newVal) {
-            selectedBallLayers.value = [];
-            selectedZoneLayers.value = [];
-        }
-    }
+        selectedBallLayers.value = newVal.map((item) => item.geom);
+    },
+    { deep: true, immediate: true }
+);
+
+watch(
+    () => props.zones,
+    (newVal) => {
+        selectedZoneLayers.value = newVal.map((item) => item.geom);
+    },
+    { deep: true, immediate: true }
 );
 
 watch(
@@ -67,6 +76,7 @@ watch(
     (newVal) => {
         emits("updateBallLayers", newVal);
     }
+    // { immediate: true }
 );
 
 watch(
@@ -74,6 +84,7 @@ watch(
     (newVal) => {
         emits("updateZoneLayers", newVal);
     }
+    // { immediate: true }
 );
 
 // Main menu toggling and mobile functionality
@@ -141,8 +152,8 @@ function linkClicked(e: Event, submenu: string) {
                 <!-- END Submenu Link -->
                 <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="(ball, ballKey) in balls[0]"
-                        :key="`region-${ballKey}`"
+                        v-for="(ball, ballIndex) in balls"
+                        :key="`region-${ballIndex}`"
                         class="nav-main-item"
                     >
                         <div class="form-check">
@@ -150,13 +161,13 @@ function linkClicked(e: Event, submenu: string) {
                                 v-model="selectedBallLayers"
                                 class="form-check-input"
                                 type="checkbox"
-                                :value="ballKey"
-                                :id="`ball_${ballKey}`"
+                                :value="ball.geom"
+                                :id="`ball_${ballIndex}`"
                             />
                             <label
                                 class="form-check-label small"
-                                :for="`ball_${ballKey}`"
-                                >{{ ballKey }}</label
+                                :for="`ball_${ballIndex}`"
+                                >{{ ball.level }}</label
                             >
                         </div>
                     </li>
@@ -176,8 +187,8 @@ function linkClicked(e: Event, submenu: string) {
                 <!-- END Submenu Link -->
                 <ul class="nav-main-submenu row row-cols-3">
                     <li
-                        v-for="(zone, zoneKey) in zones[0]"
-                        :key="`region-${zoneKey}`"
+                        v-for="(zone, zoneIndex) in zones"
+                        :key="`region-${zoneIndex}`"
                         class="nav-main-item"
                     >
                         <div class="form-check">
@@ -185,13 +196,13 @@ function linkClicked(e: Event, submenu: string) {
                                 v-model="selectedZoneLayers"
                                 class="form-check-input"
                                 type="checkbox"
-                                :value="zoneKey"
-                                :id="`zone_${zoneKey}`"
+                                :value="zone.geom"
+                                :id="`zone_${zoneIndex}`"
                             />
                             <label
                                 class="form-check-label small"
-                                :for="`zone_${zoneKey}`"
-                                >{{ zoneKey }}</label
+                                :for="`zone_${zoneIndex}`"
+                                >{{ zone.level }}</label
                             >
                         </div>
                     </li>

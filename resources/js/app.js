@@ -67,7 +67,7 @@ InertiaProgress.init({
     // color: "#4B5563",
 
     // Whether to include the default NProgress styles.
-    includeCSS: true,
+    includeCSS: false,
 
     // Whether the NProgress spinner will be shown.
     showSpinner: false,

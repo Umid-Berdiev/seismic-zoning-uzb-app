@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Ball;
 use App\Models\Border;
+use App\Models\District;
 use App\Models\Zone;
 use GeoJson\Geometry\GeometryCollection;
 use GeoJson\Geometry\LineString;
@@ -47,43 +48,57 @@ class MapController extends Controller
         ];
         // dd($soatos);
 
-        $balls = Ball::all();
-        $zones = Zone::all();
+        $balls = Ball::whereHas('districts', function ($query) use ($soatos) {
+            $query->whereIn('soato', $soatos)
+                ->orWhereIn('region_soato', $soatos);
+        })
+            ->get();
+
+        $zones = Zone::whereHas('districts', function ($query) use ($soatos) {
+            $query->whereIn('soato', $soatos)
+                ->orWhereIn('region_soato', $soatos);
+        })
+            ->get();
+
         $borders = Border::all();
-        $filtered_balls = [];
-        $filtered_zones = [];
-        $filtered_borders = [];
 
-        foreach ($soatos as $key => $soato) {
-            $temp_balls = $balls->where(function ($query) use ($soato) {
-                return str_starts_with($query->soato, $soato);
-            })->groupBy('level');
+        // dd($balls);
+        // $balls = Ball::all();
+        // $zones = Zone::all();
+        // $filtered_balls = [];
+        // $filtered_zones = [];
+        // $filtered_borders = [];
 
-            if (count($temp_balls)) {
-                $filtered_balls[] = $temp_balls;
-            }
+        // foreach ($soatos as $key => $soato) {
+        //     $temp_balls = $balls->where(function ($query) use ($soato) {
+        //         return str_starts_with($query->soato, $soato);
+        //     })->groupBy('level');
 
-            $temp_zones = $zones->where(function ($query) use ($soato) {
-                return str_starts_with($query->soato, $soato);
-            })->groupBy('level');
+        //     if (count($temp_balls)) {
+        //         $filtered_balls[] = $temp_balls;
+        //     }
 
-            if (count($temp_zones)) {
-                $filtered_zones[] = $temp_zones;
-            }
+        //     $temp_zones = $zones->where(function ($query) use ($soato) {
+        //         return str_starts_with($query->soato, $soato);
+        //     })->groupBy('level');
 
-            $temp_borders = $borders->where(function ($query) use ($soato) {
-                return str_starts_with($query->soato, $soato);
-            });
+        //     if (count($temp_zones)) {
+        //         $filtered_zones[] = $temp_zones;
+        //     }
 
-            if (count($temp_borders)) {
-                $filtered_borders[] = $temp_borders;
-            }
-        }
+        //     $temp_borders = $borders->where(function ($query) use ($soato) {
+        //         return str_starts_with($query->soato, $soato);
+        //     });
+
+        //     if (count($temp_borders)) {
+        //         $filtered_borders[] = $temp_borders;
+        //     }
+        // }
 
         return response()->json([
-            'balls' => $filtered_balls,
-            'zones' => $filtered_zones,
-            'borders' => $filtered_borders
+            'balls' => $balls,
+            'zones' => $zones,
+            'borders' => $borders
         ]);
     }
 }
