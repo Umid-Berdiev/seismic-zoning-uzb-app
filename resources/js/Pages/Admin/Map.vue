@@ -10,6 +10,7 @@ import Loader from "@/Components/Loader.vue";
 import BorderLayersControl from "@/Components/Maps/BorderLayersControl.vue";
 import LayersControl from "@/Components/Maps/LayersControl.vue";
 import { InertiaProgress } from "@inertiajs/progress";
+import BaseBlock from "@/Components/BaseBlock.vue";
 
 const props = defineProps({
     canLogin: Boolean,
@@ -376,7 +377,11 @@ function updateBallLayers(geomArr) {
             pane: "ballPane",
             style: function (geoJsonFeature) {
                 const randomColor =
-                    "#" + Math.floor(Math.random() * 16777215).toString(16);
+                    geoJsonFeature.geometry.level == 8
+                        ? "red"
+                        : geoJsonFeature.geometry.level == 9
+                        ? "orange"
+                        : "gray";
                 return {
                     stroke: true,
                     fill: true,
@@ -402,7 +407,11 @@ function updateZoneLayers(geomArr) {
             pane: "zonePane",
             style: function (geoJsonFeature) {
                 const randomColor =
-                    "#" + Math.floor(Math.random() * 16777215).toString(16);
+                    geoJsonFeature.geometry.level == 35
+                        ? "#65a30d"
+                        : geoJsonFeature.geometry.level == 40
+                        ? "#0891b2"
+                        : "lightgray";
                 return {
                     stroke: true,
                     fill: true,
@@ -437,18 +446,42 @@ function updateZoneLayers(geomArr) {
                 class="mb-3 pb-3"
                 btn-option-content
             >
-                <table class="table table-bordered">
+                <table class="table table-sm table-bordered border-secondary">
+                    <thead class="bg-light">
+                        <tr>
+                            <th colspan="2">{{ $t("Balls") }}</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr>
-                            <td>{{ $t("Balls") }}</td>
+                            <td>8</td>
                             <td>
-                                <i class="fa-solid fa-circle text-danger" />
+                                <div class="rectangle-layer bg-danger"></div>
                             </td>
                         </tr>
                         <tr>
-                            <td>{{ $t("Zones") }}</td>
+                            <td>9</td>
                             <td>
-                                <i class="fa-solid fa-circle text-info" />
+                                <div class="rectangle-layer bg-warning"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <thead class="bg-light">
+                        <tr>
+                            <th colspan="2">{{ $t("Zones") }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>35</td>
+                            <td>
+                                <div class="rectangle-layer bg-success"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>40</td>
+                            <td>
+                                <div class="rectangle-layer bg-info"></div>
                             </td>
                         </tr>
                     </tbody>
@@ -488,12 +521,15 @@ export default {
     width: 370px;
 }
 #right_bottom_block {
-    background-color: white;
     position: absolute;
     bottom: 3rem;
     right: 1rem;
     z-index: 800;
     width: 370px;
-    padding: 1rem;
+}
+.rectangle-layer {
+    width: 2rem;
+    height: 1rem;
+    // background-color: purple;
 }
 </style>
