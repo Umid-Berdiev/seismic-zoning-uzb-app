@@ -10,6 +10,7 @@ import Loader from "@/Components/Loader.vue";
 import BorderLayersControl from "@/Components/Maps/BorderLayersControl.vue";
 import LayersControl from "@/Components/Maps/LayersControl.vue";
 import { InertiaProgress } from "@inertiajs/progress";
+import BaseBlock from "@/Components/BaseBlock.vue";
 
 const props = defineProps({
     canLogin: Boolean,
@@ -73,6 +74,7 @@ const citiesGeojson = reactive({
 });
 
 const selectedSoatos = ref([]);
+const pageHeaderHeight = ref("90vh");
 
 onMounted(async () => {
     // fetch geojson data
@@ -87,6 +89,8 @@ onMounted(async () => {
     // updateZoneLayers(selectedLayers.zones.map((item) => item.geom));
     initializeDefaultLayersToMap();
     mapLoader.value = false;
+    const pageHeader = document.getElementById("page-header");
+    pageHeaderHeight.value = `calc(100vh - ${pageHeader.offsetHeight}px)`;
 });
 
 watch(
@@ -418,9 +422,13 @@ function updateZoneLayers(geomArr) {
 </script>
 
 <template>
-    <div id="map-container" class="position-relative">
+    <div
+        id="map-container"
+        class="position-relative"
+        :style="{ height: pageHeaderHeight }"
+    >
         <Loader v-if="mapLoader" />
-        <div id="map" style="height: 80vh"></div>
+        <div id="map" style="height: inherit"></div>
         <div id="left_control_block">
             <BorderLayersControl />
             <LayersControl
@@ -488,12 +496,10 @@ export default {
     width: 370px;
 }
 #right_bottom_block {
-    background-color: white;
     position: absolute;
-    bottom: 3rem;
     right: 1rem;
+    bottom: 1rem;
     z-index: 800;
     width: 370px;
-    padding: 1rem;
 }
 </style>
