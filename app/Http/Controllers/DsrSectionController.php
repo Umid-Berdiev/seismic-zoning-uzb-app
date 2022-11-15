@@ -28,7 +28,7 @@ class DsrSectionController extends Controller
             }
         }
         $regions = Region::get(['id', 'name_uz', 'soato']);
-        // $regions = Region::whereNotIn('id', $arr)->get(['id', 'name_uz', 'soato']);
+        $notUsedRegions = Region::whereNotIn('id', $arr)->get(['id', 'name_uz', 'soato']);
         // $filteredRegions = array_filter($regions, fn ($region) => !in_array($region['id'], $arr));
         // dd($arr);
         // dd($regions);
@@ -36,6 +36,7 @@ class DsrSectionController extends Controller
         return Inertia::render('Admin/Directory/DsrSection', [
             'list' => $list,
             'regions' => $regions,
+            'notUsedRegions' => $notUsedRegions,
         ]);
     }
 
@@ -59,7 +60,7 @@ class DsrSectionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:40',
-            'soatos' => 'string',
+            'soatos' => 'required|string',
             'details' => 'string|nullable|max:255'
         ]);
 

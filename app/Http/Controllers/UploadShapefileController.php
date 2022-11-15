@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Ball;
 use App\Models\Border;
+use App\Models\District;
+use App\Models\Region;
 use App\Models\Segment;
 use App\Models\ShapeImportLog;
 use App\Models\Zone;
@@ -15,12 +17,6 @@ use Illuminate\Validation\ValidationException;
 use MStaack\LaravelPostgis\Geometries\LineString;
 use MStaack\LaravelPostgis\Geometries\MultiLineString;
 use MStaack\LaravelPostgis\Geometries\Point;
-use MStaack\LaravelPostgis\Geometries\Polygon;
-use MStaack\LaravelPostgis\Geometries\MultiPolygon;
-use Shapefile\Geometry\Polygon as GeometryPolygon;
-use Shapefile\Shapefile;
-use Shapefile\ShapefileAutoloader;
-use Shapefile\ShapefileException;
 use Shapefile\ShapefileReader;
 
 // ShapefileAutoloader::register();
@@ -40,6 +36,7 @@ class UploadShapefileController extends Controller
             $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
             $is_extracted = extractUploadedZip($zipfile);
             $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
+            $not_exists_soatos = [];
 
             if ($is_extracted) {
                 $Shapefile = new ShapefileReader($shape_file);
@@ -50,12 +47,24 @@ class UploadShapefileController extends Controller
                         continue;
                     }
 
-                    $soato = $Geometry->getDataArray()['SOATO'];
+                    $soatoStr = $Geometry->getDataArray()['SOATO'];
+                    $soatosArr = explode(',', $soatoStr);
+                    $district_soatos = District::pluck('soato')->toArray();
+                    $region_soatos = District::pluck('region_soato')->toArray();
+
+                    foreach ($soatosArr as $key => $soato) {
+                        if (!in_array($soato, [...$district_soatos, ...$region_soatos]))
+                            // return redirect(route('statics'))->withErrors($soato, 'soato');
+                            throw ValidationException::withMessages([
+                                'zip' => "$soato soato kodi bazada topilmadi, tekshirib qaytadan urunib ko'ring!",
+                            ]);
+                    }
+
                     $level = $Geometry->getDataArray()['ZONE_VALUE'];
 
                     $zone = Zone::updateOrCreate(
                         [
-                            'soato' => $soato,
+                            'soato' => $soatoStr,
                             'level' => $level
                         ],
                         [
@@ -63,7 +72,7 @@ class UploadShapefileController extends Controller
                         ]
                     );
 
-                    foreach (explode(',', $soato) as $key => $value) {
+                    foreach ($soatosArr as $key => $value) {
                         DB::table('area_layer')->insert([
                             'area_soato' => $value,
                             'layer_id' => $zone->id,
@@ -73,10 +82,9 @@ class UploadShapefileController extends Controller
 
                     ShapeImportLog::create([
                         'type' => 'Zona',
-                        'comment' => "$level daraja va $soato soato kod bn zona sheypfayli yuklandi!"
+                        'comment' => "$level daraja va $soatoStr soato kodlar bn zona sheypfayli yuklandi!"
                     ]);
                 }
-
 
                 File::cleanDirectory($extracted_file_path);
 

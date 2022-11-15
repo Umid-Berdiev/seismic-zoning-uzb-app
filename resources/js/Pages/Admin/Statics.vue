@@ -33,7 +33,7 @@ const props = defineProps({
         }),
     },
 });
-const notyf = useNotyf();
+const notif = useNotyf();
 const columns = reactive([
     {
         name: "Data type",
@@ -92,14 +92,19 @@ onMounted(() => {
 async function onModalSubmit() {
     importForm.post(route(layerTypeSelectState.selectedOption), {
         onSuccess: () => {
-            notyf.success("Data successfully imported!");
+            notif.success("Data successfully imported!");
             const modal = Modal.getInstance("#importStaticDataModal");
             modal?.hide();
         },
-        onError: (errorObj) => {
-            notyf.error(errorObj.zip);
-            // notyf.error("Error while uploading shape file!");
-        },
+        // onError: (errorObj) => {
+        // notif.error(errorObj.zip);
+        // errorObj.soato &&
+        //     notif.error(
+        //         "Bu soato kodi bazada topilmadi, tekshirib qaytadan urunib ko'ring: " +
+        //             errorObj.soato
+        //     );
+        // notif.error("Error while uploading shape file!");
+        // },
     });
 }
 </script>
