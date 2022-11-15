@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted } from "vue";
 import { useForm } from "@inertiajs/inertia-vue3";
 import { useMainStore } from "@/stores/main";
 
@@ -16,6 +16,11 @@ const form = useForm({
 
 // Main store and Router
 const store = useMainStore();
+
+onMounted(() => {
+    const emailInput = document.getElementById("login-email");
+    emailInput.focus();
+});
 
 // On form submission
 async function onSubmit() {

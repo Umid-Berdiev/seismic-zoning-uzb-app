@@ -27,7 +27,8 @@ class DsrSectionController extends Controller
                 $arr[] = $value2;
             }
         }
-        $regions = Region::whereNotIn('id', $arr)->get(['id', 'name_uz', 'soato']);
+        $regions = Region::get(['id', 'name_uz', 'soato']);
+        // $regions = Region::whereNotIn('id', $arr)->get(['id', 'name_uz', 'soato']);
         // $filteredRegions = array_filter($regions, fn ($region) => !in_array($region['id'], $arr));
         // dd($arr);
         // dd($regions);

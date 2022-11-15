@@ -1,14 +1,7 @@
 <script setup lang="ts">
-import { useMapStore } from "@/stores/map";
-import { computed, onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import BaseBlock from "../BaseBlock.vue";
 import Input from "../Input.vue";
-
-interface LayerTypeData {
-    id: string;
-}
-
-const mapStore = useMapStore();
 
 // Component properties
 const props = defineProps({
@@ -58,7 +51,10 @@ const selectedZoneLayers = ref([]);
 watch(
     () => props.balls,
     (newVal) => {
-        selectedBallLayers.value = newVal.map((item) => item.geom);
+        selectedBallLayers.value = newVal.map((item) => ({
+            ...item.geom,
+            level: item.level,
+        }));
     },
     { deep: true, immediate: true }
 );
@@ -66,7 +62,10 @@ watch(
 watch(
     () => props.zones,
     (newVal) => {
-        selectedZoneLayers.value = newVal.map((item) => item.geom);
+        selectedZoneLayers.value = newVal.map((item) => ({
+            ...item.geom,
+            level: item.level,
+        }));
     },
     { deep: true, immediate: true }
 );
@@ -161,7 +160,10 @@ function linkClicked(e: Event, submenu: string) {
                                 v-model="selectedBallLayers"
                                 class="form-check-input"
                                 type="checkbox"
-                                :value="ball.geom"
+                                :value="{
+                                    ...ball.geom,
+                                    level: ball.level,
+                                }"
                                 :id="`ball_${ballIndex}`"
                             />
                             <label
@@ -196,7 +198,10 @@ function linkClicked(e: Event, submenu: string) {
                                 v-model="selectedZoneLayers"
                                 class="form-check-input"
                                 type="checkbox"
-                                :value="zone.geom"
+                                :value="{
+                                    ...zone.geom,
+                                    level: zone.level,
+                                }"
                                 :id="`zone_${zoneIndex}`"
                             />
                             <label
