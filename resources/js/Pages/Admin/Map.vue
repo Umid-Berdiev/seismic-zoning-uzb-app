@@ -74,6 +74,7 @@ const citiesGeojson = reactive({
 });
 
 const selectedSoatos = ref([]);
+const pageHeaderHeight = ref("90vh");
 
 onMounted(async () => {
     // fetch geojson data
@@ -88,6 +89,8 @@ onMounted(async () => {
     // updateZoneLayers(selectedLayers.zones.map((item) => item.geom));
     initializeDefaultLayersToMap();
     mapLoader.value = false;
+    const pageHeader = document.getElementById("page-header");
+    pageHeaderHeight.value = `calc(100vh - ${pageHeader.offsetHeight}px)`;
 });
 
 watch(
@@ -427,9 +430,13 @@ function updateZoneLayers(geomArr) {
 </script>
 
 <template>
-    <div id="map-container" class="position-relative">
+    <div
+        id="map-container"
+        class="position-relative"
+        :style="{ height: pageHeaderHeight }"
+    >
         <Loader v-if="mapLoader" />
-        <div id="map" style="height: 80vh"></div>
+        <div id="map" style="height: inherit"></div>
         <div id="left_control_block">
             <BorderLayersControl />
             <LayersControl
@@ -522,8 +529,8 @@ export default {
 }
 #right_bottom_block {
     position: absolute;
-    bottom: 3rem;
     right: 1rem;
+    bottom: 1rem;
     z-index: 800;
     width: 370px;
 }

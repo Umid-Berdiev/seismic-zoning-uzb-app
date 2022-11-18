@@ -24,6 +24,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    notUsedRegions: {
+        type: Array,
+        default: () => [],
+    },
 });
 const notyf = useNotyf();
 const selectedRegions = ref([]);
@@ -56,9 +60,7 @@ const isEditing = ref(false);
 
 onMounted(() => {
     modal.value?._element.addEventListener("hidden.bs.modal", (event) => {
-        sectionForm.reset();
-        sectionForm.clearErrors();
-        isEditing.value = false;
+        setDefaults();
     });
 });
 
@@ -69,9 +71,6 @@ async function onModalFormSubmit() {
               onSuccess: () => {
                   notyf.success("Section successfully updated!");
                   modal.value?.hide();
-                  sectionForm.reset();
-                  sectionForm.clearErrors();
-                  isEditing.value = false;
               },
               onError: (errorObj) => {
                   notyf.error("Error while updating section!");
@@ -81,9 +80,6 @@ async function onModalFormSubmit() {
               onSuccess: () => {
                   notyf.success("Section successfully updated!");
                   modal.value?.hide();
-                  sectionForm.reset();
-                  sectionForm.clearErrors();
-                  isEditing.value = false;
               },
               onError: (errorObj) => {
                   notyf.error("Error while creating section!");
@@ -93,12 +89,16 @@ async function onModalFormSubmit() {
 
 function onEdit(id) {
     isEditing.value = true;
-    const selectedSection = props.list.find((section) => section.id === id);
-    selectedRegions.value = selectedSection.regions.map((region) => region.id);
-    Object.assign(section, selectedSection);
-    sectionForm.name = selectedSection.name;
-    // sectionForm.soatos = selectedSection.soatos;
-    sectionForm.details = selectedSection.details;
+    if (id) {
+        const selectedSection = props.list.find((section) => section.id === id);
+        selectedRegions.value = selectedSection.regions.map(
+            (region) => region.id
+        );
+        Object.assign(section, selectedSection);
+        sectionForm.name = selectedSection.name;
+        // sectionForm.soatos = selectedSection.soatos;
+        sectionForm.details = selectedSection.details;
+    }
 
     modal.value?.toggle();
 }
@@ -119,6 +119,18 @@ function deleteAction() {
             notyf.error("Error while deleting section!");
         },
     });
+}
+
+function setDefaults() {
+    Object.assign(section, {
+        name: "",
+        soatos: "",
+        details: "",
+    });
+    selectedRegions.value = [];
+    sectionForm.reset();
+    sectionForm.clearErrors();
+    isEditing.value = false;
 }
 </script>
 
@@ -262,7 +274,9 @@ function deleteAction() {
                                         mode="tags"
                                         value-prop="id"
                                         label="name_uz"
-                                        :options="regions"
+                                        :options="
+                                            isEditing ? regions : notUsedRegions
+                                        "
                                         :close-on-select="false"
                                         :searchable="true"
                                         :suspensible="false"

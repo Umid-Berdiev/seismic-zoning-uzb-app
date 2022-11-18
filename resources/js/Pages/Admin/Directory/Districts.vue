@@ -252,7 +252,7 @@ function exportToExcel() {
                                         {{ districtForm.errors?.name_uz }}
                                     </div>
                                 </div>
-                                <div class="col-12 mb-3">
+                                <!-- <div class="col-12 mb-3">
                                     <InputLabel value="Name ru" />
                                     <Input
                                         type="text"
@@ -263,7 +263,7 @@ function exportToExcel() {
                                     >
                                         {{ districtForm.errors?.name_ru }}
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-12 mb-3">
                                     <InputLabel value="Admincenter uz" />
                                     <Input
@@ -278,7 +278,7 @@ function exportToExcel() {
                                         }}
                                     </div>
                                 </div>
-                                <div class="col-12 mb-3">
+                                <!-- <div class="col-12 mb-3">
                                     <InputLabel value="Admincenter ru" />
                                     <Input
                                         type="text"
@@ -291,7 +291,7 @@ function exportToExcel() {
                                             districtForm.errors?.admincenter_ru
                                         }}
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <div class="col-auto ms-auto">
                                     <Button>{{ $t("Submit") }}</Button>
