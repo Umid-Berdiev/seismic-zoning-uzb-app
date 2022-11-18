@@ -8,19 +8,18 @@ use App\Models\Segment;
 use App\Models\ShapeImportLog;
 use App\Models\Zone;
 use Error;
+use GeoJson\Geometry\MultiPolygon as GeometryMultiPolygon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\ValidationException;
 use MStaack\LaravelPostgis\Geometries\LineString;
 use MStaack\LaravelPostgis\Geometries\MultiLineString;
+use MStaack\LaravelPostgis\Geometries\MultiPolygon as GeometriesMultiPolygon;
 use MStaack\LaravelPostgis\Geometries\Point;
-use MStaack\LaravelPostgis\Geometries\Polygon;
-use MStaack\LaravelPostgis\Geometries\MultiPolygon;
-use Shapefile\Geometry\Polygon as GeometryPolygon;
+use Shapefile\Geometry\MultiPoint;
+use Shapefile\Geometry\MultiPolygon;
 use Shapefile\Shapefile;
-use Shapefile\ShapefileAutoloader;
-use Shapefile\ShapefileException;
 use Shapefile\ShapefileReader;
 
 // ShapefileAutoloader::register();
@@ -112,6 +111,14 @@ class UploadShapefileController extends Controller
                         continue;
                     }
 
+                    // dd($Geometry->getGeoJSON());
+                    $shape_json = json_decode($Geometry->getGeoJSON());
+                    $multi_polygon = new GeometriesMultiPolygon($shape_json->coordinates);
+                    dd($multi_polygon);
+                    $shape_json->type == 'Polygon' ? $multi_polygon->initFromWKT($Geometry->getWKT()) : $Geometry->getWKT();
+                    // dd($shape_json);
+                    // dd($Shapefile->getShapeType() . " - " . $Shapefile->getShapeType(Shapefile::FORMAT_STR));
+
                     // dd($Geometry->getDataArray()['BALL_VALUE']);
                     $soato = $Geometry->getDataArray()['SOATO'];
                     $level = $Geometry->getDataArray()['BALL_VALUE'];
@@ -122,7 +129,7 @@ class UploadShapefileController extends Controller
                             'level' => $level
                         ],
                         [
-                            'geom' => $Geometry->getWKT()
+                            'geom' => $multi_polygon
                         ]
                     );
 
