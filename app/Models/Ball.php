@@ -16,7 +16,8 @@ class Ball extends Model
     protected $fillable = [
         'soato',
         'level',
-        'geom'
+        'geom',
+        'accuracy'
     ];
 
     protected $postgisFields = [

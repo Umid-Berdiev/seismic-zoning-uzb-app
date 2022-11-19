@@ -4,126 +4,27 @@ import BaseBlock from "../BaseBlock.vue";
 import Input from "../Input.vue";
 
 // Component properties
-const props = defineProps({
-    horizontal: {
-        type: Boolean,
-        default: false,
-        description: "Horizontal menu in large screen width",
-    },
-    horizontalHover: {
-        type: Boolean,
-        default: false,
-        description: "Hover mode for horizontal menu",
-    },
-    disableClick: {
-        type: Boolean,
-        default: false,
-        description:
-            "Disables submenu click on 2+ level when we are in horizontal and hover mode",
-    },
-    borders: {
-        type: Object,
-        default: () => ({}),
-    },
-    balls: {
-        type: Array,
-        default: () => [],
-    },
-    zones: {
-        type: Array,
-        default: () => [],
-    },
-});
+// const props = defineProps({
+//     //
+// });
 
-const emits = defineEmits([
-    "updateBallLayers",
-    "updateZoneLayers",
-    "updateBorderLayers",
-]);
+const emits = defineEmits(["updateLayerGroup"]);
 
-const selectedBallLayers = ref([]);
-const selectedZoneLayers = ref([]);
-
-// onMounted(() => {
-//     selectedBallLayers.value = props.balls[0]
-// })
+const selectedLayerGroup = ref(null);
 
 watch(
-    () => props.balls,
+    () => selectedLayerGroup.value,
     (newVal) => {
-        selectedBallLayers.value = newVal.map((item) => ({
-            ...item.geom,
-            level: item.level,
-        }));
-    },
-    { deep: true, immediate: true }
-);
-
-watch(
-    () => props.zones,
-    (newVal) => {
-        selectedZoneLayers.value = newVal.map((item) => ({
-            ...item.geom,
-            level: item.level,
-        }));
-    },
-    { deep: true, immediate: true }
-);
-
-watch(
-    () => selectedBallLayers.value,
-    (newVal) => {
-        emits("updateBallLayers", newVal);
+        emits("updateLayerGroup", newVal);
     }
     // { immediate: true }
 );
-
-watch(
-    () => selectedZoneLayers.value,
-    (newVal) => {
-        emits("updateZoneLayers", newVal);
-    }
-    // { immediate: true }
-);
-
-// Main menu toggling and mobile functionality
-function linkClicked(e: Event, submenu: string) {
-    if (submenu) {
-        // Get closest li element
-        let el = e.target.closest("li");
-
-        // Check if we are in a large screen, have horizontal navigation and hover is enabled
-        if (
-            !(
-                window.innerWidth > 991 &&
-                ((props.horizontal && props.horizontalHover) ||
-                    props.disableClick)
-            )
-        ) {
-            if (el.classList.contains("open")) {
-                // If submenu is open, close it..
-                el.classList.remove("open");
-            } else {
-                // .. else if submenu is closed, close all other (same level) submenus first before open it
-                Array.from(el.closest("ul").children).forEach((element) => {
-                    element.classList.remove("open");
-                });
-
-                el.classList.add("open");
-            }
-        }
-    }
-}
-
-// function onLayerSelect(type: LayerTypeData) {
-//     mapStore.$patch({ selectedLayerType: type });
-// }
 </script>
 
 <template>
     <BaseBlock :title="$t('Layers')" class="mb-3 pb-3" btn-option-content>
         <ul class="nav-main">
-            <li class="nav-main-item mb-3 d-flex">
+            <!-- <li class="nav-main-item mb-3 d-flex">
                 <label class="form-check-label ms-3 ps-1" for="border_checkbox">
                     <span class="small fw-semibold">{{ $t("Borders") }}</span>
                 </label>
@@ -136,82 +37,36 @@ function linkClicked(e: Event, submenu: string) {
                         name="border_checkbox"
                     />
                 </div>
-            </li>
-            <li class="nav-main-item">
-                <!-- Submenu Link -->
-                <a
-                    href="javascript:;"
-                    class="nav-main-link nav-main-link-submenu"
-                    @click.prevent="linkClicked($event, true)"
-                >
-                    <span class="nav-main-link-name">
+            </li> -->
+            <li class="nav-main-item mb-3 px-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="ball_radio"
+                        id="ball_radio"
+                        value="balls"
+                        v-model="selectedLayerGroup"
+                    />
+                    <label class="form-check-label" for="ball_radio">
                         {{ $t("Balls") }}
-                    </span>
-                </a>
-                <!-- END Submenu Link -->
-                <ul class="nav-main-submenu row row-cols-3">
-                    <li
-                        v-for="(ball, ballIndex) in balls"
-                        :key="`region-${ballIndex}`"
-                        class="nav-main-item"
-                    >
-                        <div class="form-check">
-                            <input
-                                v-model="selectedBallLayers"
-                                class="form-check-input"
-                                type="checkbox"
-                                :value="{
-                                    ...ball.geom,
-                                    level: ball.level,
-                                }"
-                                :id="`ball_${ballIndex}`"
-                            />
-                            <label
-                                class="form-check-label small"
-                                :for="`ball_${ballIndex}`"
-                                >{{ ball.level }}</label
-                            >
-                        </div>
-                    </li>
-                </ul>
+                    </label>
+                </div>
             </li>
-            <li class="nav-main-item">
-                <!-- Submenu Link -->
-                <a
-                    href="javascript:;"
-                    class="nav-main-link nav-main-link-submenu"
-                    @click.prevent="linkClicked($event, true)"
-                >
-                    <span class="nav-main-link-name">
+            <li class="nav-main-item mb-3 px-3">
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="zone_radio"
+                        id="zone_radio"
+                        value="zones"
+                        v-model="selectedLayerGroup"
+                    />
+                    <label class="form-check-label" for="zone_radio">
                         {{ $t("Zones") }}
-                    </span>
-                </a>
-                <!-- END Submenu Link -->
-                <ul class="nav-main-submenu row row-cols-3">
-                    <li
-                        v-for="(zone, zoneIndex) in zones"
-                        :key="`region-${zoneIndex}`"
-                        class="nav-main-item"
-                    >
-                        <div class="form-check">
-                            <input
-                                v-model="selectedZoneLayers"
-                                class="form-check-input"
-                                type="checkbox"
-                                :value="{
-                                    ...zone.geom,
-                                    level: zone.level,
-                                }"
-                                :id="`zone_${zoneIndex}`"
-                            />
-                            <label
-                                class="form-check-label small"
-                                :for="`zone_${zoneIndex}`"
-                                >{{ zone.level }}</label
-                            >
-                        </div>
-                    </li>
-                </ul>
+                    </label>
+                </div>
             </li>
         </ul>
     </BaseBlock>

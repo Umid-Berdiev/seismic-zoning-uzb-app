@@ -36,6 +36,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         ->name('map');
     Route::get('/map/layers-data', [MapController::class, 'fetchLayersBySelectedArea'])
         ->name('map-layers-data');
+    Route::get('/map/search', [MapController::class, 'searchLayers'])
+        ->name('map-search');
+    Route::get('/map/accuracy', [MapController::class, 'fetchLayersByAccuracy'])
+        ->name('map-accuracy');
     Route::get('/statics', function () {
         $logs = ShapeImportLog::latest('id')->paginate();
         return Inertia::render('Admin/Statics', [

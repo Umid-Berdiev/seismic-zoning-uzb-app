@@ -62,43 +62,25 @@ class MapController extends Controller
 
         $borders = Border::all();
 
-        // dd($balls);
-        // $balls = Ball::all();
-        // $zones = Zone::all();
-        // $filtered_balls = [];
-        // $filtered_zones = [];
-        // $filtered_borders = [];
-
-        // foreach ($soatos as $key => $soato) {
-        //     $temp_balls = $balls->where(function ($query) use ($soato) {
-        //         return str_starts_with($query->soato, $soato);
-        //     })->groupBy('level');
-
-        //     if (count($temp_balls)) {
-        //         $filtered_balls[] = $temp_balls;
-        //     }
-
-        //     $temp_zones = $zones->where(function ($query) use ($soato) {
-        //         return str_starts_with($query->soato, $soato);
-        //     })->groupBy('level');
-
-        //     if (count($temp_zones)) {
-        //         $filtered_zones[] = $temp_zones;
-        //     }
-
-        //     $temp_borders = $borders->where(function ($query) use ($soato) {
-        //         return str_starts_with($query->soato, $soato);
-        //     });
-
-        //     if (count($temp_borders)) {
-        //         $filtered_borders[] = $temp_borders;
-        //     }
-        // }
-
         return response()->json([
             'balls' => $balls,
             'zones' => $zones,
             'borders' => $borders
         ]);
+    }
+
+    public function searchLayers(Request $request)
+    {
+        # code...
+    }
+
+    public function fetchLayersByAccuracy(Request $request)
+    {
+        $balls = Ball::where([
+            ['accuracy', $request->accuracy],
+            ['soato', 17]
+        ])->get();
+
+        return response()->json($balls);
     }
 }

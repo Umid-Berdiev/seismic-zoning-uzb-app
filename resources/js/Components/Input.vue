@@ -1,7 +1,13 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-defineProps(["modelValue"]);
+defineProps({
+    modelValue: "",
+    small: {
+        type: Boolean,
+        default: false,
+    },
+});
 
 defineEmits(["update:modelValue"]);
 
@@ -16,7 +22,7 @@ onMounted(() => {
 
 <template>
     <input
-        class="form-control"
+        :class="['form-control', small && 'form-control-sm']"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
         ref="input"

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import { useMainStore } from "@/stores/main";
 import { AreaData } from "@/utils/interfaces";
 import { useMapStore } from "@/stores/map";
 
 // Main store and Route
+const emits = defineEmits(["updateAccuracy"]);
 const store = useMainStore();
 const mapStore = useMapStore();
 
@@ -56,6 +57,15 @@ const props = defineProps({
 const dsrSections = ref([]);
 const regions = ref([]);
 const cities = ref([]);
+const selectedAccuracy = ref(null);
+
+watch(
+    () => selectedAccuracy.value,
+    (newVal) => {
+        emits("updateAccuracy", newVal);
+    }
+    // { immediate: true }
+);
 
 onMounted(async () => {
     const res = await fetch("/admin/regions");
@@ -115,13 +125,33 @@ function onClickAction(area: AreaData) {
         <li class="nav-main-item">
             <a
                 href="javascript:;"
-                class="nav-main-link active"
-                @click.prevent="onClickAction({ soato: 'main' })"
+                class="nav-main-link nav-main-link-submenu"
+                @click.prevent="linkClicked($event, true)"
             >
                 <span class="nav-main-link-name">
                     {{ "OSR" }}
                 </span>
             </a>
+            <ul class="nav-main-submenu">
+                <li class="nav-main-item" v-for="accuracy in [90, 95, 98]">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="ball_radio"
+                            :id="'accuracy_' + accuracy"
+                            value="balls"
+                            v-model="selectedAccuracy"
+                        />
+                        <label
+                            class="form-check-label"
+                            :for="'accuracy_' + accuracy"
+                        >
+                            {{ accuracy }}
+                        </label>
+                    </div>
+                </li>
+            </ul>
         </li>
         <li class="nav-main-item">
             <a

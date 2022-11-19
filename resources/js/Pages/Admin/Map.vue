@@ -11,6 +11,14 @@ import BorderLayersControl from "@/Components/Maps/BorderLayersControl.vue";
 import LayersControl from "@/Components/Maps/LayersControl.vue";
 import { InertiaProgress } from "@inertiajs/progress";
 import BaseBlock from "@/Components/BaseBlock.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import Input from "@/Components/Input.vue";
+import InputError from "@/Components/InputError.vue";
+import { useForm } from "@inertiajs/inertia-vue3";
+import SubmitButton from "@/Components/Buttons/SubmitButton.vue";
+import MarkerModal from "@/Components/Modals/MarkerModal.vue";
+import { Modal } from "bootstrap";
+import colors from "@/data/colors";
 
 const props = defineProps({
     canLogin: Boolean,
@@ -20,7 +28,7 @@ const props = defineProps({
     zones: Array,
 });
 const { t } = useI18n();
-const notyf = useNotyf();
+const notif = useNotyf();
 const store = useMainStore();
 const mapStore = useMapStore();
 const zoom = ref(6);
@@ -75,6 +83,13 @@ const citiesGeojson = reactive({
 
 const selectedSoatos = ref([]);
 const pageHeaderHeight = ref("90vh");
+const selectedLayerGroup = ref("");
+const selectedAccuracy = ref(null);
+const searchForm = reactive({
+    latitude: null,
+    longitude: null,
+});
+const isMarkerModalOpen = ref(false);
 
 onMounted(async () => {
     // fetch geojson data
@@ -84,10 +99,10 @@ onMounted(async () => {
     // init map
     initMap();
 
-    await fetchLayerDataBySelectedArea();
+    // await fetchLayerDataBySelectedArea();
     // updateBallLayers(selectedLayers.balls.map((item) => item.geom));
     // updateZoneLayers(selectedLayers.zones.map((item) => item.geom));
-    initializeDefaultLayersToMap();
+    // initializeDefaultLayersToMap();
     mapLoader.value = false;
     const pageHeader = document.getElementById("page-header");
     pageHeaderHeight.value = `calc(100vh - ${pageHeader.offsetHeight}px)`;
@@ -178,7 +193,7 @@ watch(
                     );
                     map.value.flyTo(areaBounds.getCenter(), 10);
                 } else {
-                    notyf.error("Area not found!");
+                    notif.error("Area not found!");
                 }
             } else if (newValue.regions?.length) {
                 const soatoArr = newValue.regions.map((region) =>
@@ -245,7 +260,7 @@ watch(
                     );
                     map.value.flyTo(areaBounds.getCenter(), 7);
                 } else {
-                    notyf.error("Area not found!");
+                    notif.error("Area not found!");
                 }
             }
         }
@@ -308,11 +323,19 @@ function initMap() {
 }
 
 async function fetchLayerDataBySelectedArea() {
-    const res = await axios.get("/admin/map/layers-data", {
-        params: { soatos: selectedSoatos.value },
-    });
+    try {
+        mapLoader.value = true;
+        const res = await axios.get("/admin/map/layers-data", {
+            params: { soatos: selectedSoatos.value },
+        });
 
-    Object.assign(selectedLayers, await res.data);
+        Object.assign(selectedLayers, await res.data);
+        updateLayerGroup(selectedLayerGroup.value);
+    } catch (error) {
+        notif.error(error.message);
+    } finally {
+        mapLoader.value = false;
+    }
 }
 
 function initializeDefaultLayersToMap() {
@@ -368,28 +391,58 @@ function initializeDefaultLayersToMap() {
     }).addTo(map.value);
 }
 
-function updateBallLayers(geomArr) {
-    if (map.value) {
-        map.value.eachLayer((layer) => {
-            if (layer.options?.pane === "ballPane") layer.removeFrom(map.value);
-        });
+function updateLayerGroup(value) {
+    selectedLayerGroup.value = value;
+
+    map.value.eachLayer((layer) => {
+        if (
+            layer.options?.pane === "ballPane" ||
+            layer.options?.pane === "zonePane"
+        )
+            layer.removeFrom(map.value);
+    });
+
+    if (value === "balls") {
         map.value.createPane("ballPane");
         map.value.getPane("ballPane").style.zIndex = 400;
+        const geomArr = selectedLayers.balls.map((ball) => ({
+            ...ball.geom,
+            level: ball.level,
+        }));
 
         L.geoJSON(geomArr, {
             pane: "ballPane",
             style: function (geoJsonFeature) {
-                const randomColor =
-                    geoJsonFeature.geometry.level == 8
-                        ? "red"
-                        : geoJsonFeature.geometry.level == 9
-                        ? "orange"
-                        : "gray";
+                const levelColor = colors[geoJsonFeature.geometry.level];
                 return {
                     stroke: true,
                     fill: true,
-                    color: randomColor,
-                    fillColor: randomColor,
+                    color: levelColor,
+                    fillColor: levelColor,
+                    fillOpacity: 1,
+                    weight: 1,
+                };
+            },
+        }).addTo(map.value);
+    }
+
+    if (value === "zones") {
+        map.value.createPane("zonePane");
+        map.value.getPane("zonePane").style.zIndex = 400;
+        const geomArr = selectedLayers.zones.map((zone) => ({
+            ...zone.geom,
+            level: zone.level,
+        }));
+
+        L.geoJSON(geomArr, {
+            pane: "zonePane",
+            style: function (geoJsonFeature) {
+                const levelColor = colors[geoJsonFeature.geometry.level];
+                return {
+                    stroke: true,
+                    fill: true,
+                    color: levelColor,
+                    fillColor: levelColor,
                     fillOpacity: 1,
                     weight: 1,
                 };
@@ -398,34 +451,94 @@ function updateBallLayers(geomArr) {
     }
 }
 
-function updateZoneLayers(geomArr) {
-    if (map.value) {
-        map.value?.eachLayer((layer) => {
-            if (layer.options?.pane === "zonePane") layer.removeFrom(map.value);
+async function updateLayersByAccuracy(accuracy) {
+    try {
+        mapLoader.value = true;
+        selectedAccuracy.value = accuracy;
+        const res = await axios.get("/admin/map/accuracy", {
+            params: { accuracy },
         });
-        map.value.createPane("zonePane");
-        map.value.getPane("zonePane").style.zIndex = 400;
 
-        L.geoJSON(geomArr, {
-            pane: "zonePane",
+        selectedLayers.balls = res.data;
+
+        map.value.eachLayer((layer) => {
+            if (
+                layer.options?.pane === "ballPane" ||
+                layer.options?.pane === "zonePane"
+            )
+                layer.removeFrom(map.value);
+        });
+
+        map.value.createPane("ballPane");
+        map.value.getPane("ballPane").style.zIndex = 400;
+        const geomArr = res.data.map((ball) => ({
+            ...ball.geom,
+            level: ball.level,
+        }));
+
+        const osrLayers = L.geoJSON(geomArr, {
+            pane: "ballPane",
             style: function (geoJsonFeature) {
-                const randomColor =
-                    geoJsonFeature.geometry.level == 35
-                        ? "#65a30d"
-                        : geoJsonFeature.geometry.level == 40
-                        ? "#0891b2"
-                        : "lightgray";
+                const levelColor = colors[geoJsonFeature.geometry.level];
                 return {
                     stroke: true,
                     fill: true,
-                    color: randomColor,
-                    fillColor: randomColor,
+                    color: levelColor,
+                    fillColor: levelColor,
                     fillOpacity: 1,
                     weight: 1,
                 };
             },
         }).addTo(map.value);
+
+        const areaBounds = L.latLngBounds(osrLayers.getBounds());
+        map.value.flyTo(areaBounds.getCenter(), 7);
+    } catch (error) {
+        notif.error(error.message);
+    } finally {
+        mapLoader.value = false;
     }
+}
+
+async function onSearch() {
+    try {
+        mapLoader.value = true;
+        map.value.eachLayer((layer) => {
+            if (layer.options?.pane === "markerPane")
+                layer.removeFrom(map.value);
+        });
+
+        L.marker([searchForm.latitude, searchForm.longitude])
+            .on("click", function (e) {
+                isMarkerModalOpen.value = true;
+                const confirmModal = Modal.getOrCreateInstance("#marker-modal");
+                confirmModal.show();
+            })
+            .addTo(map.value);
+
+        map.value.flyTo(
+            L.latLng([searchForm.latitude, searchForm.longitude]),
+            7
+        );
+
+        // const res = await axios.get("/admin/map/search", {
+        //     params: searchForm,
+        // });
+    } catch (error) {
+        //
+    } finally {
+        mapLoader.value = false;
+    }
+}
+
+function clearMarker() {
+    map.value.eachLayer((layer) => {
+        if (layer.options?.pane === "markerPane") layer.removeFrom(map.value);
+    });
+
+    searchForm.latitude = "";
+    searchForm.longitude = "";
+    map.value.flyTo(initialCenter.value, 6);
 }
 </script>
 
@@ -438,65 +551,127 @@ function updateZoneLayers(geomArr) {
         <Loader v-if="mapLoader" />
         <div id="map" style="height: inherit"></div>
         <div id="left_control_block">
-            <BorderLayersControl />
-            <LayersControl
-                :balls="selectedLayers.balls"
-                :borders="selectedLayers.borders"
-                :zones="selectedLayers.zones"
-                @update-ball-layers="updateBallLayers"
-                @update-zone-layers="updateZoneLayers"
-            />
+            <BorderLayersControl @update-accuracy="updateLayersByAccuracy" />
+            <LayersControl @update-layer-group="updateLayerGroup" />
         </div>
-        <div id="right_bottom_block">
+        <div id="right_top_block">
+            <BaseBlock
+                :title="$t('Search_by_coordinates')"
+                class="mb-3 pb-3"
+                btn-option-content
+            >
+                <form @submit.prevent="onSearch">
+                    <div class="d-flex gap-3">
+                        <div class="small">
+                            <InputLabel for="latitude-input">
+                                <span>{{ $t("Latitude") }}</span>
+                                <span class="text-danger">*</span>
+                            </InputLabel>
+                            <Input
+                                id="latitude-input"
+                                small
+                                type="number"
+                                :step="0.000000001"
+                                :min="37"
+                                :max="45.5"
+                                v-model="searchForm.latitude"
+                            />
+                            <InputError
+                                :message="searchForm.errors?.latitude"
+                            />
+                        </div>
+                        <div class="small">
+                            <InputLabel for="longitude-input">
+                                <span>{{ $t("Longitude") }}</span>
+                                <span class="text-danger">*</span>
+                            </InputLabel>
+                            <Input
+                                id="longitude-input"
+                                small
+                                type="number"
+                                :step="0.000000001"
+                                :min="56"
+                                :max="74"
+                                v-model="searchForm.longitude"
+                            />
+                            <InputError
+                                :message="searchForm.errors?.longitude"
+                            />
+                        </div>
+                    </div>
+                    <div class="d-flex mt-3">
+                        <button
+                            class="btn btn-warning"
+                            type="button"
+                            @click="clearMarker"
+                        >
+                            {{ $t("Clear") }}
+                        </button>
+                        <SubmitButton
+                            class="ms-auto"
+                            :disabled="
+                                !searchForm.latitude || !searchForm.longitude
+                            "
+                            >{{ $t("Search") }}</SubmitButton
+                        >
+                    </div>
+                </form>
+            </BaseBlock>
+        </div>
+        <div id="right_bottom_block" v-if="selectedLayerGroup">
             <BaseBlock
                 :title="$t('Conventional_designation')"
                 class="mb-3 pb-3"
                 btn-option-content
             >
                 <table class="table table-sm table-bordered border-secondary">
-                    <thead class="bg-light">
-                        <tr>
-                            <th colspan="2">{{ $t("Balls") }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>8</td>
-                            <td>
-                                <div class="rectangle-layer bg-danger"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>9</td>
-                            <td>
-                                <div class="rectangle-layer bg-warning"></div>
-                            </td>
-                        </tr>
-                    </tbody>
-                    <thead class="bg-light">
-                        <tr>
-                            <th colspan="2">{{ $t("Zones") }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>35</td>
-                            <td>
-                                <div class="rectangle-layer bg-success"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>40</td>
-                            <td>
-                                <div class="rectangle-layer bg-info"></div>
-                            </td>
-                        </tr>
-                    </tbody>
+                    <template v-if="selectedLayerGroup === 'balls'">
+                        <thead class="bg-light">
+                            <tr>
+                                <th colspan="2">{{ $t("Balls") }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="ball in selectedLayers.balls">
+                                <td>{{ ball.level }}</td>
+                                <td>
+                                    <div
+                                        class="rectangle-layer"
+                                        :style="{
+                                            'background-color':
+                                                colors[ball.level],
+                                        }"
+                                    ></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                    <template v-if="selectedLayerGroup === 'zones'">
+                        <thead class="bg-light">
+                            <tr>
+                                <th colspan="2">{{ $t("Zones") }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="zone in selectedLayers.zones">
+                                <td>{{ zone.level }}</td>
+                                <td>
+                                    <div
+                                        class="rectangle-layer"
+                                        :style="{
+                                            'background-color':
+                                                colors[zone.level / 10],
+                                        }"
+                                    ></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
                 </table>
             </BaseBlock>
         </div>
 
-        <!-- <p>Center is at {{ center }} and the zoom is: {{ zoom }}</p> -->
+        <MarkerModal />
     </div>
 </template>
 
@@ -524,6 +699,13 @@ export default {
     position: absolute;
     top: 4.25rem;
     right: 1rem;
+    z-index: 800;
+    width: 370px;
+}
+#right_top_block {
+    position: absolute;
+    right: 1rem;
+    top: 4rem;
     z-index: 800;
     width: 370px;
 }

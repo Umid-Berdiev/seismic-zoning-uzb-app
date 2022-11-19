@@ -144,7 +144,6 @@ function onRemove(id) {
 }
 
 function deleteAction() {
-    console.log("confirmed");
     const confirmModal = Modal.getInstance("#modal-confirm");
     roleForm.delete(route("users.destroy", userObj.id), {
         onSuccess: () => {

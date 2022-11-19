@@ -6,11 +6,6 @@
 
 export default {
     main: [
-        // {
-        //     name: "Statistics",
-        //     to: "/admin/dashboard",
-        //     icon: "si si-speedometer",
-        // },
         {
             name: "Map",
             to: "/admin/map",
@@ -26,38 +21,41 @@ export default {
             to: "/admin/users",
             icon: "si si-users",
         },
+        // {
+        //     name: "Roles",
+        //     to: "/admin/directory/roles",
+        //     icon: "si si-shield",
+        // },
         {
-            name: "Directory",
-            // to: "/admin/directory",
-            subActivePaths: "/admin/directory",
-            icon: "si si-list",
-            sub: [
-                {
-                    name: "Roles",
-                    // icon: "si si-pencil",
-                    to: "/admin/directory/roles",
-                },
-                {
-                    name: "Regions",
-                    // icon: "si si-pencil",
-                    to: "/admin/directory/regions",
-                },
-                {
-                    name: "DsrSections",
-                    // icon: "si si-pencil",
-                    to: "/admin/directory/dsr-sections",
-                },
-            ],
+            name: "Regions",
+            icon: "si si-globe",
+            to: "/admin/directory/regions",
+        },
+        {
+            name: "DsrSections",
+            icon: "si si-layers",
+            to: "/admin/directory/dsr-sections",
         },
         // {
-        //     name: "Page Packs",
-        //     icon: "si si-layers",
-        //     subActivePaths: "/backend/page-packs",
+        //     name: "Directory",
+        //     // to: "/admin/directory",
+        //     subActivePaths: "/admin/directory",
+        //     icon: "si si-list",
         //     sub: [
         //         {
-        //             name: "Blog",
-        //             icon: "si si-pencil",
-        //             subActivePaths: "/backend/page-packs/blog",
+        //             name: "Roles",
+        //             // icon: "si si-pencil",
+        //             to: "/admin/directory/roles",
+        //         },
+        //         {
+        //             name: "Regions",
+        //             // icon: "si si-pencil",
+        //             to: "/admin/directory/regions",
+        //         },
+        //         {
+        //             name: "DsrSections",
+        //             // icon: "si si-pencil",
+        //             to: "/admin/directory/dsr-sections",
         //         },
         //     ],
         // },
