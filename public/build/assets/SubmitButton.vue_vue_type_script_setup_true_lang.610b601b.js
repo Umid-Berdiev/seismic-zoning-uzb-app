@@ -1,1 +1,0 @@
-import{d as o,c as r,e as a,C as s,j as n,t as p}from"./app.dbb5bd6d.js";const d=["type"],i=o({__name:"SubmitButton",props:{type:{default:"submit"}},setup(e){return(t,l)=>(r(),a("button",{type:e.type,class:"btn btn-alt-primary border border-light rounded"},[s(t.$slots,"default",{},()=>[n(p(t.$t("Save")),1)])],8,d))}});export{i as _};

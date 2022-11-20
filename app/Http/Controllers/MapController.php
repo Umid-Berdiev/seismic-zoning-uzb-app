@@ -30,42 +30,28 @@ class MapController extends Controller
 
     public function fetchLayersBySelectedArea(Request $request)
     {
-        $arr = $request->soatos ? array_map(fn ($item) => (int)$item, $request->soatos) : [];
-        $soatos = count($arr) ? $arr : [
-            1735,
-            1733,
-            1712,
-            1706,
-            1718,
-            1722,
-            1708,
-            1724,
-            1703,
-            1714,
-            1730,
-            1727,
-            1710,
-        ];
-        // dd($soatos);
+        $soatos = $request->soatos ? array_map(fn ($item) => (int)$item, $request->soatos) : [];
 
         $balls = Ball::whereHas('districts', function ($query) use ($soatos) {
             $query->whereIn('soato', $soatos)
                 ->orWhereIn('region_soato', $soatos);
         })
+            ->whereNot('soato', 17)
             ->get();
 
         $zones = Zone::whereHas('districts', function ($query) use ($soatos) {
             $query->whereIn('soato', $soatos)
                 ->orWhereIn('region_soato', $soatos);
         })
+            ->whereNot('soato', 17)
             ->get();
 
-        $borders = Border::all();
+        // $borders = Border::all();
 
         return response()->json([
             'balls' => $balls,
             'zones' => $zones,
-            'borders' => $borders
+            // 'borders' => $borders
         ]);
     }
 

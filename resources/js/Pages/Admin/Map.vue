@@ -19,6 +19,17 @@ import SubmitButton from "@/Components/Buttons/SubmitButton.vue";
 import MarkerModal from "@/Components/Modals/MarkerModal.vue";
 import { Modal } from "bootstrap";
 import colors from "@/data/colors";
+import iconUrl from "leaflet/dist/images/marker-icon.png";
+import shadowUrl from "leaflet/dist/images/marker-shadow.png";
+import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl,
+    iconUrl,
+    shadowUrl,
+});
 
 const props = defineProps({
     canLogin: Boolean,
@@ -290,6 +301,7 @@ function initMap() {
     map.value = L.map("map", {
         zoom: zoom.value,
         center: center.value,
+        zoomControl: false,
     })
         .on("zoomend", function (e) {
             zoom.value = map.value.getZoom();
@@ -300,7 +312,13 @@ function initMap() {
 
     tileProviders[t("Openstreet_map")].addTo(map.value);
 
-    // add layers to map
+    // add control layers to map
+    L.control
+        .zoom({
+            position: "topright",
+        })
+        .addTo(map.value);
+
     L.control
         .layers(
             tileProviders,
@@ -312,6 +330,7 @@ function initMap() {
             }
         )
         .addTo(map.value);
+
     L.control
         .scale({
             imperial: false,
@@ -330,7 +349,7 @@ async function fetchLayerDataBySelectedArea() {
         });
 
         Object.assign(selectedLayers, await res.data);
-        updateLayerGroup(selectedLayerGroup.value);
+        // updateLayerGroup(selectedLayerGroup.value);
     } catch (error) {
         notif.error(error.message);
     } finally {
@@ -413,7 +432,7 @@ function updateLayerGroup(value) {
         L.geoJSON(geomArr, {
             pane: "ballPane",
             style: function (geoJsonFeature) {
-                const levelColor = colors[geoJsonFeature.geometry.level];
+                const levelColor = findColor(geoJsonFeature.geometry.level);
                 return {
                     stroke: true,
                     fill: true,
@@ -437,7 +456,9 @@ function updateLayerGroup(value) {
         L.geoJSON(geomArr, {
             pane: "zonePane",
             style: function (geoJsonFeature) {
-                const levelColor = colors[geoJsonFeature.geometry.level];
+                const levelColor = findColor(
+                    geoJsonFeature.geometry.level / 10
+                );
                 return {
                     stroke: true,
                     fill: true,
@@ -459,7 +480,7 @@ async function updateLayersByAccuracy(accuracy) {
             params: { accuracy },
         });
 
-        selectedLayers.balls = res.data;
+        // selectedLayers.balls = res.data;
 
         map.value.eachLayer((layer) => {
             if (
@@ -479,7 +500,7 @@ async function updateLayersByAccuracy(accuracy) {
         const osrLayers = L.geoJSON(geomArr, {
             pane: "ballPane",
             style: function (geoJsonFeature) {
-                const levelColor = colors[geoJsonFeature.geometry.level];
+                const levelColor = findColor(geoJsonFeature.geometry.level);
                 return {
                     stroke: true,
                     fill: true,
@@ -540,6 +561,11 @@ function clearMarker() {
     searchForm.longitude = "";
     map.value.flyTo(initialCenter.value, 6);
 }
+
+function findColor(index) {
+    const color = colors.find((color) => color.index == index)?.value;
+    return color ?? "black";
+}
 </script>
 
 <template>
@@ -551,10 +577,6 @@ function clearMarker() {
         <Loader v-if="mapLoader" />
         <div id="map" style="height: inherit"></div>
         <div id="left_control_block">
-            <BorderLayersControl @update-accuracy="updateLayersByAccuracy" />
-            <LayersControl @update-layer-group="updateLayerGroup" />
-        </div>
-        <div id="right_top_block">
             <BaseBlock
                 :title="$t('Search_by_coordinates')"
                 class="mb-3 pb-3"
@@ -617,7 +639,73 @@ function clearMarker() {
                     </div>
                 </form>
             </BaseBlock>
+            <BorderLayersControl @update-accuracy="updateLayersByAccuracy" />
+            <LayersControl @update-layer-group="updateLayerGroup" />
         </div>
+        <!-- <div id="right_top_block">
+            <BaseBlock
+                :title="$t('Search_by_coordinates')"
+                class="mb-3 pb-3"
+                btn-option-content
+            >
+                <form @submit.prevent="onSearch">
+                    <div class="d-flex gap-3">
+                        <div class="small">
+                            <InputLabel for="latitude-input">
+                                <span>{{ $t("Latitude") }}</span>
+                                <span class="text-danger">*</span>
+                            </InputLabel>
+                            <Input
+                                id="latitude-input"
+                                small
+                                type="number"
+                                :step="0.000000001"
+                                :min="37"
+                                :max="45.5"
+                                v-model="searchForm.latitude"
+                            />
+                            <InputError
+                                :message="searchForm.errors?.latitude"
+                            />
+                        </div>
+                        <div class="small">
+                            <InputLabel for="longitude-input">
+                                <span>{{ $t("Longitude") }}</span>
+                                <span class="text-danger">*</span>
+                            </InputLabel>
+                            <Input
+                                id="longitude-input"
+                                small
+                                type="number"
+                                :step="0.000000001"
+                                :min="56"
+                                :max="74"
+                                v-model="searchForm.longitude"
+                            />
+                            <InputError
+                                :message="searchForm.errors?.longitude"
+                            />
+                        </div>
+                    </div>
+                    <div class="d-flex mt-3">
+                        <button
+                            class="btn btn-warning"
+                            type="button"
+                            @click="clearMarker"
+                        >
+                            {{ $t("Clear") }}
+                        </button>
+                        <SubmitButton
+                            class="ms-auto"
+                            :disabled="
+                                !searchForm.latitude || !searchForm.longitude
+                            "
+                            >{{ $t("Search") }}</SubmitButton
+                        >
+                    </div>
+                </form>
+            </BaseBlock>
+        </div> -->
         <div id="right_bottom_block" v-if="selectedLayerGroup">
             <BaseBlock
                 :title="$t('Conventional_designation')"
@@ -638,8 +726,9 @@ function clearMarker() {
                                     <div
                                         class="rectangle-layer"
                                         :style="{
-                                            'background-color':
-                                                colors[ball.level],
+                                            'background-color': findColor(
+                                                ball.level
+                                            ),
                                         }"
                                     ></div>
                                 </td>
@@ -659,8 +748,9 @@ function clearMarker() {
                                     <div
                                         class="rectangle-layer"
                                         :style="{
-                                            'background-color':
-                                                colors[zone.level / 10],
+                                            'background-color': findColor(
+                                                zone.level / 10
+                                            ),
                                         }"
                                     ></div>
                                 </td>
@@ -687,13 +777,14 @@ export default {
 #left_control_block {
     // border: 2px solid lightgray;
     position: absolute;
-    top: 5.25rem;
+    top: 1rem;
     left: 1rem;
     z-index: 1000;
     // min-width: 100px;
     width: 100%;
     max-width: 20vw;
 }
+
 #right_control_block {
     // border: 2px solid lightgray;
     position: absolute;
@@ -702,6 +793,7 @@ export default {
     z-index: 800;
     width: 370px;
 }
+
 #right_top_block {
     position: absolute;
     right: 1rem;
@@ -709,6 +801,7 @@ export default {
     z-index: 800;
     width: 370px;
 }
+
 #right_bottom_block {
     position: absolute;
     right: 1rem;
@@ -716,6 +809,7 @@ export default {
     z-index: 800;
     width: 370px;
 }
+
 .rectangle-layer {
     width: 2rem;
     height: 1rem;
