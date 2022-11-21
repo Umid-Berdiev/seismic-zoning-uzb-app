@@ -41,4 +41,16 @@ class Zone extends Model
             ->belongsToMany(District::class, 'area_layer', 'layer_id', 'area_soato', 'id', 'soato')
             ->wherePivot('layer_type', 'zone');
     }
+
+    /**
+     * The regions that belong to the Zone
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function regions(): BelongsToMany
+    {
+        return $this
+            ->belongsToMany(Region::class, 'area_layer', 'layer_id', 'area_soato', 'id', 'soato')
+            ->wherePivot('layer_type', 'zone');
+    }
 }

@@ -94,17 +94,9 @@ async function onModalSubmit() {
         onSuccess: () => {
             notif.success("Data successfully imported!");
             const modal = Modal.getInstance("#importStaticDataModal");
+            importForm.reset();
             modal?.hide();
         },
-        // onError: (errorObj) => {
-        // notif.error(errorObj.zip);
-        // errorObj.soato &&
-        //     notif.error(
-        //         "Bu soato kodi bazada topilmadi, tekshirib qaytadan urunib ko'ring: " +
-        //             errorObj.soato
-        //     );
-        // notif.error("Error while uploading shape file!");
-        // },
     });
 }
 </script>

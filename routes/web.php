@@ -34,8 +34,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         ->name('dashboard');
     Route::get('/map', [MapController::class, 'index'])
         ->name('map');
-    Route::get('/map/layers-data', [MapController::class, 'fetchLayersBySelectedArea'])
-        ->name('map-layers-data');
+    Route::get('/map/smr-layer-data', [MapController::class, 'fetchSmrLayers'])
+        ->name('map-smr-layer-data');
+    Route::get('/map/dsr-layer-data', [MapController::class, 'fetchDsrLayers'])
+        ->name('map-dsr-layer-data');
     Route::get('/map/search', [MapController::class, 'searchLayers'])
         ->name('map-search');
     Route::get('/map/accuracy', [MapController::class, 'fetchLayersByAccuracy'])

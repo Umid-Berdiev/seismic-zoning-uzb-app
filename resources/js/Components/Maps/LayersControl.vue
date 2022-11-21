@@ -37,8 +37,8 @@ const selectedLayerGroup = computed({
                         value="balls"
                         v-model="selectedLayerGroup"
                     />
-                    <label class="form-check-label" for="ball_radio">
-                        {{ $t("Balls") }}
+                    <label class="form-check-label small" for="ball_radio">
+                        {{ $t("Ball (MSK-64 makroseismik shkala bo'yicha)") }}
                     </label>
                 </div>
             </li>
@@ -53,8 +53,12 @@ const selectedLayerGroup = computed({
                         v-model="selectedLayerGroup"
                         :disabled="zoneDisabled"
                     />
-                    <label class="form-check-label" for="zone_radio">
-                        {{ $t("Zones") }}
+                    <label class="form-check-label small" for="zone_radio">
+                        {{
+                            $t(
+                                "PGA (Grunt tebranishining cho'qqi tezlanishi qiymati)"
+                            )
+                        }}
                     </label>
                 </div>
             </li>

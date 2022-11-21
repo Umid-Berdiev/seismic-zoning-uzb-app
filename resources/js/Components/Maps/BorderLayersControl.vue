@@ -6,7 +6,7 @@ import { useMapStore } from "@/stores/map";
 import BaseBlock from "../BaseBlock.vue";
 
 // Main store and Route
-const emits = defineEmits(["update:accuracy", "updateArea"]);
+const emits = defineEmits(["update:accuracy", "updateSmrArea", 'updateDsrArea']);
 const store = useMainStore();
 const mapStore = useMapStore();
 
@@ -91,13 +91,12 @@ function linkClicked(e: Event, submenu: string) {
     }
 }
 
-function onClickAction(area: AreaData) {
-    // console.log({ area });
+function onDsrClickAction(area: AreaData) {
+    emits("updateDsrArea", area);
+}
 
-    // Object.assign(selectedArea, area);
-    // mapStore.$reset();
-    // mapStore.$patch({ selectedArea: area });
-    emits("updateArea", area);
+function onSmrClickAction(area: AreaData) {
+    emits("updateSmrArea", area);
 }
 </script>
 
@@ -125,7 +124,7 @@ function onClickAction(area: AreaData) {
                                 v-model="selectedAccuracy"
                             />
                             <label
-                                class="form-check-label"
+                                class="form-check-label small"
                                 :for="'accuracy_' + accuracy"
                             >
                                 <span>{{ accuracy }}% aniqlik</span>
@@ -154,7 +153,7 @@ function onClickAction(area: AreaData) {
                         <a
                             href="javascript:;"
                             class="nav-main-link"
-                            @click.prevent="onClickAction(section)"
+                            @click.prevent="onDsrClickAction(section)"
                         >
                             <span class="nav-main-link-name">
                                 {{ section.name }}
@@ -184,7 +183,7 @@ function onClickAction(area: AreaData) {
                         <a
                             href="javascript:;"
                             class="nav-main-link"
-                            @click.prevent="onClickAction(city)"
+                            @click.prevent="onSmrClickAction(city)"
                         >
                             <span class="nav-main-link-name">
                                 {{ city.name_uz }}
@@ -233,7 +232,7 @@ function onClickAction(area: AreaData) {
                                 <a
                                     href="javascript:;"
                                     class="nav-main-link"
-                                    @click.prevent="onClickAction(district)"
+                                    @click.prevent="onSmrClickAction(district)"
                                 >
                                     <span class="nav-main-link-name">
                                         {{ district.name_uz }}

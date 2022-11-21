@@ -32,7 +32,7 @@ class Ball extends Model
     ];
 
     /**
-     * The districts that belong to the Zone
+     * The districts that belong to the Ball
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
@@ -40,6 +40,18 @@ class Ball extends Model
     {
         return $this
             ->belongsToMany(District::class, 'area_layer', 'layer_id', 'area_soato', 'id', 'soato')
+            ->wherePivot('layer_type', 'ball');
+    }
+
+    /**
+     * The regions that belong to the Ball
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function regions(): BelongsToMany
+    {
+        return $this
+            ->belongsToMany(Region::class, 'area_layer', 'layer_id', 'area_soato', 'id', 'soato')
             ->wherePivot('layer_type', 'ball');
     }
 }

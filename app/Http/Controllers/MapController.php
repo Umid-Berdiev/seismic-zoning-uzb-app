@@ -13,65 +13,74 @@ use Inertia\Inertia;
 
 class MapController extends Controller
 {
-  public function index()
-  {
-    // $balls = Ball::all();
-    // $borders = Border::all();
-    // $zones = Zone::all();
+    public function index()
+    {
+        // $balls = Ball::all();
+        // $borders = Border::all();
+        // $zones = Zone::all();
 
-    // $gropedBalls = $balls->groupBy('level');
+        // $gropedBalls = $balls->groupBy('level');
 
-    return Inertia::render('Admin/Map', [
-      // 'balls' => $gropedBalls,
-      // 'borders' => $borders,
-      // 'zones' => $zones
-    ]);
-  }
+        return Inertia::render('Admin/Map', [
+            // 'balls' => $gropedBalls,
+            // 'borders' => $borders,
+            // 'zones' => $zones
+        ]);
+    }
 
-  public function fetchLayersBySelectedArea(Request $request)
-  {
-    $soatos = $request->soatos ? array_map(fn ($item) => (int)$item, $request->soatos) : [];
+    public function fetchDsrLayers(Request $request)
+    {
+        $soatos = $request->soatos;
+        // dd($soatos);
+        $data = [];
 
-    $data = [];
-    $balls = Ball::all()->toArray();
-    if ($request->layer_group === 'balls')
-      $data = array_filter($balls, function ($ball) use ($soatos) {
-        $ball_soatos = explode(',', $ball['soato']);
+        if ($request->layer_group === 'balls') $data = Ball::whereHas('regions', function ($query) use ($soatos) {
+            $query->whereIn('soato', $soatos);
+        })
+            // ->whereNot('soato', 17)
+            ->get();
 
-        foreach ($soatos as $key => $soato) {
-          return in_array($soato, $ball_soatos);
-        }
-      });
+        if ($request->layer_group === 'zones') $data = Zone::whereHas('regions', function ($query) use ($soatos) {
+            $query->whereIn('soato', $soatos);
+        })
+            // ->whereNot('soato', 17)
+            ->get();
 
-    // if ($request->layer_group === 'balls') $data = Ball::whereHas('districts', function ($query) use ($soatos) {
-    //     $query->whereIn('soato', $soatos)
-    //         ->orWhereIn('region_soato', $soatos);
-    // })
-    //     ->whereNot('soato', 17)
-    //     ->get();
+        return response()->json($data);
+    }
 
-    if ($request->layer_group === 'zones') $data = Zone::whereHas('districts', function ($query) use ($soatos) {
-      $query->whereIn('soato', $soatos)
-        ->orWhereIn('region_soato', $soatos);
-    })
-      ->whereNot('soato', 17)
-      ->get();
+    public function fetchSmrLayers(Request $request)
+    {
+        $soatos = $request->soatos;
+        $data = [];
 
-    return response()->json($data);
-  }
+        if ($request->layer_group === 'balls') $data = Ball::whereHas('districts', function ($query) use ($soatos) {
+            $query->whereIn('soato', $soatos);
+        })
+            ->whereNot('soato', 17)
+            ->get();
 
-  public function searchLayers(Request $request)
-  {
-    # code...
-  }
+        if ($request->layer_group === 'zones') $data = Zone::whereHas('districts', function ($query) use ($soatos) {
+            $query->whereIn('soato', $soatos);
+        })
+            ->whereNot('soato', 17)
+            ->get();
 
-  public function fetchLayersByAccuracy(Request $request)
-  {
-    $balls = Ball::where([
-      ['accuracy', $request->accuracy],
-      ['soato', 17]
-    ])->get();
+        return response()->json($data);
+    }
 
-    return response()->json($balls);
-  }
+    public function searchLayers(Request $request)
+    {
+        # code...
+    }
+
+    public function fetchLayersByAccuracy(Request $request)
+    {
+        $balls = Ball::where([
+            ['accuracy', $request->accuracy],
+            ['soato', 17]
+        ])->get();
+
+        return response()->json($balls);
+    }
 }

@@ -14,12 +14,12 @@ import InputError from "@/Components/InputError.vue";
 import SubmitButton from "@/Components/Buttons/SubmitButton.vue";
 import MarkerModal from "@/Components/Modals/MarkerModal.vue";
 import { Modal } from "bootstrap";
-import colors from "@/data/colors";
+import { ballColors, zoneColors } from "@/data/colors";
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import { LayerGroupTypes } from "@/utils/interfaces";
-import { isEmpty, isNull } from "lodash";
+import { inRange, isEmpty, isNull } from "lodash";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -86,7 +86,8 @@ const citiesGeojson = reactive({
     features: [],
 });
 
-const selectedSoatos = ref([]);
+const selectedDsrSoatos = ref<number[]>([]);
+const selectedSmrSoatos = ref<number[]>([]);
 const pageHeaderHeight = ref("90vh");
 const selectedLayerGroup = ref<LayerGroupTypes>("balls");
 const selectedAccuracy = ref<number | null>(90);
@@ -103,7 +104,7 @@ onMounted(async () => {
 
     // init map
     initMap();
-    await fetchLayerDataBySelectedArea();
+    await fetchOsrLayerData();
     updateLayerGroup();
     mapLoader.value = false;
     const pageHeader = document.getElementById("page-header");
@@ -116,7 +117,7 @@ watch(
         if (newVal) {
             selectedLayerGroup.value = "balls";
             clearLayers();
-            await fetchLayerDataBySelectedArea();
+            await fetchOsrLayerData();
             updateLayerGroup();
         }
     }
@@ -127,20 +128,104 @@ watch(
     async (newVal: LayerGroupTypes) => {
         if (newVal) {
             clearLayers();
-            await fetchLayerDataBySelectedArea();
+            selectedDsrSoatos.value.length && (await fetchDsrLayerData());
+            selectedSmrSoatos.value.length && (await fetchSmrLayerData());
             updateLayerGroup();
         }
     }
     // { immediate: true }
 );
 
-async function onAreaUpdated(area: import("@/utils/interfaces").AreaData) {
+async function onDsrAreaUpdated(area: import("@/utils/interfaces").AreaData) {
     mapLoader.value = true;
     selectedLayerGroup.value = "balls";
     selectedAccuracy.value = null;
 
     if (area) {
-        selectedSoatos.value = [];
+        selectedDsrSoatos.value = [];
+        selectedSmrSoatos.value = [];
+        clearLayers();
+
+        if (area.regions?.length) {
+            const soatoArr = area.regions.map((region) => Number(region.soato));
+            const foundAreas = regionsGeojson.features?.filter((feature) =>
+                soatoArr.includes(feature.properties.soato)
+            );
+
+            if (foundAreas.length) {
+                selectedDsrSoatos.value = soatoArr;
+                const dsrSectionPolygon = L.geoJSON(foundAreas, {
+                    onEachFeature: function (feature, layer) {
+                        layer
+                            .on("click", async function () {
+                                //
+                            })
+                            .on("mouseover", function () {
+                                layer.setStyle({
+                                    weight: 2,
+                                });
+                            })
+                            .on("mouseout", function () {
+                                layer.setStyle({
+                                    weight: 1,
+                                });
+                            })
+                            .bindPopup(
+                                `
+                                    <ul class="list-group mt-4">
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <span class="fw-bold">
+                                                Nomi
+                                            </span>
+                                            <span class="ms-auto">
+                                                ${feature.properties?.name_uz}
+                                            </span>
+                                        </li>
+                                        <li class="list-group-item d-flex align-items-start">
+                                            <span class="fw-bold">
+                                                SOATO kodi
+                                            </span>
+                                            <span class="ms-auto">
+                                                ${feature.properties?.soato}
+                                            </span>
+                                        </li>
+                                    </ul>
+                                    `,
+                                {
+                                    minWidth: 300,
+                                }
+                            );
+                    },
+                    style: function (feature) {
+                        return {
+                            color: "#0eb297",
+                            weight: 1,
+                            fillOpacity: 0.0,
+                        };
+                    },
+                }).addTo(map.value);
+                const areaBounds = L.latLngBounds(
+                    dsrSectionPolygon.getBounds()
+                );
+                map.value.flyTo(areaBounds.getCenter(), 7);
+            } else {
+                notif.error("Area not found!");
+            }
+        }
+    }
+    await fetchDsrLayerData();
+    updateLayerGroup();
+    mapLoader.value = false;
+}
+
+async function onSmrAreaUpdated(area: import("@/utils/interfaces").AreaData) {
+    mapLoader.value = true;
+    selectedLayerGroup.value = "balls";
+    selectedAccuracy.value = null;
+
+    if (area) {
+        selectedDsrSoatos.value = [];
+        selectedSmrSoatos.value = [];
         clearLayers();
 
         if (Number(area.soato)) {
@@ -156,7 +241,7 @@ async function onAreaUpdated(area: import("@/utils/interfaces").AreaData) {
                       );
 
             if (foundArea) {
-                selectedSoatos.value = [Number(area.soato)];
+                selectedSmrSoatos.value = [Number(area.soato)];
                 const districtPolygon = L.geoJSON(foundArea, {
                     onEachFeature: function (feature, layer) {
                         layer
@@ -212,74 +297,9 @@ async function onAreaUpdated(area: import("@/utils/interfaces").AreaData) {
             } else {
                 notif.error("Area not found!");
             }
-        } else if (area.regions?.length) {
-            const soatoArr = area.regions.map((region) => Number(region.soato));
-            const foundAreas = regionsGeojson.features?.filter((feature) =>
-                soatoArr.includes(feature.properties.soato)
-            );
-
-            if (foundAreas.length) {
-                selectedSoatos.value = soatoArr;
-                const dsrSectionPolygon = L.geoJSON(foundAreas, {
-                    onEachFeature: function (feature, layer) {
-                        layer
-                            .on("click", async function () {
-                                //
-                            })
-                            .on("mouseover", function () {
-                                this.setStyle({
-                                    weight: 2,
-                                });
-                            })
-                            .on("mouseout", function () {
-                                this.setStyle({
-                                    weight: 1,
-                                });
-                            })
-                            .bindPopup(
-                                `
-                                    <ul class="list-group mt-4">
-                                        <li class="list-group-item d-flex align-items-start">
-                                            <span class="fw-bold">
-                                                Nomi
-                                            </span>
-                                            <span class="ms-auto">
-                                                ${feature.properties?.name_uz}
-                                            </span>
-                                        </li>
-                                        <li class="list-group-item d-flex align-items-start">
-                                            <span class="fw-bold">
-                                                SOATO kodi
-                                            </span>
-                                            <span class="ms-auto">
-                                                ${feature.properties?.soato}
-                                            </span>
-                                        </li>
-                                    </ul>
-                                    `,
-                                {
-                                    minWidth: 300,
-                                }
-                            );
-                    },
-                    style: function (feature) {
-                        return {
-                            color: "#0eb297",
-                            weight: 1,
-                            fillOpacity: 0.0,
-                        };
-                    },
-                }).addTo(map.value);
-                const areaBounds = L.latLngBounds(
-                    dsrSectionPolygon.getBounds()
-                );
-                map.value.flyTo(areaBounds.getCenter(), 7);
-            } else {
-                notif.error("Area not found!");
-            }
         }
     }
-    await fetchLayerDataBySelectedArea();
+    await fetchSmrLayerData();
     updateLayerGroup();
     mapLoader.value = false;
 }
@@ -345,25 +365,15 @@ function initMap() {
     map.value.attributionControl.setPrefix(""); // Don't show the 'Powered by Leaflet' text.
 }
 
-async function fetchLayerDataBySelectedArea() {
+async function fetchSmrLayerData() {
     try {
         mapLoader.value = true;
-        let result;
-
-        if (selectedAccuracy.value) {
-            result = await axios.get("/admin/map/accuracy", {
-                params: {
-                    accuracy: selectedAccuracy.value,
-                },
-            });
-        } else {
-            result = await axios.get("/admin/map/layers-data", {
-                params: {
-                    soatos: selectedSoatos.value,
-                    layer_group: selectedLayerGroup.value,
-                },
-            });
-        }
+        const result = await axios.get("/admin/map/smr-layer-data", {
+            params: {
+                soatos: selectedSmrSoatos.value,
+                layer_group: selectedLayerGroup.value,
+            },
+        });
 
         if (isEmpty(result.data))
             notif.warning("Tanlangan hududda ma'lumotlar topilmadi");
@@ -371,6 +381,53 @@ async function fetchLayerDataBySelectedArea() {
             ballLayers.value = result.data;
         if (selectedLayerGroup.value === "zones")
             zoneLayers.value = result.data;
+    } catch (error) {
+        notif.error(error.message);
+    } finally {
+        mapLoader.value = false;
+    }
+}
+
+async function fetchDsrLayerData() {
+    try {
+        mapLoader.value = true;
+        const result = await axios.get("/admin/map/dsr-layer-data", {
+            params: {
+                soatos: selectedDsrSoatos.value,
+                layer_group: selectedLayerGroup.value,
+            },
+        });
+
+        if (isEmpty(result.data))
+            notif.warning("Tanlangan hududda ma'lumotlar topilmadi");
+        if (selectedLayerGroup.value === "balls")
+            ballLayers.value = result.data;
+        if (selectedLayerGroup.value === "zones")
+            zoneLayers.value = result.data;
+    } catch (error) {
+        notif.error(error.message);
+    } finally {
+        mapLoader.value = false;
+    }
+}
+
+async function fetchOsrLayerData() {
+    try {
+        mapLoader.value = true;
+        const result = await axios.get("/admin/map/accuracy", {
+            params: {
+                accuracy: selectedAccuracy.value,
+            },
+        });
+
+        if (isEmpty(result.data))
+            notif.warning("Tanlangan hududda ma'lumotlar topilmadi");
+        else ballLayers.value = result.data;
+
+        // if (selectedLayerGroup.value === "balls")
+        //     ballLayers.value = result.data;
+        // if (selectedLayerGroup.value === "zones")
+        //     zoneLayers.value = result.data;
     } catch (error) {
         notif.error(error.message);
     } finally {
@@ -392,7 +449,9 @@ function updateLayerGroup() {
             const ballLayer = L.geoJSON(geomArr, {
                 pane: "ballPane",
                 style: function (geoJsonFeature) {
-                    const levelColor = findColor(geoJsonFeature.geometry.level);
+                    const levelColor = setBallColor(
+                        geoJsonFeature.geometry.level
+                    );
                     return {
                         stroke: true,
                         fill: true,
@@ -419,26 +478,28 @@ function updateLayerGroup() {
             level: zone.level,
         }));
 
-        const zoneLayer = L.geoJSON(geomArr, {
-            pane: "zonePane",
-            style: function (geoJsonFeature) {
-                const levelColor = findColor(
-                    geoJsonFeature.geometry.level / 10
-                );
-                return {
-                    stroke: true,
-                    fill: true,
-                    color: levelColor,
-                    fillColor: levelColor,
-                    fillOpacity: 1,
-                    weight: 1,
-                };
-            },
-        }).addTo(map.value);
+        if (geomArr.length) {
+            const zoneLayer = L.geoJSON(geomArr, {
+                pane: "zonePane",
+                style: function (geoJsonFeature) {
+                    const levelColor = setZoneColor(
+                        geoJsonFeature.geometry.level
+                    );
+                    return {
+                        stroke: true,
+                        fill: true,
+                        color: levelColor,
+                        fillColor: levelColor,
+                        fillOpacity: 1,
+                        weight: 1,
+                    };
+                },
+            }).addTo(map.value);
 
-        const areaBounds = L.latLngBounds(zoneLayer.getBounds());
-        const zoneZoom = map.value.getBoundsZoom(areaBounds);
-        map.value.flyTo(areaBounds.getCenter(), zoneZoom);
+            const areaBounds = L.latLngBounds(zoneLayer.getBounds());
+            const zoneZoom = map.value.getBoundsZoom(areaBounds);
+            map.value.flyTo(areaBounds.getCenter(), zoneZoom);
+        }
     }
 }
 
@@ -483,8 +544,15 @@ function clearMarker() {
     map.value.flyTo(initialCenter.value, 6);
 }
 
-function findColor(index: number) {
-    const color = colors.find((color) => color.index == index)?.value;
+function setBallColor(level: number) {
+    const color = ballColors.find((color) => color.level == level)?.value;
+    return color ?? "black";
+}
+
+function setZoneColor(level: number) {
+    const color = zoneColors.find((color) =>
+        inRange(level * 10, color.range[0], color.range[1])
+    )?.value;
     return color ?? "black";
 }
 
@@ -510,16 +578,101 @@ function clearLayers() {
     >
         <Loader v-if="mapLoader" />
         <div id="map" style="height: inherit"></div>
-        <div id="left_control_block">
-            <div class="d-flex align-items-start">
+        <div id="right_bottom_block" v-if="selectedLayerGroup">
+            <BaseBlock
+                :title="$t('Conventional_designation')"
+                class="mb-3 pb-3"
+                btn-option-content
+            >
+                <table class="table table-sm table-bordered border-secondary">
+                    <template v-if="selectedLayerGroup === 'balls'">
+                        <thead class="bg-light">
+                            <tr>
+                                <th colspan="2">
+                                    {{
+                                        $t(
+                                            "Ball (MSK-64 makroseismik shkala bo'yicha)"
+                                        )
+                                    }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="ball in ballLayers">
+                                <td>{{ ball.level }}</td>
+                                <td>
+                                    <div
+                                        class="rectangle-layer"
+                                        :style="{
+                                            'background-color': setBallColor(
+                                                ball.level
+                                            ),
+                                        }"
+                                    ></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                    <template v-if="selectedLayerGroup === 'zones'">
+                        <thead class="bg-light">
+                            <tr>
+                                <th colspan="2">PGA, sm/s&sup2;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="zone in zoneLayers">
+                                <td>{{ zone.level }}</td>
+                                <td>
+                                    <div
+                                        class="rectangle-layer"
+                                        :style="{
+                                            'background-color': setZoneColor(
+                                                zone.level
+                                            ),
+                                        }"
+                                    ></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </template>
+                </table>
+            </BaseBlock>
+        </div>
+        <div class="position-absolute top-0 start-1 setting-div">
+            <button
+                class="btn btn-info"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasScrolling"
+                aria-controls="offcanvasScrolling"
+            >
+                <i class="si si-equalizer"></i>
+            </button>
+        </div>
+
+        <div
+            class="offcanvas offcanvas-start"
+            data-bs-scroll="true"
+            data-bs-backdrop="false"
+            tabindex="-1"
+            id="offcanvasScrolling"
+            aria-labelledby="offcanvasScrollingLabel"
+        >
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasScrollingLabel">
+                    <!-- Offcanvas with body scrolling -->
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="offcanvas-body">
                 <BaseBlock
-                    v-show="isSearchFormOverlayOpen"
                     :title="$t('Search_by_coordinates')"
-                    :class="[
-                        'animated',
-                        isSearchFormOverlayOpen ? 'fadeInLeft' : 'fadeOutLeft',
-                        'mb-3 pb-3',
-                    ]"
+                    class="mb-3 pb-3"
                     btn-option-content
                 >
                     <form @submit.prevent="onSearch">
@@ -563,14 +716,14 @@ function clearLayers() {
                         </div>
                         <div class="d-flex mt-3">
                             <button
-                                class="btn btn-warning"
+                                class="btn btn-sm btn-warning"
                                 type="button"
                                 @click="clearMarker"
                             >
                                 {{ $t("Clear") }}
                             </button>
                             <SubmitButton
-                                class="ms-auto"
+                                class="ms-auto btn-sm"
                                 :disabled="
                                     !searchForm.latitude ||
                                     !searchForm.longitude
@@ -580,77 +733,17 @@ function clearLayers() {
                         </div>
                     </form>
                 </BaseBlock>
-                <div
-                    class="bg-white border rounded-end py-2 px-3"
-                    @click="isSearchFormOverlayOpen = !isSearchFormOverlayOpen"
-                >
-                    <i class="si si-magnifier"></i>
-                </div>
+                <BorderLayersControl
+                    v-model:accuracy="selectedAccuracy"
+                    @update-dsr-area="onDsrAreaUpdated"
+                    @update-smr-area="onSmrAreaUpdated"
+                />
+                <LayersControl
+                    v-model:layer-group="selectedLayerGroup"
+                    :zone-disabled="!isNull(selectedAccuracy)"
+                />
             </div>
-            <BorderLayersControl
-                v-model:accuracy="selectedAccuracy"
-                @update-area="onAreaUpdated"
-            />
-            <LayersControl
-                v-model:layer-group="selectedLayerGroup"
-                :zone-disabled="!isNull(selectedAccuracy)"
-            />
         </div>
-        <div id="right_bottom_block" v-if="selectedLayerGroup">
-            <BaseBlock
-                :title="$t('Conventional_designation')"
-                class="mb-3 pb-3"
-                btn-option-content
-            >
-                <table class="table table-sm table-bordered border-secondary">
-                    <template v-if="selectedLayerGroup === 'balls'">
-                        <thead class="bg-light">
-                            <tr>
-                                <th colspan="2">{{ $t("Balls") }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="ball in ballLayers">
-                                <td>{{ ball.level }}</td>
-                                <td>
-                                    <div
-                                        class="rectangle-layer"
-                                        :style="{
-                                            'background-color': findColor(
-                                                ball.level
-                                            ),
-                                        }"
-                                    ></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </template>
-                    <template v-if="selectedLayerGroup === 'zones'">
-                        <thead class="bg-light">
-                            <tr>
-                                <th colspan="2">{{ $t("Zones") }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="zone in zoneLayers">
-                                <td>{{ zone.level }}</td>
-                                <td>
-                                    <div
-                                        class="rectangle-layer"
-                                        :style="{
-                                            'background-color': findColor(
-                                                zone.level / 10
-                                            ),
-                                        }"
-                                    ></div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </template>
-                </table>
-            </BaseBlock>
-        </div>
-
         <MarkerModal />
     </div>
 </template>
@@ -664,19 +757,6 @@ export default {
 </script> -->
 
 <style lang="scss" scoped>
-#left_control_block {
-    // border: 2px solid lightgray;
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    z-index: 1000;
-    // min-width: 100px;
-    width: 100%;
-    max-width: 20vw;
-    max-height: 85vh;
-    overflow-y: auto;
-}
-
 #right_control_block {
     // border: 2px solid lightgray;
     position: absolute;
@@ -706,5 +786,9 @@ export default {
     width: 2rem;
     height: 1rem;
     // background-color: purple;
+}
+
+.setting-div {
+    z-index: 1040;
 }
 </style>
