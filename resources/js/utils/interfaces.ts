@@ -5,3 +5,5 @@ export interface AreaData {
     admincenter_uz?: string;
     admincenter_ru?: string;
 }
+
+export type LayerGroupTypes = "balls" | "zones" | null;

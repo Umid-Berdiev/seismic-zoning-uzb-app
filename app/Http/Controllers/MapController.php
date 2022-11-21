@@ -32,27 +32,23 @@ class MapController extends Controller
     {
         $soatos = $request->soatos ? array_map(fn ($item) => (int)$item, $request->soatos) : [];
 
-        $balls = Ball::whereHas('districts', function ($query) use ($soatos) {
+        $data = [];
+
+        if ($request->layer_group === 'balls') $data = Ball::whereHas('districts', function ($query) use ($soatos) {
             $query->whereIn('soato', $soatos)
                 ->orWhereIn('region_soato', $soatos);
         })
             ->whereNot('soato', 17)
             ->get();
 
-        $zones = Zone::whereHas('districts', function ($query) use ($soatos) {
+        if ($request->layer_group === 'zones') $data = Zone::whereHas('districts', function ($query) use ($soatos) {
             $query->whereIn('soato', $soatos)
                 ->orWhereIn('region_soato', $soatos);
         })
             ->whereNot('soato', 17)
             ->get();
 
-        // $borders = Border::all();
-
-        return response()->json([
-            'balls' => $balls,
-            'zones' => $zones,
-            // 'borders' => $borders
-        ]);
+        return response()->json($data);
     }
 
     public function searchLayers(Request $request)

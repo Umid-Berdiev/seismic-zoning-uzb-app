@@ -13,7 +13,7 @@ import BaseBlock from "../BaseBlock.vue";
     >
         <div class="modal-dialog modal-dialog-popout" role="document">
             <div class="modal-content">
-                <BaseBlock title="Sismologik ma'lumotlar" transparent>
+                <BaseBlock title="Qo'shimcha ma'lumotlar" transparent>
                     <template #options>
                         <button
                             type="button"
@@ -79,8 +79,7 @@ import BaseBlock from "../BaseBlock.vue";
                                     aria-labelledby="nav-osr-tab"
                                     tabindex="0"
                                 >
-                                    Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit. Fuga, sunt.
+                                    Ma'lumot mavjud emas
                                 </div>
                                 <div
                                     class="tab-pane fade"
@@ -89,9 +88,7 @@ import BaseBlock from "../BaseBlock.vue";
                                     aria-labelledby="nav-dsr-tab"
                                     tabindex="0"
                                 >
-                                    Lorem ipsum dolor sit amet, consectetur
-                                    adipisicing elit. Dolores natus veritatis
-                                    laboriosam velit sequi? Cumque.
+                                    Ma'lumot mavjud emas
                                 </div>
                                 <div
                                     class="tab-pane fade"
@@ -100,7 +97,7 @@ import BaseBlock from "../BaseBlock.vue";
                                     aria-labelledby="nav-smr-tab"
                                     tabindex="0"
                                 >
-                                    Lorem ipsum dolor sit amet.
+                                    Ma'lumot mavjud emas
                                 </div>
                             </div>
                         </div>

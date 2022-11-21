@@ -1,52 +1,51 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useMainStore } from "@/stores/main";
 import { AreaData } from "@/utils/interfaces";
 import { useMapStore } from "@/stores/map";
 import BaseBlock from "../BaseBlock.vue";
 
 // Main store and Route
-const emits = defineEmits(["updateAccuracy"]);
+const emits = defineEmits(["update:accuracy", "updateArea"]);
 const store = useMainStore();
 const mapStore = useMapStore();
 
 // Component properties
-const props = defineProps({
-    horizontal: {
-        type: Boolean,
-        default: false,
-        description: "Horizontal menu in large screen width",
-    },
-    horizontalHover: {
-        type: Boolean,
-        default: false,
-        description: "Hover mode for horizontal menu",
-    },
-    horizontalJustify: {
-        type: Boolean,
-        default: false,
-        description: "Justify mode for horizontal menu",
-    },
-    disableClick: {
-        type: Boolean,
-        default: false,
-        description:
-            "Disables submenu click on 2+ level when we are in horizontal and hover mode",
-    },
-});
+const props = withDefaults(
+    defineProps<{
+        horizontal?: boolean;
+        horizontalHover?: boolean;
+        horizontalJustify?: boolean;
+        disableClick?: boolean;
+        accuracy: number | null;
+    }>(),
+    {
+        horizontal: false,
+        horizontalHo: false,
+        horizontalJu: false,
+        disableClick: false,
+        accuracy: null,
+    }
+);
 
 const dsrSections = ref([]);
 const regions = ref([]);
 const cities = ref([]);
-const selectedAccuracy = ref(null);
+const selectedAccuracy = computed({
+    get() {
+        return props.accuracy;
+    },
+    set(val) {
+        emits("update:accuracy", val);
+    },
+});
 
-watch(
-    () => selectedAccuracy.value,
-    (newVal) => {
-        emits("updateAccuracy", newVal);
-    }
-    // { immediate: true }
-);
+// watch(
+//     () => selectedAccuracy.value,
+//     (newVal) => {
+//         emits("update:accuracy", newVal);
+//     }
+// );
 
 onMounted(async () => {
     const res = await fetch("/admin/regions");
@@ -96,15 +95,16 @@ function onClickAction(area: AreaData) {
     // console.log({ area });
 
     // Object.assign(selectedArea, area);
-    mapStore.$reset();
-    mapStore.$patch({ selectedArea: area });
+    // mapStore.$reset();
+    // mapStore.$patch({ selectedArea: area });
+    emits("updateArea", area);
 }
 </script>
 
 <template>
     <BaseBlock :title="$t('Areas')" class="mb-3 pb-3" btn-option-content>
         <ul class="nav-main">
-            <li class="nav-main-item">
+            <li class="nav-main-item open">
                 <a
                     href="javascript:;"
                     class="nav-main-link nav-main-link-submenu"
@@ -120,7 +120,6 @@ function onClickAction(area: AreaData) {
                             <input
                                 class="form-check-input"
                                 type="radio"
-                                name="ball_radio"
                                 :id="'accuracy_' + accuracy"
                                 :value="accuracy"
                                 v-model="selectedAccuracy"
@@ -129,7 +128,7 @@ function onClickAction(area: AreaData) {
                                 class="form-check-label"
                                 :for="'accuracy_' + accuracy"
                             >
-                                {{ accuracy }}
+                                <span>{{ accuracy }}% aniqlik</span>
                             </label>
                         </div>
                     </li>
@@ -159,6 +158,36 @@ function onClickAction(area: AreaData) {
                         >
                             <span class="nav-main-link-name">
                                 {{ section.name }}
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-main-item">
+                <!-- Submenu Link -->
+                <a
+                    href="javascript:;"
+                    class="nav-main-link nav-main-link-submenu"
+                    @click.prevent="linkClicked($event, true)"
+                >
+                    <span class="nav-main-link-name">
+                        {{ "SMR (shahar)" }}
+                    </span>
+                </a>
+                <!-- END Submenu Link -->
+                <ul class="nav-main-submenu">
+                    <li
+                        v-for="(city, index) in cities"
+                        :key="`city-${index}`"
+                        class="nav-main-item"
+                    >
+                        <a
+                            href="javascript:;"
+                            class="nav-main-link"
+                            @click.prevent="onClickAction(city)"
+                        >
+                            <span class="nav-main-link-name">
+                                {{ city.name_uz }}
                             </span>
                         </a>
                     </li>
@@ -213,36 +242,6 @@ function onClickAction(area: AreaData) {
                                 <!-- END Submenu Link -->
                             </li>
                         </ul>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-main-item">
-                <!-- Submenu Link -->
-                <a
-                    href="javascript:;"
-                    class="nav-main-link nav-main-link-submenu"
-                    @click.prevent="linkClicked($event, true)"
-                >
-                    <span class="nav-main-link-name">
-                        {{ "SMR (shahar)" }}
-                    </span>
-                </a>
-                <!-- END Submenu Link -->
-                <ul class="nav-main-submenu">
-                    <li
-                        v-for="(city, index) in cities"
-                        :key="`city-${index}`"
-                        class="nav-main-item"
-                    >
-                        <a
-                            href="javascript:;"
-                            class="nav-main-link"
-                            @click.prevent="onClickAction(city)"
-                        >
-                            <span class="nav-main-link-name">
-                                {{ city.name_uz }}
-                            </span>
-                        </a>
                     </li>
                 </ul>
             </li>
