@@ -35,15 +35,15 @@ class MapController extends Controller
         $data = [];
 
         if ($request->layer_group === 'balls') $data = Ball::whereHas('districts', function ($query) use ($soatos) {
-            $query->whereIn('soato', $soatos)
-                ->orWhereIn('region_soato', $soatos);
+            $query->whereIn('region_soato', $soatos)
+                ->orWhereIn('soato', $soatos);
         })
             ->whereNot('soato', 17)
             ->get();
 
         if ($request->layer_group === 'zones') $data = Zone::whereHas('districts', function ($query) use ($soatos) {
-            $query->whereIn('soato', $soatos)
-                ->orWhereIn('region_soato', $soatos);
+            $query->whereIn('region_soato', $soatos)
+                ->orWhereIn('soato', $soatos);
         })
             ->whereNot('soato', 17)
             ->get();
