@@ -17,6 +17,12 @@ class District extends Model
         'admincenter_ru',
     ];
 
+    protected $casts = [
+        'soato' => 'integer',
+        'region_soato' => 'integer',
+    ];
+
+
     /**
      * Get the region that owns the District
      *

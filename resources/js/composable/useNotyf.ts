@@ -15,9 +15,9 @@ export const useNotyf = createSharedComposable(() => {
         types: [
             {
                 type: "warning",
-                // background: themeColors.warning,
+                background: "orange",
                 icon: {
-                    className: "fas fa-hand-paper",
+                    className: "si si-question",
                     tagName: "i",
                     text: "",
                 },

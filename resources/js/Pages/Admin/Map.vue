@@ -20,7 +20,6 @@ import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import { LayerGroupTypes } from "@/utils/interfaces";
 import { isEmpty, isNull } from "lodash";
-import SearchFormOverlay from "@/Components/overlays/SearchFormOverlay.vue";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -389,24 +388,26 @@ function updateLayerGroup() {
             level: ball.level,
         }));
 
-        const ballLayer = L.geoJSON(geomArr, {
-            pane: "ballPane",
-            style: function (geoJsonFeature) {
-                const levelColor = findColor(geoJsonFeature.geometry.level);
-                return {
-                    stroke: true,
-                    fill: true,
-                    color: levelColor,
-                    fillColor: levelColor,
-                    fillOpacity: 1,
-                    weight: 1,
-                };
-            },
-        }).addTo(map.value);
+        if (geomArr.length) {
+            const ballLayer = L.geoJSON(geomArr, {
+                pane: "ballPane",
+                style: function (geoJsonFeature) {
+                    const levelColor = findColor(geoJsonFeature.geometry.level);
+                    return {
+                        stroke: true,
+                        fill: true,
+                        color: levelColor,
+                        fillColor: levelColor,
+                        fillOpacity: 1,
+                        weight: 1,
+                    };
+                },
+            }).addTo(map.value);
 
-        const areaBounds = L.latLngBounds(ballLayer.getBounds());
-        const ballZoom = map.value.getBoundsZoom(areaBounds);
-        map.value.flyTo(areaBounds.getCenter(), ballZoom);
+            const areaBounds = L.latLngBounds(ballLayer.getBounds());
+            const ballZoom = map.value.getBoundsZoom(areaBounds);
+            map.value.flyTo(areaBounds.getCenter(), ballZoom);
+        }
     }
 
     if (selectedLayerGroup.value === "zones") {
