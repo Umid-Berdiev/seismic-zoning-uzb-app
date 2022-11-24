@@ -2,22 +2,20 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use MStaack\LaravelPostgis\Eloquent\PostgisTrait;
 
 class Ball extends Model
 {
-    // use HasFactory;
-
     use PostgisTrait;
 
     protected $fillable = [
         'soato',
         'level',
         'geom',
-        'accuracy'
+        'accuracy',
+        'details',
     ];
 
     protected $postgisFields = [

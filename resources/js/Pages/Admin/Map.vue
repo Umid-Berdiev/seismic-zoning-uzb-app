@@ -20,6 +20,7 @@ import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import { LayerGroupTypes } from "@/utils/interfaces";
 import { inRange, isEmpty, isNull } from "lodash";
+import VueformSlider from "@vueform/slider";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -29,6 +30,24 @@ L.Icon.Default.mergeOptions({
     shadowUrl,
 });
 
+interface Ball {
+    id?: number;
+    accuracy: number;
+    details: string;
+    geom: object;
+    level: number;
+    soato: string;
+}
+
+interface Zone {
+    id?: number;
+    accuracy: number;
+    details: string;
+    geom: object;
+    pga_value: string;
+    soato: string;
+}
+
 const props = defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
@@ -36,11 +55,11 @@ const props = defineProps({
     balls: Object,
     zones: Array,
 });
+
 const { t } = useI18n();
 const notif = useNotyf();
 const zoom = ref(6);
 const mapLoader = ref(false);
-const isSearchFormOverlayOpen = ref(false);
 const initialCenter = ref<LatLngExpression>([40.4111, 66.9]);
 const center = ref(initialCenter.value);
 const map = ref<Map | null>(null);
@@ -55,8 +74,8 @@ const tileProviders = reactive({
         "http://www.google.com/maps/vt?lyrs=s,h@189&gl=uz&x={x}&y={y}&z={z}"
     ),
 });
-const ballLayers = ref([]);
-const zoneLayers = ref([]);
+const ballLayers = ref<Ball[]>([]);
+const zoneLayers = ref<Zone[]>([]);
 const geojsonRegions = ref(null);
 const regionsGeojson = reactive({
     type: "FeatureCollection",
@@ -96,7 +115,11 @@ const searchForm = reactive({
     longitude: null,
 });
 const isMarkerModalOpen = ref(false);
+const layerOpacity = ref(1);
+const ballGeoJson = ref<L.GeoJSON | null>(null);
+const zoneGeoJson = ref<L.GeoJSON | null>(null);
 
+// hooks
 onMounted(async () => {
     // fetch geojson data
     mapLoader.value = true;
@@ -136,6 +159,7 @@ watch(
     // { immediate: true }
 );
 
+// functions
 async function onDsrAreaUpdated(area: import("@/utils/interfaces").AreaData) {
     mapLoader.value = true;
     selectedLayerGroup.value = "balls";
@@ -440,13 +464,13 @@ function updateLayerGroup() {
         map.value.createPane("ballPane");
         map.value.getPane("ballPane").style.zIndex = 400;
 
-        const geomArr = ballLayers.value.map((ball) => ({
+        const geomArr: any[] = ballLayers.value.map((ball: Ball) => ({
             ...ball.geom,
             level: ball.level,
         }));
 
         if (geomArr.length) {
-            const ballLayer = L.geoJSON(geomArr, {
+            ballGeoJson.value = L.geoJSON(geomArr, {
                 pane: "ballPane",
                 style: function (geoJsonFeature) {
                     const levelColor = setBallColor(
@@ -457,13 +481,13 @@ function updateLayerGroup() {
                         fill: true,
                         color: levelColor,
                         fillColor: levelColor,
-                        fillOpacity: 1,
+                        fillOpacity: layerOpacity.value,
                         weight: 1,
                     };
                 },
             }).addTo(map.value);
 
-            const areaBounds = L.latLngBounds(ballLayer.getBounds());
+            const areaBounds = L.latLngBounds(ballGeoJson.value.getBounds());
             const ballZoom = map.value.getBoundsZoom(areaBounds);
             map.value.flyTo(areaBounds.getCenter(), ballZoom);
         }
@@ -473,30 +497,30 @@ function updateLayerGroup() {
         map.value.createPane("zonePane");
         map.value.getPane("zonePane").style.zIndex = 400;
 
-        const geomArr = zoneLayers.value.map((zone) => ({
+        const geomArr: any[] = zoneLayers.value.map((zone: Zone) => ({
             ...zone.geom,
-            level: zone.level,
+            pga_value: zone.pga_value,
         }));
 
         if (geomArr.length) {
-            const zoneLayer = L.geoJSON(geomArr, {
+            zoneGeoJson.value = L.geoJSON(geomArr, {
                 pane: "zonePane",
                 style: function (geoJsonFeature) {
                     const levelColor = setZoneColor(
-                        geoJsonFeature.geometry.level
+                        geoJsonFeature?.geometry.pga_value
                     );
                     return {
                         stroke: true,
                         fill: true,
                         color: levelColor,
                         fillColor: levelColor,
-                        fillOpacity: 1,
+                        fillOpacity: layerOpacity.value,
                         weight: 1,
                     };
                 },
             }).addTo(map.value);
 
-            const areaBounds = L.latLngBounds(zoneLayer.getBounds());
+            const areaBounds = L.latLngBounds(zoneGeoJson.value.getBounds());
             const zoneZoom = map.value.getBoundsZoom(areaBounds);
             map.value.flyTo(areaBounds.getCenter(), zoneZoom);
         }
@@ -549,10 +573,8 @@ function setBallColor(level: number) {
     return color ?? "black";
 }
 
-function setZoneColor(level: number) {
-    const color = zoneColors.find((color) =>
-        inRange(level * 10, color.range[0], color.range[1])
-    )?.value;
+function setZoneColor(pga_value: string) {
+    const color = zoneColors.find((color) => color.range == pga_value)?.value;
     return color ?? "black";
 }
 
@@ -567,6 +589,11 @@ function clearLayers() {
 
     ballLayers.value = [];
     zoneLayers.value = [];
+}
+
+function updateLayerOpacities(value: number) {
+    ballGeoJson.value?.setStyle({ opacity: value, fillOpacity: value });
+    zoneGeoJson.value?.setStyle({ opacity: value, fillOpacity: value });
 }
 </script>
 
@@ -588,7 +615,7 @@ function clearLayers() {
                     <template v-if="selectedLayerGroup === 'balls'">
                         <thead class="bg-light">
                             <tr>
-                                <th colspan="2">
+                                <th colspan="2" style="text-transform: none">
                                     {{
                                         $t(
                                             "Ball (MSK-64 makroseismik shkala bo'yicha)"
@@ -616,18 +643,20 @@ function clearLayers() {
                     <template v-if="selectedLayerGroup === 'zones'">
                         <thead class="bg-light">
                             <tr>
-                                <th colspan="2">PGA, sm/s&sup2;</th>
+                                <th colspan="2" style="text-transform: none">
+                                    PGA, sm/s&sup2;
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="zone in zoneLayers">
-                                <td>{{ zone.level }}</td>
+                                <td>{{ zone.pga_value.replace("_", "-") }}</td>
                                 <td>
                                     <div
                                         class="rectangle-layer"
                                         :style="{
                                             'background-color': setZoneColor(
-                                                zone.level
+                                                zone.pga_value
                                             ),
                                         }"
                                     ></div>
@@ -742,20 +771,24 @@ function clearLayers() {
                     v-model:layer-group="selectedLayerGroup"
                     :zone-disabled="!isNull(selectedAccuracy)"
                 />
+                <br />
+                <VueformSlider
+                    v-model="layerOpacity"
+                    :min="0"
+                    :max="1"
+                    :step="0.01"
+                    :tooltips="false"
+                    :lazy="false"
+                    @update="updateLayerOpacities"
+                />
             </div>
         </div>
         <MarkerModal />
     </div>
 </template>
 
-<!-- <script>
-import AdminLayout from "@/Layouts/AdminLayout.vue";
-
-export default {
-    layout: AdminLayout,
-};
-</script> -->
-
+<style src="@vueform/slider/themes/default.css"></style>
+<style src="@/assets/scss/vendor/_vueform-slider.scss"></style>
 <style lang="scss" scoped>
 #right_control_block {
     // border: 2px solid lightgray;
@@ -779,7 +812,7 @@ export default {
     right: 1rem;
     bottom: 1rem;
     z-index: 800;
-    width: 370px;
+    max-width: 300px;
 }
 
 .rectangle-layer {

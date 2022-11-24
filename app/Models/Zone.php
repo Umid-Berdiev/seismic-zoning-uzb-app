@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use MStaack\LaravelPostgis\Eloquent\PostgisTrait;
 
 class Zone extends Model
 {
-    // use HasFactory;
-
     use PostgisTrait;
 
     protected $fillable = [
         'soato',
         'level',
-        'geom'
+        'geom',
+        'accuracy',
+        'details',
+        'pga_value',
     ];
 
     protected $postgisFields = [

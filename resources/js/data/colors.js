@@ -30,15 +30,15 @@ export const ballColors = [
 ];
 
 export const zoneColors = [
-    { range: [501, 551], value: "#b71c1c" },
-    { range: [451, 501], value: "#f44336" },
-    { range: [401, 451], value: "#ff9800" },
-    { range: [351, 401], value: "#ff9100" },
-    { range: [301, 351], value: "#ffc400" },
-    { range: [251, 301], value: "#ffff00" },
-    { range: [201, 251], value: "#64dd17" },
-    { range: [151, 201], value: "#00c853" },
-    { range: [101, 151], value: "#00b8d4" },
-    { range: [51, 101], value: "#b2ebf2" },
-    { range: [0, 51], value: "#e1f5fe" },
+    { range: "500_550", value: "#b71c1c" },
+    { range: "450_500", value: "#f44336" },
+    { range: "400_450", value: "#ff9800" },
+    { range: "350_400", value: "#ff9100" },
+    { range: "300_350", value: "#ffc400" },
+    { range: "250_300", value: "#ffff00" },
+    { range: "200_250", value: "#64dd17" },
+    { range: "150_200", value: "#00c853" },
+    { range: "100_150", value: "#00b8d4" },
+    { range: "50_100", value: "#b2ebf2" },
+    { range: "0_50", value: "#e1f5fe" },
 ];

@@ -41,7 +41,6 @@ class UploadShapefileController extends Controller
             $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
             $is_extracted = extractUploadedZip($zipfile);
             $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
-            $not_exists_soatos = [];
 
             if ($is_extracted) {
                 $Shapefile = new ShapefileReader($shape_file);
@@ -52,7 +51,9 @@ class UploadShapefileController extends Controller
                         continue;
                     }
 
-                    $level = $Geometry->getDataArray()['ZONE_VALUE'];
+                    $accuracy = $Geometry->getDataArray()['ACCURACY'] ?? null;
+                    $details = $Geometry->getDataArray()['DETAILS'] ?? '';
+                    $pgaValue = $Geometry->getDataArray()['PGA_VALUE'];
                     $soatoStr = $Geometry->getDataArray()['SOATO'];
                     $soatosArr = explode(',', $soatoStr);
                     $district_soatos = District::pluck('soato')->toArray();
@@ -66,24 +67,17 @@ class UploadShapefileController extends Controller
                     }
 
                     $shape_json = json_decode($Geometry->getGeoJSON());
-                    // $shape_json->type = 'MultiPolygon';
-                    // $shape_json->coordinates = [$shape_json->coordinates];
-                    // // dd($Geometry->getWKT());
                     $multi_polygon = new MultiPolygon();
-                    // $multi_polygon->initFromGeoJSON(json_encode((array)$shape_json));
                     $multi_polygon = $shape_json->type == 'Polygon' ? $multi_polygon->addPolygon($Geometry) : $Geometry;
-                    // dd($multi_polygon->getWKT());
-                    // dd($shape_json);
-                    // dd($Shapefile->getShapeType() . " - " . $Shapefile->getShapeType(Shapefile::FORMAT_STR));
-
-                    // dd($Geometry->getDataArray()['BALL_VALUE']);
 
                     $zone = Zone::updateOrCreate(
                         [
-                            'soato' => $soatoStr,
-                            'level' => $level
+                            'accuracy' => $accuracy,
+                            'pga_value' => $pgaValue,
+                            'soato' => $soatoStr
                         ],
                         [
+                            'details' => $details,
                             'geom' => $multi_polygon->getWKT()
                         ]
                     );
@@ -98,7 +92,7 @@ class UploadShapefileController extends Controller
 
                     ShapeImportLog::create([
                         'type' => 'Zona',
-                        'comment' => "$level daraja va $soatoStr soato kodlar bn zona sheypfayli yuklandi!"
+                        'comment' => "$pgaValue zona oralig'i va $soatoStr soato kodlar bn PGA sheypfayli yuklandi!"
                     ]);
                 }
 
@@ -137,6 +131,7 @@ class UploadShapefileController extends Controller
                     }
 
                     $accuracy = $Geometry->getDataArray()['ACCURACY'] ?? null;
+                    $details = $Geometry->getDataArray()['DETAILS'] ?? '';
                     $level = $Geometry->getDataArray()['BALL_VALUE'];
                     $soatoStr = $Geometry->getDataArray()['SOATO'];
                     $soatosArr = explode(',', $soatoStr);
@@ -145,7 +140,6 @@ class UploadShapefileController extends Controller
 
                     foreach ($soatosArr as $key => $soato) {
                         if (!in_array($soato, [...$district_soatos, ...$region_soatos]) && $soato != 17)
-                            // return redirect(route('statics'))->withErrors($soato, 'soato');
                             throw ValidationException::withMessages([
                                 'zip' => "$soato soato kodi bazada topilmadi, tekshirib qaytadan urunib ko'ring!",
                             ]);
@@ -154,19 +148,18 @@ class UploadShapefileController extends Controller
                     $shape_json = json_decode($Geometry->getGeoJSON());
                     $multi_polygon = new MultiPolygon();
                     $multi_polygon = $shape_json->type == 'Polygon' ? $multi_polygon->addPolygon($Geometry) : $Geometry;
-                    // dd($accuracy);
 
                     $ball = Ball::updateOrCreate(
                         [
-                            'soato' => $soatoStr,
-                            'level' => $level,
                             'accuracy' => $accuracy,
+                            'level' => $level,
+                            'soato' => $soatoStr
                         ],
                         [
+                            'details' => $details,
                             'geom' => $multi_polygon->getWKT()
                         ]
                     );
-                    // dd($ball);
 
                     foreach ($soatosArr as $key => $value) {
                         DB::table('area_layer')->insert([
@@ -178,7 +171,7 @@ class UploadShapefileController extends Controller
 
                     ShapeImportLog::create([
                         'type' => 'Ball',
-                        'comment' => "$level daraja va $soatoStr soato kod bn ball sheypfayli yuklandi!"
+                        'comment' => "$level daraja va $soatoStr soato kodlar bn Ball sheypfayli yuklandi!"
                     ]);
                 }
 
