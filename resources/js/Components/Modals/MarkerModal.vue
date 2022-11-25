@@ -3,8 +3,18 @@ import BaseBlock from "../BaseBlock.vue";
 
 const props = defineProps({
     searchResult: {
-        balls: [],
-        zones: [],
+        osr: {
+            balls: [],
+            zones: [],
+        },
+        dsr: {
+            balls: [],
+            zones: [],
+        },
+        smr: {
+            balls: [],
+            zones: [],
+        },
     },
 });
 </script>
@@ -65,7 +75,7 @@ const props = defineProps({
                                         DSR
                                     </button>
                                     <button
-                                        class="nav-link active"
+                                        class="nav-link"
                                         id="nav-osr-tab"
                                         data-bs-toggle="tab"
                                         data-bs-target="#nav-osr"
@@ -86,7 +96,71 @@ const props = defineProps({
                                     aria-labelledby="nav-smr-tab"
                                     tabindex="0"
                                 >
-                                    Ma'lumot mavjud emas
+                                    <table class="table table-sm">
+                                        <template
+                                            v-if="searchResult.smr.balls.length"
+                                        >
+                                            <tbody>
+                                                <tr
+                                                    v-for="ball in searchResult
+                                                        .smr.balls"
+                                                >
+                                                    <th>
+                                                        Ball (MSK-64
+                                                        makroseismik shkala
+                                                        bo'yicha)
+                                                    </th>
+                                                    <td>
+                                                        <div>
+                                                            Darajasi:
+                                                            {{ ball.level }}
+                                                        </div>
+                                                        <div>
+                                                            Aniqlik:
+                                                            {{ ball.accuracy }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template
+                                            v-if="searchResult.smr.zones.length"
+                                        >
+                                            <tbody>
+                                                <tr
+                                                    v-for="zone in searchResult
+                                                        .smr.zones"
+                                                >
+                                                    <th>PGA, sm/s&sup2;</th>
+                                                    <td>
+                                                        <div>
+                                                            PGA oralig'i:
+                                                            {{
+                                                                zone.pga_value.replace(
+                                                                    "_",
+                                                                    "-"
+                                                                )
+                                                            }}
+                                                        </div>
+                                                        <div>
+                                                            Aniqlik:
+                                                            {{ zone.accuracy }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template
+                                            v-if="
+                                                searchResult.smr.balls
+                                                    .length === 0 &&
+                                                searchResult.smr.zones
+                                                    .length === 0
+                                            "
+                                        >
+                                            Ma'lumot mavjud emas
+                                        </template>
+                                    </table>
                                 </div>
                                 <div
                                     class="tab-pane fade"
@@ -96,71 +170,69 @@ const props = defineProps({
                                     tabindex="0"
                                 >
                                     <table class="table table-sm">
-                                        <tbody>
-                                            <template
-                                                v-if="
-                                                    searchResult.balls.filter(
-                                                        (ball) =>
-                                                            ball.soato != '17'
-                                                    ).length
-                                                "
-                                            >
+                                        <template
+                                            v-if="searchResult.dsr.balls.length"
+                                        >
+                                            <tbody>
                                                 <tr
-                                                    v-for="(
-                                                        ball, ballIndex
-                                                    ) in searchResult.balls.filter(
-                                                        (ball) =>
-                                                            ball.soato != '17'
-                                                    )"
+                                                    v-for="ball in searchResult
+                                                        .dsr.balls"
                                                 >
                                                     <th>
-                                                        {{ ball.level }} ball
+                                                        Ball (MSK-64
+                                                        makroseismik shkala
+                                                        bo'yicha)
                                                     </th>
                                                     <td>
-                                                        <span
-                                                            >Aniqlik
-                                                            darajasi:</span
-                                                        >
-                                                        <span>{{
-                                                            ball.accuracy
-                                                        }}</span>
+                                                        <div>
+                                                            Darajasi:
+                                                            {{ ball.level }}
+                                                        </div>
+                                                        <div>
+                                                            Aniqlik:
+                                                            {{ ball.accuracy }}
+                                                        </div>
                                                     </td>
                                                 </tr>
-                                            </template>
-                                            <template
-                                                v-if="
-                                                    searchResult.zones.filter(
-                                                        (zone) =>
-                                                            zone.soato != '17'
-                                                    ).length
-                                                "
-                                            >
+                                            </tbody>
+                                        </template>
+                                        <template
+                                            v-if="searchResult.dsr.zones.length"
+                                        >
+                                            <tbody>
                                                 <tr
-                                                    v-for="(
-                                                        zone, zoneIndex
-                                                    ) in searchResult.zones.filter(
-                                                        (zone) =>
-                                                            zone.soato != '17'
-                                                    )"
+                                                    v-for="zone in searchResult
+                                                        .dsr.zones"
                                                 >
-                                                    <th>
-                                                        {{
-                                                            zone.pga_value
-                                                        }}
-                                                        zona
-                                                    </th>
+                                                    <th>PGA, sm/s&sup2;</th>
                                                     <td>
-                                                        <span
-                                                            >Aniqlik
-                                                            darajasi:</span
-                                                        >
-                                                        <span>{{
-                                                            zone.accuracy
-                                                        }}</span>
+                                                        <div>
+                                                            PGA oralig'i:
+                                                            {{
+                                                                zone.pga_value.replace(
+                                                                    "_",
+                                                                    "-"
+                                                                )
+                                                            }}
+                                                        </div>
+                                                        <div>
+                                                            Aniqlik:
+                                                            {{ zone.accuracy }}
+                                                        </div>
                                                     </td>
                                                 </tr>
-                                            </template>
-                                        </tbody>
+                                            </tbody>
+                                        </template>
+                                        <template
+                                            v-if="
+                                                searchResult.dsr.balls
+                                                    .length === 0 &&
+                                                searchResult.dsr.zones
+                                                    .length === 0
+                                            "
+                                        >
+                                            Ma'lumot mavjud emas
+                                        </template>
                                     </table>
                                 </div>
                                 <div
@@ -170,11 +242,71 @@ const props = defineProps({
                                     aria-labelledby="nav-osr-tab"
                                     tabindex="0"
                                 >
-                                    {{
-                                        searchResult.balls.filter(
-                                            (ball) => ball.soato == "17"
-                                        )
-                                    }}
+                                    <table class="table table-sm">
+                                        <template
+                                            v-if="searchResult.osr.balls.length"
+                                        >
+                                            <tbody>
+                                                <tr
+                                                    v-for="ball in searchResult
+                                                        .osr.balls"
+                                                >
+                                                    <th>
+                                                        Ball (MSK-64
+                                                        makroseismik shkala
+                                                        bo'yicha)
+                                                    </th>
+                                                    <td>
+                                                        <div>
+                                                            Darajasi:
+                                                            {{ ball.level }}
+                                                        </div>
+                                                        <div>
+                                                            Aniqlik:
+                                                            {{ ball.accuracy }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template
+                                            v-if="searchResult.osr.zones.length"
+                                        >
+                                            <tbody>
+                                                <tr
+                                                    v-for="zone in searchResult
+                                                        .osr.zones"
+                                                >
+                                                    <th>PGA, sm/s&sup2;</th>
+                                                    <td>
+                                                        <div>
+                                                            PGA oralig'i:
+                                                            {{
+                                                                zone.pga_value.replace(
+                                                                    "_",
+                                                                    "-"
+                                                                )
+                                                            }}
+                                                        </div>
+                                                        <div>
+                                                            Aniqlik:
+                                                            {{ zone.accuracy }}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template
+                                            v-if="
+                                                searchResult.osr.balls
+                                                    .length === 0 &&
+                                                searchResult.osr.zones
+                                                    .length === 0
+                                            "
+                                        >
+                                            Ma'lumot mavjud emas
+                                        </template>
+                                    </table>
                                 </div>
                             </div>
                         </div>

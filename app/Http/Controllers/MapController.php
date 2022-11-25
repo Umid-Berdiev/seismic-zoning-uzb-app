@@ -105,6 +105,13 @@ class MapController extends Controller
                 $osr['balls'][] = $ball;
                 continue;
             }
+            if (strlen($ball->soato) === 9 || strlen($ball->soato) === 14) {
+                $dsr['balls'][] = $ball;
+                continue;
+            }
+            if (strlen($ball->soato) === 6 || strlen($ball->soato) === 7) {
+                $smr['balls'][] = $ball;
+            }
         }
 
         $zoneQuery = "SELECT accuracy, id, pga_value, soato FROM zones WHERE ST_Contains(
@@ -113,6 +120,20 @@ class MapController extends Controller
         )";
 
         $zones = DB::select(DB::raw($zoneQuery));
+
+        foreach ($zones as $key => $zone) {
+            if ($zone->soato == '17') {
+                $osr['zones'][] = $zone;
+                continue;
+            }
+            if (strlen($zone->soato) === 9 || strlen($zone->soato) === 14) {
+                $dsr['zones'][] = $zone;
+                continue;
+            }
+            if (strlen($zone->soato) === 6 || strlen($zone->soato) === 7) {
+                $smr['zones'][] = $zone;
+            }
+        }
 
         return response()->json([
             'osr' => $osr,

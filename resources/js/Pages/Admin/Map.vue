@@ -119,8 +119,18 @@ const layerOpacity = ref(1);
 const ballGeoJson = ref<L.GeoJSON | null>(null);
 const zoneGeoJson = ref<L.GeoJSON | null>(null);
 const modalInfo = reactive({
-    balls: [],
-    zones: [],
+    osr: {
+        balls: [],
+        zones: [],
+    },
+    dsr: {
+        balls: [],
+        zones: [],
+    },
+    smr: {
+        balls: [],
+        zones: [],
+    },
 });
 
 // hooks
