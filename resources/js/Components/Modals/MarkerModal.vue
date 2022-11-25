@@ -51,14 +51,14 @@ const props = defineProps({
                                     role="tablist"
                                 >
                                     <button
-                                        class="nav-link"
+                                        class="nav-link active"
                                         id="nav-smr-tab"
                                         data-bs-toggle="tab"
                                         data-bs-target="#nav-smr"
                                         type="button"
                                         role="tab"
                                         aria-controls="nav-smr"
-                                        aria-selected="false"
+                                        aria-selected="true"
                                     >
                                         SMR
                                     </button>
@@ -82,7 +82,7 @@ const props = defineProps({
                                         type="button"
                                         role="tab"
                                         aria-controls="nav-osr"
-                                        aria-selected="true"
+                                        aria-selected="false"
                                     >
                                         OSR
                                     </button>
@@ -90,7 +90,7 @@ const props = defineProps({
                             </nav>
                             <div class="tab-content pt-3" id="nav-tabContent">
                                 <div
-                                    class="tab-pane fade"
+                                    class="tab-pane fade show active"
                                     id="nav-smr"
                                     role="tabpanel"
                                     aria-labelledby="nav-smr-tab"
@@ -236,7 +236,7 @@ const props = defineProps({
                                     </table>
                                 </div>
                                 <div
-                                    class="tab-pane fade show active"
+                                    class="tab-pane fade show"
                                     id="nav-osr"
                                     role="tabpanel"
                                     aria-labelledby="nav-osr-tab"

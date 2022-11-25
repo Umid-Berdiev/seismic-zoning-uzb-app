@@ -1,0 +1,1 @@
+import{N as o,b as r,d as s,s as a,l as n,t as p}from"./app.71aa8fad.js";const l=["type"],u=o({__name:"SubmitButton",props:{type:{default:"submit"}},setup(e){return(t,d)=>(r(),s("button",{type:e.type,class:"btn btn-alt-primary border border-light rounded"},[a(t.$slots,"default",{},()=>[n(p(t.$t("Save")),1)])],8,l))}});export{u as _};
