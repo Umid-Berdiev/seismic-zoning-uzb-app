@@ -118,6 +118,10 @@ const isMarkerModalOpen = ref(false);
 const layerOpacity = ref(1);
 const ballGeoJson = ref<L.GeoJSON | null>(null);
 const zoneGeoJson = ref<L.GeoJSON | null>(null);
+const modalInfo = reactive({
+    balls: [],
+    zones: [],
+});
 
 // hooks
 onMounted(async () => {
@@ -527,9 +531,20 @@ function updateLayerGroup() {
     }
 }
 
-async function onSearch() {
+async function pointSearch() {
     try {
         mapLoader.value = true;
+
+        const res = await axios({
+            url: route("map-point-in-polygon"),
+            params: {
+                latitude: searchForm.latitude,
+                longitude: searchForm.longitude,
+            },
+        });
+
+        Object.assign(modalInfo, res.data);
+
         map.value.eachLayer((layer) => {
             if (layer.options?.pane === "markerPane")
                 layer.removeFrom(map.value);
@@ -547,10 +562,6 @@ async function onSearch() {
             L.latLng([searchForm.latitude, searchForm.longitude]),
             10
         );
-
-        // const res = await axios.get("/admin/map/search", {
-        //     params: searchForm,
-        // });
     } catch (error) {
         //
     } finally {
@@ -704,7 +715,7 @@ function updateLayerOpacities(value: number) {
                     class="mb-3 pb-3"
                     btn-option-content
                 >
-                    <form @submit.prevent="onSearch">
+                    <form @submit.prevent="pointSearch">
                         <div class="d-flex gap-3">
                             <div class="small">
                                 <InputLabel for="latitude-input">
@@ -783,7 +794,7 @@ function updateLayerOpacities(value: number) {
                 />
             </div>
         </div>
-        <MarkerModal />
+        <MarkerModal :search-result="modalInfo" />
     </div>
 </template>
 

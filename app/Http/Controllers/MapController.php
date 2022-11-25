@@ -9,6 +9,7 @@ use App\Models\Zone;
 use GeoJson\Geometry\GeometryCollection;
 use GeoJson\Geometry\LineString;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class MapController extends Controller
@@ -82,5 +83,41 @@ class MapController extends Controller
         ])->get();
 
         return response()->json($balls);
+    }
+
+    public function findPointInPolygon(Request $request)
+    {
+        $osr = ['balls' => [], 'zones' => []];
+        $dsr = ['balls' => [], 'zones' => []];
+        $smr = ['balls' => [], 'zones' => []];
+        $lat = $request->latitude;
+        $lng = $request->longitude;
+
+        $ballQuery = "SELECT accuracy, id, level, soato FROM balls WHERE _ST_Contains(
+            geom::geometry,
+            'SRID=4326;POINT($lng $lat)'::geometry
+        )";
+
+        $balls = DB::select(DB::raw($ballQuery));
+
+        foreach ($balls as $key => $ball) {
+            if ($ball->soato == '17') {
+                $osr['balls'][] = $ball;
+                continue;
+            }
+        }
+
+        $zoneQuery = "SELECT accuracy, id, pga_value, soato FROM zones WHERE ST_Contains(
+            geom::geometry,
+            'SRID=4326;POINT($lng $lat)'::geometry
+        )";
+
+        $zones = DB::select(DB::raw($zoneQuery));
+
+        return response()->json([
+            'osr' => $osr,
+            'dsr' => $dsr,
+            'smr' => $smr
+        ]);
     }
 }

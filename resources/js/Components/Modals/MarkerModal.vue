@@ -1,5 +1,12 @@
 <script setup>
 import BaseBlock from "../BaseBlock.vue";
+
+const props = defineProps({
+    searchResult: {
+        balls: [],
+        zones: [],
+    },
+});
 </script>
 
 <template>
@@ -34,16 +41,16 @@ import BaseBlock from "../BaseBlock.vue";
                                     role="tablist"
                                 >
                                     <button
-                                        class="nav-link active"
-                                        id="nav-osr-tab"
+                                        class="nav-link"
+                                        id="nav-smr-tab"
                                         data-bs-toggle="tab"
-                                        data-bs-target="#nav-osr"
+                                        data-bs-target="#nav-smr"
                                         type="button"
                                         role="tab"
-                                        aria-controls="nav-osr"
-                                        aria-selected="true"
+                                        aria-controls="nav-smr"
+                                        aria-selected="false"
                                     >
-                                        OSR
+                                        SMR
                                     </button>
                                     <button
                                         class="nav-link"
@@ -58,25 +65,25 @@ import BaseBlock from "../BaseBlock.vue";
                                         DSR
                                     </button>
                                     <button
-                                        class="nav-link"
-                                        id="nav-smr-tab"
+                                        class="nav-link active"
+                                        id="nav-osr-tab"
                                         data-bs-toggle="tab"
-                                        data-bs-target="#nav-smr"
+                                        data-bs-target="#nav-osr"
                                         type="button"
                                         role="tab"
-                                        aria-controls="nav-smr"
-                                        aria-selected="false"
+                                        aria-controls="nav-osr"
+                                        aria-selected="true"
                                     >
-                                        SMR
+                                        OSR
                                     </button>
                                 </div>
                             </nav>
                             <div class="tab-content pt-3" id="nav-tabContent">
                                 <div
-                                    class="tab-pane fade show active"
-                                    id="nav-osr"
+                                    class="tab-pane fade"
+                                    id="nav-smr"
                                     role="tabpanel"
-                                    aria-labelledby="nav-osr-tab"
+                                    aria-labelledby="nav-smr-tab"
                                     tabindex="0"
                                 >
                                     Ma'lumot mavjud emas
@@ -88,16 +95,86 @@ import BaseBlock from "../BaseBlock.vue";
                                     aria-labelledby="nav-dsr-tab"
                                     tabindex="0"
                                 >
-                                    Ma'lumot mavjud emas
+                                    <table class="table table-sm">
+                                        <tbody>
+                                            <template
+                                                v-if="
+                                                    searchResult.balls.filter(
+                                                        (ball) =>
+                                                            ball.soato != '17'
+                                                    ).length
+                                                "
+                                            >
+                                                <tr
+                                                    v-for="(
+                                                        ball, ballIndex
+                                                    ) in searchResult.balls.filter(
+                                                        (ball) =>
+                                                            ball.soato != '17'
+                                                    )"
+                                                >
+                                                    <th>
+                                                        {{ ball.level }} ball
+                                                    </th>
+                                                    <td>
+                                                        <span
+                                                            >Aniqlik
+                                                            darajasi:</span
+                                                        >
+                                                        <span>{{
+                                                            ball.accuracy
+                                                        }}</span>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                            <template
+                                                v-if="
+                                                    searchResult.zones.filter(
+                                                        (zone) =>
+                                                            zone.soato != '17'
+                                                    ).length
+                                                "
+                                            >
+                                                <tr
+                                                    v-for="(
+                                                        zone, zoneIndex
+                                                    ) in searchResult.zones.filter(
+                                                        (zone) =>
+                                                            zone.soato != '17'
+                                                    )"
+                                                >
+                                                    <th>
+                                                        {{
+                                                            zone.pga_value
+                                                        }}
+                                                        zona
+                                                    </th>
+                                                    <td>
+                                                        <span
+                                                            >Aniqlik
+                                                            darajasi:</span
+                                                        >
+                                                        <span>{{
+                                                            zone.accuracy
+                                                        }}</span>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
                                 </div>
                                 <div
-                                    class="tab-pane fade"
-                                    id="nav-smr"
+                                    class="tab-pane fade show active"
+                                    id="nav-osr"
                                     role="tabpanel"
-                                    aria-labelledby="nav-smr-tab"
+                                    aria-labelledby="nav-osr-tab"
                                     tabindex="0"
                                 >
-                                    Ma'lumot mavjud emas
+                                    {{
+                                        searchResult.balls.filter(
+                                            (ball) => ball.soato == "17"
+                                        )
+                                    }}
                                 </div>
                             </div>
                         </div>

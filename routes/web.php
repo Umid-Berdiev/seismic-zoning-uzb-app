@@ -30,19 +30,21 @@ Route::get('/', function () {
 });
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
-    Route::get('/dashboard', fn () => redirect()->route('map'))
+    Route::get('dashboard', fn () => redirect()->route('map'))
         ->name('dashboard');
-    Route::get('/map', [MapController::class, 'index'])
+    Route::get('map', [MapController::class, 'index'])
         ->name('map');
-    Route::get('/map/smr-layer-data', [MapController::class, 'fetchSmrLayers'])
+    Route::get('map/smr-layer-data', [MapController::class, 'fetchSmrLayers'])
         ->name('map-smr-layer-data');
-    Route::get('/map/dsr-layer-data', [MapController::class, 'fetchDsrLayers'])
+    Route::get('map/dsr-layer-data', [MapController::class, 'fetchDsrLayers'])
         ->name('map-dsr-layer-data');
-    Route::get('/map/search', [MapController::class, 'searchLayers'])
+    Route::get('map/search', [MapController::class, 'searchLayers'])
         ->name('map-search');
-    Route::get('/map/accuracy', [MapController::class, 'fetchLayersByAccuracy'])
+    Route::get('map/accuracy', [MapController::class, 'fetchLayersByAccuracy'])
         ->name('map-accuracy');
-    Route::get('/statics', function () {
+    Route::get('map/point-in-polygon', [MapController::class, 'findPointInPolygon'])
+        ->name('map-point-in-polygon');
+    Route::get('statics', function () {
         $logs = ShapeImportLog::latest('id')->paginate();
         return Inertia::render('Admin/Statics', [
             'logs' => $logs
