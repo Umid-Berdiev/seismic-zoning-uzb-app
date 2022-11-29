@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useMainStore } from "@/stores/main";
-import LocalesDropdown from "@/Components/Dropdowns/LocalesDropdown.vue";
 
 // Grab example data
-import notifications from "@/data/notifications";
 import UserDropdown from "@/Components/Dropdowns/UserDropdown.vue";
 
 // Main store and Router
 const store = useMainStore();
+// store.sidebar({ mode: "close" });
 
 // Reactive variables
 const baseSearchTerm = ref("");
@@ -24,27 +23,6 @@ function eventHeaderSearch(event) {
     if (event.which === 27) {
         event.preventDefault();
         store.headerSearch({ mode: "off" });
-    }
-}
-
-function toggleFullScreen() {
-    // UniversalXPConnect privilege is required in Firefox
-    try {
-        if (window.netscape && netscape.security) {
-            // Firefox
-            netscape.security.PrivilegeManager.enablePrivilege(
-                "UniversalXPConnect"
-            );
-        }
-    } catch (e) {
-        alert("UniversalXPConnect privilege is required for this operation!");
-        return;
-    }
-
-    if ("fullScreen" in window) {
-        window.fullScreen = !window.fullScreen;
-    } else {
-        alert("Your browser does not support this example!");
     }
 }
 
@@ -99,18 +77,7 @@ onUnmounted(() => {
                     <!-- Right Section -->
                     <div class="d-flex align-items-center">
                         <slot name="content-right">
-                            <!-- <button
-                                class="btn btn-sm btn-alt-light"
-                                @click="toggleFullScreen"
-                            >
-                                {{ $t("full_screen_mode_text") }}
-                            </button> -->
-                            <!-- User Dropdown -->
                             <UserDropdown />
-                            <!-- END User Dropdown -->
-
-                            <!-- locale dropdown -->
-                            <!-- <LocalesDropdown /> -->
                         </slot>
                     </div>
                     <!-- END Right Section -->

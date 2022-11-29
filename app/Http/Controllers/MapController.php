@@ -55,24 +55,23 @@ class MapController extends Controller
         $soatos = $request->soatos;
         $data = [];
 
-        if ($request->layer_group === 'balls') $data = Ball::whereHas('districts', function ($query) use ($soatos) {
-            $query->whereIn('soato', $soatos);
-        })
-            ->whereNot('soato', 17)
-            ->get();
+        if ($request->layer_group === 'balls')
+            $data = Ball::whereHas('districts', function ($query) use ($soatos) {
+                $query->whereIn('soato', $soatos);
+            })
+                ->whereNot('soato', 17)
+                ->orderBy('level')
+                ->get();
 
-        if ($request->layer_group === 'zones') $data = Zone::whereHas('districts', function ($query) use ($soatos) {
-            $query->whereIn('soato', $soatos);
-        })
-            ->whereNot('soato', 17)
-            ->get();
+        if ($request->layer_group === 'zones')
+            $data = Zone::whereHas('districts', function ($query) use ($soatos) {
+                $query->whereIn('soato', $soatos);
+            })
+                ->whereNot('soato', 17)
+                ->orderBy('pga_value')
+                ->get();
 
         return response()->json($data);
-    }
-
-    public function searchLayers(Request $request)
-    {
-        # code...
     }
 
     public function fetchLayersByAccuracy(Request $request)
@@ -80,7 +79,9 @@ class MapController extends Controller
         $balls = Ball::where([
             ['accuracy', $request->accuracy],
             ['soato', 17]
-        ])->get();
+        ])
+            ->orderBy('level')
+            ->get();
 
         return response()->json($balls);
     }

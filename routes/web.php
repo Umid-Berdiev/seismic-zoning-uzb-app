@@ -30,6 +30,15 @@ Route::get('/', function () {
 });
 
 Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+    Route::get('profile', function () {
+        return Inertia::render('Admin/Profile');
+    })->name('profile');
+    Route::put('profile', [UserController::class, 'updateProfile'])
+        ->name('profile.update');
+    Route::get('profile/password', function () {
+        return Inertia::render('Admin/PasswordUpdatePage');
+    })->name('profile.password');
+    Route::post('profile/password', [UserController::class, 'updatePassword'])->name('update-password');
     Route::get('dashboard', fn () => redirect()->route('map'))
         ->name('dashboard');
     Route::get('map', [MapController::class, 'index'])

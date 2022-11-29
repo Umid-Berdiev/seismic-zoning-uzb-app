@@ -12,6 +12,7 @@ import BaseBlock from "@/Components/BaseBlock.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import InputError from "@/Components/InputError.vue";
+import SubmitButton from "@/Components/Buttons/SubmitButton.vue";
 
 const props = defineProps({
     users: {
@@ -23,29 +24,33 @@ const props = defineProps({
         default: () => [],
     },
 });
-const notyf = useNotyf();
+const notif = useNotyf();
 const modal = ref(null);
 // const modal = computed(() => Modal.getOrCreateInstance("#userFormModal"));
 const columns = reactive([
     {
-        name: "First name",
+        name: "Ismi",
         field: "first_name",
     },
     {
-        name: "Last name",
+        name: "Familiyasi",
         field: "last_name",
     },
     {
-        name: "Username",
+        name: "Foydalanuvchi nomi (Login)",
         field: "username",
     },
     {
-        name: "Email",
+        name: "Elektron manzili",
         field: "email",
     },
     {
-        name: "Role",
+        name: "Roli",
         field: "roles",
+    },
+    {
+        name: "Faollik statusi",
+        field: "is_active",
     },
     // {
     //     name: "Updated at",
@@ -58,6 +63,7 @@ const userObj = reactive({
     last_name: "",
     email: "",
     role_id: null,
+    is_active: null,
 });
 const userForm = useForm({
     username: "",
@@ -65,6 +71,7 @@ const userForm = useForm({
     last_name: "",
     email: "",
     role_id: null,
+    is_active: null,
 });
 const isEditing = ref(false);
 const isLoading = ref(false);
@@ -98,28 +105,28 @@ async function onModalFormSubmit() {
         isEditing.value
             ? userForm.put(route("users.update", userObj.id), {
                   onSuccess: () => {
-                      notyf.success("User successfully updated!");
+                      notif.success("Ma'lumotlar muvaffaqiyatli saqlandi!");
                       userForm.reset();
                       modal.value?.hide();
                   },
                   //   onError: (errorObj) => {
                   //       console.log({ errorObj });
-                  //       notyf.error("Error while updating user!");
+                  //       notif.error("Error while updating user!");
                   //   },
               })
             : userForm.post(route("users.store"), {
                   onSuccess: () => {
-                      notyf.success("User successfully updated!");
+                      notif.success("Ma'lumotlar muvaffaqiyatli saqlandi!");
                       userForm.reset();
                       modal.value?.hide();
                       //   modal.hide();
                   },
                   //   onError: (errorObj) => {
-                  //       notyf.error("Error while creating user!");
+                  //       notif.error("Error while creating user!");
                   //   },
               });
     } catch (error) {
-        notyf.error("Error while storing data!");
+        notif.error("Ma'lumotlarni saqlashda hatolik!");
     } finally {
         isLoading.value = false;
     }
@@ -134,6 +141,7 @@ function onEdit(id) {
     userForm.last_name = selectedUser.last_name;
     userForm.username = selectedUser.username;
     userForm.email = selectedUser.email;
+    userForm.is_active = selectedUser.is_active;
     // modal.value?.show();
 }
 
@@ -147,11 +155,11 @@ function deleteAction() {
     const confirmModal = Modal.getInstance("#modal-confirm");
     roleForm.delete(route("users.destroy", userObj.id), {
         onSuccess: () => {
-            notyf.success("User successfully removed!");
+            notif.success("User successfully removed!");
             // modal.value?.hide();
         },
         onError: (errorObj) => {
-            notyf.error("Error while deleting user!");
+            notif.error("Error while deleting user!");
         },
     });
     confirmModal.hide();
@@ -168,11 +176,11 @@ function deleteAction() {
                 data-bs-target="#userFormModal"
             >
                 <i class="si si-plus me-1"></i>
-                <span>Add</span>
+                <span>Yangi foydalanuvchi qo'shish</span>
             </button>
         </div>
 
-        <BaseBlock title="Users table" content-full>
+        <BaseBlock title="Foydalanuvchilar jadvali" content-full>
             <div v-if="users?.length == 0" class="text-center">
                 {{ $t("No_data") }}
             </div>
@@ -204,6 +212,13 @@ function deleteAction() {
                                             <td>{{ row.username }}</td>
                                             <td>{{ row.email }}</td>
                                             <td>{{ row.roles[0].name }}</td>
+                                            <td>
+                                                {{
+                                                    row.is_active
+                                                        ? "Aktiv"
+                                                        : "Aktiv emas"
+                                                }}
+                                            </td>
                                             <td class="d-flex gap-2">
                                                 <button
                                                     type="button"
@@ -246,7 +261,11 @@ function deleteAction() {
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="userFormModalLabel">
-                            {{ isEditing ? "Edit user data" : "Add user data" }}
+                            {{
+                                isEditing
+                                    ? "Foydalanuvchi ma'lumotlarini o'zgartirish"
+                                    : "Yangi foydalanuvchi ma'lumotlarini yaratish"
+                            }}
                         </h5>
                         <button
                             type="button"
@@ -260,7 +279,7 @@ function deleteAction() {
                             <div class="row">
                                 <div class="col-12 mb-3">
                                     <InputLabel
-                                        value="Username"
+                                        value="Foydalanuvchi nomi (login)"
                                         for="username"
                                     />
                                     <Input
@@ -273,10 +292,7 @@ function deleteAction() {
                                     />
                                 </div>
                                 <div class="col-12 mb-3">
-                                    <InputLabel
-                                        value="First name"
-                                        for="first_name"
-                                    />
+                                    <InputLabel value="Ismi" for="first_name" />
                                     <Input
                                         id="first_name"
                                         type="text"
@@ -288,7 +304,7 @@ function deleteAction() {
                                 </div>
                                 <div class="col-12 mb-3">
                                     <InputLabel
-                                        value="Last name"
+                                        value="Familiyasi"
                                         for="last_name"
                                     />
                                     <Input
@@ -301,7 +317,10 @@ function deleteAction() {
                                     />
                                 </div>
                                 <div v-if="!isEditing" class="col-12 mb-3">
-                                    <InputLabel value="Email" for="email" />
+                                    <InputLabel
+                                        value="Elektron manzili"
+                                        for="email"
+                                    />
                                     <Input
                                         id="email"
                                         type="text"
@@ -312,7 +331,7 @@ function deleteAction() {
                                     />
                                 </div>
                                 <div class="col-12 mb-3">
-                                    <InputLabel value="Role" for="user_role" />
+                                    <InputLabel value="Roli" for="user_role" />
                                     <select
                                         id="user_role"
                                         class="form-select"
@@ -321,7 +340,7 @@ function deleteAction() {
                                         v-model="userForm.role_id"
                                     >
                                         <option selected disabled :value="null">
-                                            Select one
+                                            Rol tanlang
                                         </option>
                                         <option
                                             v-for="item in roles"
@@ -334,17 +353,27 @@ function deleteAction() {
                                         :message="userForm.errors.role_id"
                                     />
                                 </div>
+                                <div class="col-12 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input
+                                            v-model="userForm.is_active"
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="user_status"
+                                            checked
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="user_status"
+                                            >Faolmi?</label
+                                        >
+                                    </div>
+                                </div>
 
                                 <div class="col-auto ms-auto">
-                                    <Button :disabled="userForm.processing">
-                                        <span
-                                            v-if="userForm.processing"
-                                            class="spinner-border spinner-border-sm"
-                                            role="status"
-                                            aria-hidden="true"
-                                        ></span>
-                                        <span v-else>{{ $t("Submit") }}</span>
-                                    </Button>
+                                    <SubmitButton
+                                        :loading="userForm.processing"
+                                    />
                                 </div>
                             </div>
                         </form>

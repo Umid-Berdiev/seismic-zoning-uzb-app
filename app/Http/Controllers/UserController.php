@@ -6,7 +6,9 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use InvalidArgumentException;
 
 class UserController extends Controller
 {
@@ -49,9 +51,10 @@ class UserController extends Controller
         $validated = $request->validate([
             'email' => 'required|string|email|max:100|unique:users',
             'username' => 'required|string|max:50',
-            'first_name' => 'nullable|string|max:50',
-            'last_name' => 'nullable|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
             'role_id' => 'required|numeric',
+            'is_active' => 'bool',
         ]);
 
         $user = User::create([
@@ -72,11 +75,14 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return Inertia::render('User/Show', [
+        return Inertia::render('Admin/Profile', [
             'user' => $user->only(
+                'email',
                 'id',
+                'is_active',
+                'first_name',
+                'last_name',
                 'username',
-                'email'
             )
         ]);
     }
@@ -103,8 +109,9 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'username' => 'required|string|max:50',
-            'first_name' => 'string|max:50',
-            'last_name' => 'string|max:50',
+            'first_name' => 'required|max:50',
+            'last_name' => 'required|max:50',
+            'is_active' => 'bool',
             // 'role_id' => 'numeric',
             // 'email' => 'required|string|email|max:100'
         ]);
@@ -112,10 +119,72 @@ class UserController extends Controller
         // dd($validated);
 
         $user->update($validated);
-        $user->roles()->detach();
-        $user->roles()->attach($request->role_id);
+
+        if ($request->has('role_id')) {
+            $user->roles()->detach();
+            $user->roles()->attach($request->role_id);
+        }
 
         return redirect(route('users.index'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function updateProfile(Request $request)
+    {
+        $validated = $request->validate([
+            'username' => 'required|string|max:50',
+            'first_name' => 'required|max:50',
+            'last_name' => 'required|max:50',
+            // 'role_id' => 'numeric',
+            // 'email' => 'required|string|email|max:100'
+        ]);
+
+        // dd($validated);
+
+        $user = User::find(auth()->id());
+        $user->update($validated);
+
+        return redirect(route('profile'));
+    }
+
+    /**
+     * Update profile password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string',
+            'confirm_password' => 'required|string',
+        ]);
+
+        $user = User::find(auth()->id());
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => "Hozirgi parol foydalanuvchi paroli bn mos kelmadi!",
+            ]);
+        }
+
+        if ($request->new_password !== $request->confirm_password) {
+            throw ValidationException::withMessages([
+                'confirm_password' => "Yangi parol bn tasdiq paroli mos kelmadi!",
+            ]);
+        }
+
+        $user->update(['password' => Hash::make($request->confirm_password)]);
+
+        return redirect(route('profile-password'));
     }
 
     /**

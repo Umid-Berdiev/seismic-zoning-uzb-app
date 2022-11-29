@@ -92,7 +92,8 @@ class UploadShapefileController extends Controller
 
                     ShapeImportLog::create([
                         'type' => 'Zona',
-                        'comment' => "$pgaValue zona oralig'i va $soatoStr soato kodlar bn PGA sheypfayli yuklandi!"
+                        // 'comment' => "$pgaValue zona oralig'i va $soatoStr soato kodlar bn PGA sheypfayli yuklandi!"
+                        'comment' => "zona oralig'i: $pgaValue va soato kodi: $soatoStr bo'lgan PGA qatlami yuklandi!"
                     ]);
                 }
 
@@ -171,7 +172,7 @@ class UploadShapefileController extends Controller
 
                     ShapeImportLog::create([
                         'type' => 'Ball',
-                        'comment' => "$level daraja va $soatoStr soato kodlar bn Ball sheypfayli yuklandi!"
+                        'comment' => "darajasi: $level, soato kodi: $soatoStr va aniqlik darajsi: $accuracy bo'lgan Ball qatlami yuklandi!"
                     ]);
                 }
 

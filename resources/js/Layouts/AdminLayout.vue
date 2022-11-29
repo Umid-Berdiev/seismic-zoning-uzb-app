@@ -6,6 +6,7 @@ import { useMainStore } from "@/stores/main";
 import BaseHeader from "@/Layouts/partials/Header.vue";
 import BaseSidebar from "@/Layouts/partials/Sidebar.vue";
 import BaseSideOverlay from "@/Layouts/partials/SideOverlay.vue";
+import { Link, usePage } from "@inertiajs/inertia-vue3";
 
 // Component properties
 defineProps({
@@ -18,11 +19,13 @@ defineProps({
 
 // Main store
 const store = useMainStore();
+const authUser = computed(() => usePage().props.value.auth.user);
+// store.sidebar({ mode: "close" });
 
 // Set default elements for this layout
 store.setLayout({
     header: true,
-    sidebar: true,
+    sidebar: authUser.value.role_slug === "admin",
     sideOverlay: false,
     footer: true,
 });
@@ -123,7 +126,7 @@ onMounted(() => {
         <!-- END Page Overlay -->
 
         <!-- Side Overlay -->
-        <BaseSideOverlay v-if="store.layout.sideOverlay">
+        <!-- <BaseSideOverlay v-if="store.layout.sideOverlay">
             <template #header>
                 <slot name="side-overlay-header"></slot>
             </template>
@@ -133,7 +136,7 @@ onMounted(() => {
             </template>
 
             <slot name="side-overlay"></slot>
-        </BaseSideOverlay>
+        </BaseSideOverlay> -->
         <!-- END Side Overlay -->
 
         <!-- Sidebar -->
@@ -160,7 +163,26 @@ onMounted(() => {
         <!-- Header -->
         <BaseHeader v-if="store.layout.header">
             <template #content-left>
-                <slot name="header-content-left"></slot>
+                <slot name="header-content-left">
+                    <div v-if="authUser.role_slug !== 'admin'">
+                        <Link
+                            href="/"
+                            class="d-flex gap-2 fw-semibold text-dual"
+                        >
+                            <span class="">
+                                <!-- <i class="fa fa-circle-notch text-primary"></i> -->
+                                <img
+                                    src="/images/circle-cropped.png"
+                                    alt="main_logo"
+                                    width="20"
+                                />
+                            </span>
+                            <span class="smini-hide fs-5 tracking-wider">
+                                {{ store.app.name }}
+                            </span>
+                        </Link>
+                    </div>
+                </slot>
             </template>
 
             <template #content-right>

@@ -18,11 +18,12 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'username',
-        'first_name',
-        'last_name',
         'email',
+        'first_name',
+        'is_active',
+        'last_name',
         'password',
+        'username',
     ];
 
     /**
@@ -45,10 +46,37 @@ class User extends Authenticatable
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['fullname', 'role_slug'];
+
+    protected function getFullnameAttribute(): string
+    {
+        return "$this->first_name $this->last_name";
+    }
+
+    protected function getRoleSlugAttribute(): string
+    {
+        return $this->roles()->first()->slug;
+    }
+
+    /**
      * The roles that belong to the user.
      */
     public function roles()
     {
         return $this->belongsToMany(Role::class);
     }
+
+    // /**
+    //  * Get the role associated with the User
+    //  *
+    //  * @return \Illuminate\Database\Eloquent\Relations\HasOne
+    //  */
+    // public function role(): HasOne
+    // {
+    //     return $this->hasOne(Role::class)->latestOfMany();
+    // }
 }

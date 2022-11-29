@@ -1,8 +1,17 @@
 <script setup>
 import { computed } from "vue";
 import { useForm, usePage } from "@inertiajs/inertia-vue3";
+import NavLink from "../NavLink.vue";
 
 const authUser = computed(() => usePage().props.value.auth.user);
+
+function gotoProfilePage() {
+    useForm().get(route("profile"));
+}
+
+function gotoChangePasswordPage() {
+    useForm().get(route("profile.password"));
+}
 </script>
 
 <template>
@@ -16,7 +25,7 @@ const authUser = computed(() => usePage().props.value.auth.user);
             aria-expanded="false"
         >
             <span class="">
-                {{ authUser?.email }}
+                {{ authUser?.fullname }}
             </span>
             <i class="fa fa-fw fa-angle-down"></i>
         </button>
@@ -34,11 +43,29 @@ const authUser = computed(() => usePage().props.value.auth.user);
                 <p class="mb-0 text-muted fs-sm fw-medium">Web Developer</p>
             </div> -->
             <div class="p-2">
+                <button
+                    class="btn dropdown-item"
+                    type="button"
+                    @click="gotoProfilePage"
+                >
+                    <span class="fs-sm fw-medium"> Profilni yangilash </span>
+                </button>
+            </div>
+            <div class="p-2">
+                <button
+                    class="btn dropdown-item"
+                    type="button"
+                    @click="gotoChangePasswordPage"
+                >
+                    <span class="fs-sm fw-medium"> Parolni o'zgartirish </span>
+                </button>
+            </div>
+            <div class="p-2">
                 <form
                     @submit.prevent="useForm().post(route('logout'))"
                     method="POST"
                 >
-                    <button type="submit" class="btn dropdown-item text-center">
+                    <button type="submit" class="btn dropdown-item">
                         <span class="fs-sm fw-medium">{{
                             $t("logout_text")
                         }}</span>

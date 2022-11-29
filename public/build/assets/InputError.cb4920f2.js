@@ -1,0 +1,1 @@
+import{G as s,I as a,b as t,d as r,e as n,t as o}from"./app.35649df7.js";const c={class:"text-danger animated fadeIn"},d={__name:"InputError",props:["message"],setup(e){return(i,m)=>s((t(),r("div",null,[n("small",c,o(e.message),1)],512)),[[a,e.message]])}};export{d as _};

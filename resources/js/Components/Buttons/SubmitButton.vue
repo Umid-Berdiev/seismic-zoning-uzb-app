@@ -7,11 +7,13 @@
 // });
 
 interface ButtonProps {
-    type?: string;
+    type?: "submit" | "button" | "reset";
+    loading?: boolean;
 }
 
 withDefaults(defineProps<ButtonProps>(), {
     type: "submit",
+    loading: false,
 });
 </script>
 
@@ -19,7 +21,14 @@ withDefaults(defineProps<ButtonProps>(), {
     <button
         :type="type"
         class="btn btn-alt-primary border border-light rounded"
+        :disabled="loading"
     >
+        <span
+            v-if="loading"
+            class="spinner-border spinner-border-sm me-1"
+            role="status"
+            aria-hidden="true"
+        ></span>
         <slot>
             {{ $t("Save") }}
         </slot>

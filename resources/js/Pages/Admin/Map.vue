@@ -793,6 +793,7 @@ function updateLayerOpacities(value: number) {
                     :zone-disabled="!isNull(selectedAccuracy)"
                 />
                 <br />
+                <div class="mb-2">Ko'rinish darajasi</div>
                 <VueformSlider
                     v-model="layerOpacity"
                     :min="0"
