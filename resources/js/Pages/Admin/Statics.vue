@@ -1,6 +1,7 @@
-<script setup>
-import { onMounted, reactive } from "vue";
-import { useForm } from "@inertiajs/inertia-vue3";
+<script setup lang="ts">
+import { onMounted, reactive, ref } from "vue";
+import { Inertia } from "@inertiajs/inertia";
+import { Link, useForm, usePage } from "@inertiajs/inertia-vue3";
 import { Modal } from "bootstrap";
 import { useNotyf } from "@/composable/useNotyf";
 import Input from "@/Components/Input.vue";
@@ -12,6 +13,7 @@ import BaseBlock from "@/Components/BaseBlock.vue";
 import Pagination from "@/Components/Pagination.vue";
 import ImportButton from "@/Components/Buttons/ImportButton.vue";
 import SubmitButton from "@/Components/Buttons/SubmitButton.vue";
+import { useSwal } from "@/composable/useSwal";
 
 const props = defineProps({
     logs: {
@@ -36,32 +38,32 @@ const props = defineProps({
 const notif = useNotyf();
 const columns = reactive([
     {
-        name: "Data type",
+        name: "Ma'lumot turi",
         field: "type",
     },
     {
-        name: "Comment",
+        name: "Izoh",
         field: "comment",
     },
     {
-        name: "Date",
+        name: "Yuklangan sanasi",
         field: "created_at",
     },
 ]);
 const layerTypeSelectState = reactive({
     options: [
         {
-            label: "Zones",
-            value: "zones.import.shape_file",
-        },
-        {
             label: "Balls",
             value: "balls.import.shape_file",
         },
         {
-            label: "Borders",
-            value: "borders.import.shape_file",
+            label: "Zones",
+            value: "zones.import.shape_file",
         },
+        // {
+        //     label: "Borders",
+        //     value: "borders.import.shape_file",
+        // },
         // {
         //     label: "DSR",
         //     value: "segments.import.shape_file",
@@ -72,6 +74,8 @@ const layerTypeSelectState = reactive({
 const importForm = useForm({
     zip: null,
 });
+const swal = useSwal();
+const fileInput = ref<HTMLInputElement>();
 
 // Apply a few Bootstrap 5 optimizations
 onMounted(() => {
@@ -87,6 +91,15 @@ onMounted(() => {
         selectLength.classList = "";
         selectLength.classList.add("form-select");
     }
+
+    const modalEl = document.getElementById("importStaticDataModal");
+    modalEl?.addEventListener("hidden.bs.modal", (event) => {
+        layerTypeSelectState.selectedOption = "balls.import.shape_file";
+        importForm.reset();
+
+        const file_input = document.getElementById("fileInput");
+        if (file_input) file_input.value = null;
+    });
 });
 
 async function onModalSubmit() {
@@ -94,10 +107,44 @@ async function onModalSubmit() {
         onSuccess: () => {
             notif.success("Data successfully imported!");
             const modal = Modal.getInstance("#importStaticDataModal");
-            importForm.reset();
             modal?.hide();
         },
     });
+}
+
+async function onRemove(layer_id: number, layer_type: "ball" | "pga") {
+    // Inertia.delete(`/layers/${layer_id}/${layer_type}`, {
+    //     onBefore: () => confirm("Are you sure you want to delete this record?"),
+    // });
+    const result = await swal.fire({
+        title: "Ishonchingiz komilmi?",
+        text: "O'chirilgandan ma'lumotni qayta tiklab bo'lmaydi!",
+        icon: "warning",
+        showCancelButton: true,
+        customClass: {
+            confirmButton: "btn btn-danger m-1",
+            cancelButton: "btn btn-secondary m-1",
+        },
+        confirmButtonText: "Ha, o'chiravering!",
+        cancelButtonText: "Yo'q, o'chirmang!",
+        // html: false,
+        preConfirm: () => {
+            return useForm().delete(
+                route(`layers.remove`, { layer_id, layer_type })
+            );
+        },
+    });
+
+    if (result.value) {
+        swal.fire(
+            "O'chirildi!",
+            "Ma'lumot muvoffaqiyatli o'chirildi.",
+            "success"
+        );
+        // result.dismiss can be 'overlay', 'cancel', 'close', 'esc', 'timer'
+    } else if (result.dismiss === "cancel") {
+        swal.fire("Bekor qilindi", "Ma'lumot saqlab qolindi :)", "error");
+    }
 }
 </script>
 
@@ -125,6 +172,7 @@ async function onModalSubmit() {
                                         >
                                             {{ th.name }}
                                         </th>
+                                        <th>Amallar</th>
                                     </tr>
                                 </thead>
                                 <DatasetItem tag="tbody" class="fs-sm">
@@ -142,6 +190,27 @@ async function onModalSubmit() {
                                                         "DD-MM-YYYY"
                                                     )
                                                 }}
+                                            </td>
+                                            <td
+                                                class="d-flex gap-1 align-items-center"
+                                            >
+                                                <a :href="row.zipfile_path">
+                                                    <i
+                                                        class="fa fa-download"
+                                                    ></i>
+                                                </a>
+                                                <button
+                                                    type="button"
+                                                    class="btn text-danger btn-link"
+                                                    @click="
+                                                        onRemove(
+                                                            row.layer_id,
+                                                            row.type
+                                                        )
+                                                    "
+                                                >
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     </template>
@@ -205,6 +274,8 @@ async function onModalSubmit() {
                                 </div>
                                 <div class="col-12 mb-4">
                                     <Input
+                                        ref="fileInput"
+                                        id="fileInput"
                                         type="file"
                                         accept="zip,application/octet-stream,application/zip,application/x-zip,application/x-zip-compressed"
                                         @change="

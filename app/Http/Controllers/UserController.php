@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use ErrorException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -19,13 +20,15 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('roles:id,name')->latest('id')->get();
-        $roles = Role::latest('id')->select(['id', 'name'])->get();
+        if (auth()->user()->role_slug === 'admin') {
+            $users = User::with('roles:id,name')->latest('id')->get();
+            $roles = Role::latest('id')->where('slug', '<>', 'admin')->get();
 
-        return Inertia::render('Admin/Users', [
-            'users' => $users,
-            'roles' => $roles
-        ]);
+            return Inertia::render('Admin/Users', [
+                'users' => $users,
+                'roles' => $roles
+            ]);
+        } else return redirect('/');
     }
 
     /**
@@ -54,13 +57,16 @@ class UserController extends Controller
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
             'role_id' => 'required|numeric',
+            'password' => 'required|string',
             'is_active' => 'bool',
         ]);
 
-        $user = User::create([
-            ...$validated,
-            'password' => Hash::make('password123')
-        ]);
+        if ($request->default_pwd) {
+            $user = User::create([
+                ...$validated,
+                'password' => Hash::make($request->default_pwd)
+            ]);
+        }
 
         $user->roles()->attach($request->role_id);
 

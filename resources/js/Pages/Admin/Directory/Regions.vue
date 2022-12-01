@@ -8,6 +8,7 @@ import Button from "@/Components/Button.vue";
 import BaseBlock from "@/Components/BaseBlock.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
+import cities from "@/data/cities";
 
 const props = defineProps({
     regions: {
@@ -19,12 +20,20 @@ const notyf = useNotyf();
 const modal = computed(() => Modal.getOrCreateInstance("#regionFormModal"));
 const columns = reactive([
     {
-        name: "Soato",
+        name: "Viloyat soato kodi",
         field: "soato",
     },
     {
-        name: "Name uz",
+        name: "Viloyat nomi",
         field: "name_uz",
+    },
+    {
+        name: "Shahar soato kodi",
+        field: "city_soato",
+    },
+    {
+        name: "Shahar nomi",
+        field: "city_name_uz",
     },
     // {
     //     name: "Name ru",
@@ -48,6 +57,7 @@ const regionObj = reactive({
 });
 const regionForm = useForm(regionObj);
 const isEditing = ref(false);
+const regionsWithCities = ref([]);
 
 onMounted(() => {
     modal.value?._element.addEventListener("hidden.bs.modal", (event) => {
@@ -68,6 +78,18 @@ onMounted(() => {
         selectLength.classList = "";
         selectLength.classList.add("form-select");
     }
+
+    regionsWithCities.value = props.regions.map((region) => {
+        const foundCity = cities.find((city) =>
+            String(city.soato).startsWith(region.soato)
+        );
+
+        return {
+            ...region,
+            city_name_uz: foundCity.name_uz,
+            city_soato: foundCity.soato,
+        };
+    });
 });
 
 async function onModalFormSubmit() {
@@ -140,7 +162,7 @@ function exportToExcel() {
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="(row, rowIndex) in regions"
+                                    v-for="(row, rowIndex) in regionsWithCities"
                                     :key="row.id"
                                 >
                                     <th scope="row">
@@ -148,9 +170,8 @@ function exportToExcel() {
                                     </th>
                                     <td>{{ row.soato }}</td>
                                     <td>{{ row.name_uz }}</td>
-                                    <!-- <td>{{ row.name_ru }}</td>
-                                    <td>{{ row.admincenter_uz }}</td>
-                                    <td>{{ row.admincenter_ru }}</td> -->
+                                    <td>{{ row.city_soato }}</td>
+                                    <td>{{ row.city_name_uz }}</td>
                                     <td class="d-flex gap-2">
                                         <button
                                             type="button"

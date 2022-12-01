@@ -14,6 +14,7 @@ use GeoJson\Geometry\MultiPolygon as GeometryMultiPolygon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use MStaack\LaravelPostgis\Geometries\LineString;
 use MStaack\LaravelPostgis\Geometries\MultiLineString;
@@ -35,10 +36,12 @@ class UploadShapefileController extends Controller
         ]);
 
         $extracted_file_path = base_path("storage/app/uploads/unzip");
+        $zipped_file_path = "/storage/zip";
+        $zipfile = $request->file("zip");
+        $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
+        $zipfile->storeAs('public/zip', "$zipfile_name.zip");
 
         try {
-            $zipfile = $request->file("zip");
-            $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
             $is_extracted = extractUploadedZip($zipfile);
             $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
 
@@ -91,9 +94,10 @@ class UploadShapefileController extends Controller
                     }
 
                     ShapeImportLog::create([
-                        'type' => 'Zona',
-                        // 'comment' => "$pgaValue zona oralig'i va $soatoStr soato kodlar bn PGA sheypfayli yuklandi!"
-                        'comment' => "zona oralig'i: $pgaValue va soato kodi: $soatoStr bo'lgan PGA qatlami yuklandi!"
+                        'comment' => "zona oralig'i: $pgaValue va soato kodi: $soatoStr bo'lgan PGA qatlami yuklandi!",
+                        'layer_id' => $zone->id,
+                        'type' => 'pga',
+                        'zipfile_path' => "$zipped_file_path/$zipfile_name.zip"
                     ]);
                 }
 
@@ -114,11 +118,13 @@ class UploadShapefileController extends Controller
             'zip' => 'required|file:zip'
         ]);
 
-        $extracted_file_path = base_path("storage/app/uploads/unzip");
+        $extracted_file_path = base_path("/storage/app/uploads/unzip");
+        $zipped_file_path = "/storage/zip";
+        $zipfile = $request->file("zip");
+        $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
+        $zipfile->storeAs('public/zip', "$zipfile_name.zip");
 
         try {
-            $zipfile = $request->file("zip");
-            $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
             $is_extracted = extractUploadedZip($zipfile);
             $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
 
@@ -169,10 +175,12 @@ class UploadShapefileController extends Controller
                             'layer_type' => 'ball'
                         ]);
                     }
-
+                    // dd($ball);
                     ShapeImportLog::create([
-                        'type' => 'Ball',
-                        'comment' => "darajasi: $level, soato kodi: $soatoStr va aniqlik darajsi: $accuracy bo'lgan Ball qatlami yuklandi!"
+                        'comment' => "darajasi: $level, soato kodi: $soatoStr va aniqlik darajsi: $accuracy bo'lgan Ball qatlami yuklandi!",
+                        'layer_id' => $ball->id,
+                        'type' => 'ball',
+                        'zipfile_path' => "$zipped_file_path/$zipfile_name.zip"
                     ]);
                 }
 
@@ -187,137 +195,170 @@ class UploadShapefileController extends Controller
         }
     }
 
-    public function bordersImportShapefile(Request $request)
+    // public function bordersImportShapefile(Request $request)
+    // {
+    //     $request->validate([
+    //         'zip' => 'required|file:zip'
+    //     ]);
+
+    //     $extracted_file_path = base_path("storage/app/uploads/unzip");
+
+    //     try {
+    //         $zipfile = $request->file("zip");
+    //         $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
+    //         $is_extracted = extractUploadedZip($zipfile);
+    //         $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
+
+    //         if ($is_extracted) {
+    //             $Shapefile = new ShapefileReader($shape_file);
+    //             $linestrings = [];
+
+    //             while ($Geometry = $Shapefile->fetchRecord()) {
+    //                 // Skip the record if marked as "deleted"
+    //                 if ($Geometry->isDeleted()) {
+    //                     continue;
+    //                 }
+
+    //                 // dd($Shapefile->getShapeType(Shapefile::FORMAT_STR));
+    //                 // dd($Geometry->getArray()['points']);
+    //                 $soato = $Geometry->getDataArray()['SOATO'];
+    //                 $points = [];
+    //                 foreach ($Geometry->getArray()['points'] as $key => $value) {
+    //                     $points[] = new Point($value['x'], $value['y']);
+    //                 }
+    //                 $linestrings[] = new LineString($points);
+    //             }
+
+    //             $border = Border::updateOrCreate(
+    //                 [
+    //                     'soato' => $soato,
+    //                 ],
+    //                 [
+    //                     'geom' => new MultiLineString($linestrings)
+    //                 ]
+    //             );
+
+    //             foreach (explode(',', $soato) as $key => $value) {
+    //                 DB::table('area_layer')->insert([
+    //                     'area_soato' => $value,
+    //                     'layer_id' => $border->id,
+    //                     'layer_type' => 'border'
+    //                 ]);
+    //             }
+
+    //             ShapeImportLog::create([
+    //                 'type' => 'Chegara',
+    //                 'comment' => "$soato soato kod bn chegara sheypfayli yuklandi!"
+    //             ]);
+
+    //             File::cleanDirectory($extracted_file_path);
+
+    //             return redirect(route('statics'));
+    //         }
+    //     } catch (Error $e) {
+    //         throw ValidationException::withMessages([
+    //             'zip' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
+
+    // public function segmentsImportShapefile(Request $request)
+    // {
+    //     $request->validate([
+    //         'zip' => 'required|file:zip'
+    //     ]);
+
+    //     $extracted_file_path = base_path("storage/app/uploads/unzip");
+
+    //     try {
+    //         $zipfile = $request->file("zip");
+    //         $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
+    //         $is_extracted = extractUploadedZip($zipfile);
+    //         $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
+
+    //         if ($is_extracted) {
+    //             $Shapefile = new ShapefileReader($shape_file);
+
+    //             while ($Geometry = $Shapefile->fetchRecord()) {
+    //                 // Skip the record if marked as "deleted"
+    //                 if ($Geometry->isDeleted()) {
+    //                     continue;
+    //                 }
+
+    //                 // dd($Geometry->getDataArray()['BALL_VALUE']);
+    //                 $soato = $Geometry->getDataArray()['SOATO'];
+    //                 $name = $Geometry->getDataArray()['NAME'];
+
+    //                 $segment = Segment::updateOrCreate(
+    //                     [
+    //                         'soato' => $soato,
+    //                         'name' => $name,
+    //                     ],
+    //                     [
+    //                         'geom' => $Geometry->getWKT()
+    //                     ]
+    //                 );
+
+    //                 foreach (explode(',', $soato) as $key => $value) {
+    //                     DB::table('area_layer')->insert([
+    //                         'area_soato' => $value,
+    //                         'layer_id' => $segment->id,
+    //                         'layer_type' => 'segment'
+    //                     ]);
+    //                 }
+
+    //                 ShapeImportLog::create([
+    //                     'type' => 'DSR',
+    //                     'comment' => "$soato soato kod bn DSR sheypfayli yuklandi!"
+    //                 ]);
+    //             }
+
+    //             File::cleanDirectory($extracted_file_path);
+
+    //             return redirect(route('statics'));
+    //         }
+    //     } catch (Error $e) {
+    //         // Print detailed error information
+    //         // echo "Error Type: " . $e->getErrorType()
+    //         //     . "\nMessage: " . $e->getMessage()
+    //         //     . "\nDetails: " . $e->getDetails();
+
+    //         throw ValidationException::withMessages([
+    //             'zip' => $e->getMessage(),
+    //         ]);
+    //     }
+    // }
+
+    public function removeLayer($layer_id, $layer_type)
     {
-        $request->validate([
-            'zip' => 'required|file:zip'
-        ]);
-
-        $extracted_file_path = base_path("storage/app/uploads/unzip");
-
-        try {
-            $zipfile = $request->file("zip");
-            $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
-            $is_extracted = extractUploadedZip($zipfile);
-            $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
-
-            if ($is_extracted) {
-                $Shapefile = new ShapefileReader($shape_file);
-                $linestrings = [];
-
-                while ($Geometry = $Shapefile->fetchRecord()) {
-                    // Skip the record if marked as "deleted"
-                    if ($Geometry->isDeleted()) {
-                        continue;
-                    }
-
-                    // dd($Shapefile->getShapeType(Shapefile::FORMAT_STR));
-                    // dd($Geometry->getArray()['points']);
-                    $soato = $Geometry->getDataArray()['SOATO'];
-                    $points = [];
-                    foreach ($Geometry->getArray()['points'] as $key => $value) {
-                        $points[] = new Point($value['x'], $value['y']);
-                    }
-                    $linestrings[] = new LineString($points);
-                }
-
-                $border = Border::updateOrCreate(
-                    [
-                        'soato' => $soato,
-                    ],
-                    [
-                        'geom' => new MultiLineString($linestrings)
-                    ]
-                );
-
-                foreach (explode(',', $soato) as $key => $value) {
-                    DB::table('area_layer')->insert([
-                        'area_soato' => $value,
-                        'layer_id' => $border->id,
-                        'layer_type' => 'border'
-                    ]);
-                }
-
-                ShapeImportLog::create([
-                    'type' => 'Chegara',
-                    'comment' => "$soato soato kod bn chegara sheypfayli yuklandi!"
-                ]);
-
-                File::cleanDirectory($extracted_file_path);
-
-                return redirect(route('statics'));
-            }
-        } catch (Error $e) {
-            throw ValidationException::withMessages([
-                'zip' => $e->getMessage(),
-            ]);
+        if ($layer_type === 'ball') {
+            $ball = Ball::find($layer_id);
+            $ball && $ball->delete();
         }
-    }
 
-    public function segmentsImportShapefile(Request $request)
-    {
-        $request->validate([
-            'zip' => 'required|file:zip'
-        ]);
-
-        $extracted_file_path = base_path("storage/app/uploads/unzip");
-
-        try {
-            $zipfile = $request->file("zip");
-            $zipfile_name = pathinfo($zipfile->getClientOriginalName(), PATHINFO_FILENAME);
-            $is_extracted = extractUploadedZip($zipfile);
-            $shape_file = "$extracted_file_path/$zipfile_name/$zipfile_name.shp";
-
-            if ($is_extracted) {
-                $Shapefile = new ShapefileReader($shape_file);
-
-                while ($Geometry = $Shapefile->fetchRecord()) {
-                    // Skip the record if marked as "deleted"
-                    if ($Geometry->isDeleted()) {
-                        continue;
-                    }
-
-                    // dd($Geometry->getDataArray()['BALL_VALUE']);
-                    $soato = $Geometry->getDataArray()['SOATO'];
-                    $name = $Geometry->getDataArray()['NAME'];
-
-                    $segment = Segment::updateOrCreate(
-                        [
-                            'soato' => $soato,
-                            'name' => $name,
-                        ],
-                        [
-                            'geom' => $Geometry->getWKT()
-                        ]
-                    );
-
-                    foreach (explode(',', $soato) as $key => $value) {
-                        DB::table('area_layer')->insert([
-                            'area_soato' => $value,
-                            'layer_id' => $segment->id,
-                            'layer_type' => 'segment'
-                        ]);
-                    }
-
-                    ShapeImportLog::create([
-                        'type' => 'DSR',
-                        'comment' => "$soato soato kod bn DSR sheypfayli yuklandi!"
-                    ]);
-                }
-
-                File::cleanDirectory($extracted_file_path);
-
-                return redirect(route('statics'));
-            }
-        } catch (Error $e) {
-            // Print detailed error information
-            // echo "Error Type: " . $e->getErrorType()
-            //     . "\nMessage: " . $e->getMessage()
-            //     . "\nDetails: " . $e->getDetails();
-
-            throw ValidationException::withMessages([
-                'zip' => $e->getMessage(),
-            ]);
+        if ($layer_type === 'pga') {
+            $pga = Zone::find($layer_id);
+            $pga && $pga->delete();
         }
+
+        // dd($layer_id, $layer_type);
+
+        $logs = ShapeImportLog::where([
+            ['type', $layer_type],
+            ['layer_id', $layer_id]
+        ])->get();
+
+        foreach ($logs as $key => $log) {
+            $zipfile_path = str_replace('storage', 'public', $log->zipfile_path);
+            // dd($zipfile_path);
+
+            if (Storage::exists($zipfile_path)) {
+                Storage::delete($zipfile_path);
+            }
+
+            $log->delete();
+        }
+
+        return redirect(route('statics'));
     }
 }

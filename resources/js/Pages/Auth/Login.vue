@@ -69,7 +69,7 @@ async function onSubmit() {
                                                 'is-invalid':
                                                     form.errors?.email?.length,
                                             }"
-                                            v-model="form.email"
+                                            v-model.trim="form.email"
                                         />
                                         <div
                                             class="invalid-feedback animated fadeIn"

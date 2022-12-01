@@ -60,6 +60,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         ]);
     })
         ->name('statics');
+
     Route::resource('users', UserController::class);
 
     Route::prefix('directory')->group(function () {
@@ -87,8 +88,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
 
     Route::post('zones/import/shapefile', [UploadShapefileController::class, 'zonesImportShapefile'])->name('zones.import.shape_file');
     Route::post('balls/import/shapefile', [UploadShapefileController::class, 'ballsImportShapefile'])->name('balls.import.shape_file');
-    Route::post('borders/import/shapefile', [UploadShapefileController::class, 'bordersImportShapefile'])->name('borders.import.shape_file');
-    Route::post('segments/import/shapefile', [UploadShapefileController::class, 'segmentsImportShapefile'])->name('segments.import.shape_file');
+    // Route::post('borders/import/shapefile', [UploadShapefileController::class, 'bordersImportShapefile'])->name('borders.import.shape_file');
+    // Route::post('segments/import/shapefile', [UploadShapefileController::class, 'segmentsImportShapefile'])->name('segments.import.shape_file');
+    Route::delete('layers/{layer_id}/{layer_type}', [UploadShapefileController::class, 'removeLayer'])->name('layers.remove');
 });
 
 require __DIR__ . '/auth.php';

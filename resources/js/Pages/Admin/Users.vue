@@ -63,7 +63,8 @@ const userObj = reactive({
     last_name: "",
     email: "",
     role_id: null,
-    is_active: null,
+    is_active: true,
+    password: "password123",
 });
 const userForm = useForm({
     username: "",
@@ -71,10 +72,13 @@ const userForm = useForm({
     last_name: "",
     email: "",
     role_id: null,
-    is_active: null,
+    is_active: true,
+    password: "password123",
 });
 const isEditing = ref(false);
 const isLoading = ref(false);
+const passwordFieldInputType = ref("text");
+const pwdInput = ref(null);
 
 onMounted(() => {
     modal.value = new Modal("#userFormModal");
@@ -109,21 +113,13 @@ async function onModalFormSubmit() {
                       userForm.reset();
                       modal.value?.hide();
                   },
-                  //   onError: (errorObj) => {
-                  //       console.log({ errorObj });
-                  //       notif.error("Error while updating user!");
-                  //   },
               })
             : userForm.post(route("users.store"), {
                   onSuccess: () => {
                       notif.success("Ma'lumotlar muvaffaqiyatli saqlandi!");
                       userForm.reset();
                       modal.value?.hide();
-                      //   modal.hide();
                   },
-                  //   onError: (errorObj) => {
-                  //       notif.error("Error while creating user!");
-                  //   },
               });
     } catch (error) {
         notif.error("Ma'lumotlarni saqlashda hatolik!");
@@ -163,6 +159,12 @@ function deleteAction() {
         },
     });
     confirmModal.hide();
+}
+
+function changePwdInputType() {
+    passwordFieldInputType.value === "password"
+        ? (passwordFieldInputType.value = "text")
+        : (passwordFieldInputType.value = "password");
 }
 </script>
 
@@ -339,7 +341,7 @@ function deleteAction() {
                                         :disabled="userForm.role_id === 1"
                                         v-model="userForm.role_id"
                                     >
-                                        <option selected disabled :value="null">
+                                        <option selected hidden :value="null">
                                             Rol tanlang
                                         </option>
                                         <option
@@ -352,6 +354,39 @@ function deleteAction() {
                                     <InputError
                                         :message="userForm.errors.role_id"
                                     />
+                                </div>
+                                <div class="col-12 mb-3" v-if="!isEditing">
+                                    <InputLabel for="pwd_input">
+                                        Yangi parol
+                                    </InputLabel>
+                                    <div class="input-group">
+                                        <Input
+                                            ref="pwdInput"
+                                            :type="passwordFieldInputType"
+                                            class="form-control"
+                                            v-model="userForm.password"
+                                        />
+                                        <button
+                                            type="button"
+                                            class="input-group-text"
+                                            @click="changePwdInputType"
+                                        >
+                                            <i
+                                                v-if="
+                                                    passwordFieldInputType ===
+                                                    'password'
+                                                "
+                                                class="far fa-eye"
+                                            ></i>
+                                            <i
+                                                v-if="
+                                                    passwordFieldInputType ===
+                                                    'text'
+                                                "
+                                                class="far fa-eye-slash"
+                                            ></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <div class="form-check form-switch">

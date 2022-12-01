@@ -267,8 +267,10 @@ async function onSmrAreaUpdated(area: import("@/utils/interfaces").AreaData) {
         clearLayers();
 
         if (Number(area.soato)) {
+            // console.log({ area });
+
             const foundArea =
-                String(area.soato).length > 4
+                area.area_type === "district"
                     ? districtsGeojson.features?.find(
                           (feature) =>
                               feature.properties.soato === Number(area.soato)
@@ -601,7 +603,9 @@ function setZoneColor(pga_value: string) {
 
 function clearLayers() {
     map.value?.eachLayer((layer) => {
+        // console.log({ layer });
         if (
+            layer.options?.pane === "overlayPane" ||
             layer.options?.pane === "ballPane" ||
             layer.options?.pane === "zonePane"
         )
@@ -626,7 +630,10 @@ function updateLayerOpacities(value: number) {
     >
         <Loader v-if="mapLoader" />
         <div id="map" style="height: inherit"></div>
-        <div id="right_bottom_block" v-if="selectedLayerGroup">
+        <div
+            id="right_bottom_block"
+            v-if="ballLayers.length || zoneLayers.length"
+        >
             <BaseBlock
                 :title="$t('Conventional_designation')"
                 class="mb-3 pb-3"

@@ -52,7 +52,7 @@ class MapController extends Controller
 
     public function fetchSmrLayers(Request $request)
     {
-        $soatos = $request->soatos;
+        $soatos = $request->soatos ?? [];
         $data = [];
 
         if ($request->layer_group === 'balls')

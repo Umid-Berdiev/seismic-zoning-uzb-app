@@ -11,7 +11,7 @@
             "properties": {
                 "object_id": 1,
                 "name_uz": "Nukus",
-                "soato": 1735
+                "soato": 173501
             },
             "geometry": {
                 "type": "Polygon",
@@ -62,7 +62,7 @@
             "properties": {
                 "object_id": 2,
                 "name_uz": "Urganch",
-                "soato": 1733
+                "soato": 173301
             },
             "geometry": {
                 "type": "Polygon",
@@ -125,7 +125,7 @@
             "properties": {
                 "object_id": 3,
                 "name_uz": "Navoiy",
-                "soato": 1712
+                "soato": 171201
             },
             "geometry": {
                 "type": "Polygon",
@@ -205,7 +205,7 @@
             "properties": {
                 "object_id": 4,
                 "name_uz": "Buhoro",
-                "soato": 1706
+                "soato": 170601
             },
             "geometry": {
                 "type": "Polygon",
@@ -263,7 +263,7 @@
             "properties": {
                 "object_id": 5,
                 "name_uz": "Samarqand",
-                "soato": 1718
+                "soato": 171801
             },
             "geometry": {
                 "type": "Polygon",
@@ -357,7 +357,7 @@
             "properties": {
                 "object_id": 6,
                 "name_uz": "Termez",
-                "soato": 1722
+                "soato": 172201
             },
             "geometry": {
                 "type": "Polygon",
@@ -425,7 +425,7 @@
             "properties": {
                 "object_id": 7,
                 "name_uz": "Jizzah",
-                "soato": 1708
+                "soato": 170801
             },
             "geometry": {
                 "type": "Polygon",
@@ -541,7 +541,7 @@
             "properties": {
                 "object_id": 8,
                 "name_uz": "Guliston",
-                "soato": 1724
+                "soato": 172401
             },
             "geometry": {
                 "type": "Polygon",
@@ -587,7 +587,7 @@
             "properties": {
                 "object_id": 9,
                 "name_uz": "Andijon",
-                "soato": 1703
+                "soato": 1703203
             },
             "geometry": {
                 "type": "Polygon",
@@ -673,7 +673,7 @@
             "properties": {
                 "object_id": 10,
                 "name_uz": "Namangan",
-                "soato": 1714
+                "soato": 1714212
             },
             "geometry": {
                 "type": "Polygon",
@@ -765,7 +765,7 @@
             "properties": {
                 "object_id": 11,
                 "name_uz": "Farg'ona",
-                "soato": 1730
+                "soato": 1730233
             },
             "geometry": {
                 "type": "Polygon",
@@ -839,7 +839,7 @@
             "properties": {
                 "object_id": 12,
                 "name_uz": "Toshkent",
-                "soato": 1727
+                "soato": 172701
             },
             "geometry": {
                 "type": "Polygon",
@@ -963,7 +963,7 @@
             "properties": {
                 "object_id": 13,
                 "name_uz": "Qarshi",
-                "soato": 1710
+                "soato": 171001
             },
             "geometry": {
                 "type": "Polygon",

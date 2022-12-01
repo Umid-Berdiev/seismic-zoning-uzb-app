@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import { Link } from "@inertiajs/inertia-vue3";
+import { Link, usePage } from "@inertiajs/inertia-vue3";
 import { useMainStore } from "@/stores/main";
 import BaseNavigation from "@/Components/BaseNavigation.vue";
 
@@ -63,6 +63,13 @@ const classContainer = computed(() => {
         "nav-main-horizontal-justify": props.horizontalJustify,
     };
 });
+const authUser = computed(() => usePage().props.value.auth.user);
+
+const computedNodes = computed(() => {
+    if (authUser?.value?.role_slug !== "admin") {
+        return props.nodes.filter((node) => node.name !== "Users");
+    } else return props.nodes;
+});
 
 // Checks if a submenu path is part of the URL path
 function subIsActive(paths) {
@@ -111,7 +118,7 @@ function linkClicked(e, submenu) {
 <template>
     <ul :class="classContainer">
         <li
-            v-for="(node, index) in nodes"
+            v-for="(node, index) in computedNodes"
             :key="`node-${index}`"
             :class="{
                 'nav-main-heading': node.heading,

@@ -6,7 +6,11 @@ import { useMapStore } from "@/stores/map";
 import BaseBlock from "../BaseBlock.vue";
 
 // Main store and Route
-const emits = defineEmits(["update:accuracy", "updateSmrArea", 'updateDsrArea']);
+const emits = defineEmits([
+    "update:accuracy",
+    "updateSmrArea",
+    "updateDsrArea",
+]);
 const store = useMainStore();
 const mapStore = useMapStore();
 
@@ -95,8 +99,8 @@ function onDsrClickAction(area: AreaData) {
     emits("updateDsrArea", area);
 }
 
-function onSmrClickAction(area: AreaData) {
-    emits("updateSmrArea", area);
+function onSmrClickAction(area: AreaData, area_type: "city" | "district") {
+    emits("updateSmrArea", { ...area, area_type });
 }
 </script>
 
@@ -183,7 +187,7 @@ function onSmrClickAction(area: AreaData) {
                         <a
                             href="javascript:;"
                             class="nav-main-link"
-                            @click.prevent="onSmrClickAction(city)"
+                            @click.prevent="onSmrClickAction(city, 'city')"
                         >
                             <span class="nav-main-link-name">
                                 {{ city.name_uz }}
@@ -232,7 +236,9 @@ function onSmrClickAction(area: AreaData) {
                                 <a
                                     href="javascript:;"
                                     class="nav-main-link"
-                                    @click.prevent="onSmrClickAction(district)"
+                                    @click.prevent="
+                                        onSmrClickAction(district, 'district')
+                                    "
                                 >
                                     <span class="nav-main-link-name">
                                         {{ district.name_uz }}

@@ -10,7 +10,9 @@ class ShapeImportLog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'type',
         'comment',
+        'layer_id',
+        'type',
+        'zipfile_path',
     ];
 }

@@ -25,7 +25,7 @@ const authUser = computed(() => usePage().props.value.auth.user);
 // Set default elements for this layout
 store.setLayout({
     header: true,
-    sidebar: authUser.value.role_slug === "admin",
+    sidebar: authUser.value.role_slug !== "visitor",
     sideOverlay: false,
     footer: true,
 });
@@ -164,7 +164,7 @@ onMounted(() => {
         <BaseHeader v-if="store.layout.header">
             <template #content-left>
                 <slot name="header-content-left">
-                    <div v-if="authUser.role_slug !== 'admin'">
+                    <div v-if="authUser.role_slug === 'visitor'">
                         <Link
                             href="/"
                             class="d-flex gap-2 fw-semibold text-dual"

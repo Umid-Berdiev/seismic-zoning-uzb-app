@@ -1,0 +1,15 @@
+export default [
+    { name_uz: "Nukus", soato: 173501 },
+    { name_uz: "Urganch", soato: 173301 },
+    { name_uz: "Navoiy", soato: 171201 },
+    { name_uz: "Buhoro", soato: 170601 },
+    { name_uz: "Samarqand", soato: 171801 },
+    { name_uz: "Termez", soato: 172201 },
+    { name_uz: "Jizzah", soato: 170801 },
+    { name_uz: "Guliston", soato: 172401 },
+    { name_uz: "Andijon", soato: 1703203 },
+    { name_uz: "Namangan", soato: 1714212 },
+    { name_uz: "Farg'ona", soato: 1730233 },
+    { name_uz: "Toshkent", soato: 172701 },
+    { name_uz: "Qarshi", soato: 171001 },
+];
