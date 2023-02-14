@@ -1,7 +1,7 @@
 ### Prerequisites
 
 1. A recent web browser (Chrome, Edge, Firefox, ...)
-2. PHP with composer installed
+2. PHP > 8.x with composer installed
 3. [Nodejs LTS](https://nodejs.org/en/) _(> 16.x with npm >8)_ installed
 4. Knowledge with [Typescript](https://github.com/microsoft/typescript) _(> 4.x)_ (should not be installed globally)
 5. (recommended) [VSCode](https://code.visualstudio.com/ with [Volar](https://marketplace.visualstudio.com/items?itemName=vue.volar)
@@ -50,7 +50,7 @@ yarn dev
 
 This will run the `dev` script from the `package.json` file.
 
-To build production version, run the following command:
+To build production version, run one of the following commands:
 
 ```bash
 # using pnpm (recommended)
