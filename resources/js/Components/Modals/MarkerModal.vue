@@ -15,6 +15,10 @@ const props = defineProps({
             balls: [],
             zones: [],
         },
+        fyy: {
+            balls: [],
+            zones: [],
+        },
     },
 });
 </script>
@@ -85,6 +89,18 @@ const props = defineProps({
                                         aria-selected="false"
                                     >
                                         OSR
+                                    </button>
+                                    <button
+                                        class="nav-link"
+                                        id="nav-fyy-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#nav-fyy"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="nav-fyy"
+                                        aria-selected="false"
+                                    >
+                                        Faol yer yoriqlari
                                     </button>
                                 </div>
                             </nav>
@@ -304,6 +320,34 @@ const props = defineProps({
                                                     .length === 0
                                             "
                                         >
+                                            Ma'lumot mavjud emas
+                                        </template>
+                                    </table>
+                                </div>
+                                <div
+                                    class="tab-pane fade show"
+                                    id="nav-fyy"
+                                    role="tabpanel"
+                                    aria-labelledby="nav-fyy-tab"
+                                    tabindex="0"
+                                >
+                                    <table class="table table-sm">
+                                        <template v-if="searchResult.fyy">
+                                            <tbody>
+                                                <tr
+                                                    v-for="item in searchResult.fyy"
+                                                >
+                                                    <th>
+                                                        {{ item.Nomi }}
+                                                    </th>
+                                                    <td>
+                                                        <b>Yer yorig'i:</b>
+                                                        {{ item.Yer_yorig_ }}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+                                        <template v-else>
                                             Ma'lumot mavjud emas
                                         </template>
                                     </table>

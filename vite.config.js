@@ -28,4 +28,10 @@ export default defineConfig({
             include: path.resolve(__dirname, "./resources/js/locales/**"),
         }),
     ],
+    resolve: {
+        alias: {
+            "@publicPath": path.resolve(__dirname, "./public"),
+        },
+    },
+    // assetsInclude: ["**/*.docx"],
 });

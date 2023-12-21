@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
-import { useMainStore } from "@/stores/main";
+import { computed, onMounted, ref } from "vue";
 import { AreaData } from "@/utils/interfaces";
-import { useMapStore } from "@/stores/map";
-import BaseBlock from "../BaseBlock.vue";
+import gruntFile from "@publicPath/files/grunt_1.pdf";
+import { useForm } from "@inertiajs/inertia-vue3";
 
 // Main store and Route
 const emits = defineEmits([
     "update:accuracy",
     "updateSmrArea",
     "updateDsrArea",
+    "updateFyy",
 ]);
-const store = useMainStore();
-const mapStore = useMapStore();
 
 // Component properties
 const props = withDefaults(
@@ -44,13 +42,6 @@ const selectedAccuracy = computed({
     },
 });
 
-// watch(
-//     () => selectedAccuracy.value,
-//     (newVal) => {
-//         emits("update:accuracy", newVal);
-//     }
-// );
-
 onMounted(async () => {
     const res = await fetch("/admin/regions");
     regions.value = await res.json();
@@ -63,14 +54,14 @@ onMounted(async () => {
             soato: feature.properties.soato,
             name_uz: feature.properties.name_uz,
         }))
-        .sort((a, b) => a.soato > b.soato);
+        .sort((a: any, b: any) => a.soato > b.soato);
 });
 
 // Main menu toggling and mobile functionality
 function linkClicked(e: Event, submenu: string) {
     if (submenu) {
         // Get closest li element
-        let el = e.target.closest("li");
+        let el = e.target?.closest("li");
 
         // Check if we are in a large screen, have horizontal navigation and hover is enabled
         if (
@@ -85,9 +76,11 @@ function linkClicked(e: Event, submenu: string) {
                 el.classList.remove("open");
             } else {
                 // .. else if submenu is closed, close all other (same level) submenus first before open it
-                Array.from(el.closest("ul").children).forEach((element) => {
-                    element.classList.remove("open");
-                });
+                Array.from(el.closest("ul").children).forEach(
+                    (element: any) => {
+                        element.classList.remove("open");
+                    }
+                );
 
                 el.classList.add("open");
             }
@@ -102,154 +95,189 @@ function onDsrClickAction(area: AreaData) {
 function onSmrClickAction(area: AreaData, area_type: "city" | "district") {
     emits("updateSmrArea", { ...area, area_type });
 }
+
+function handleGruntBtnClick() {
+    window.open(gruntFile); //opens the pdf in a new tab
+}
+
+function onAccelerogramLinkClick() {
+    useForm().get(route("accelerograms.charts"));
+}
 </script>
 
 <template>
-    <BaseBlock :title="$t('Areas')" class="mb-3 pb-3" btn-option-content>
-        <ul class="nav-main">
-            <li class="nav-main-item open">
-                <a
-                    href="javascript:;"
-                    class="nav-main-link nav-main-link-submenu"
-                    @click.prevent="linkClicked($event, true)"
-                >
-                    <span class="nav-main-link-name">
-                        {{ "OSR" }}
-                    </span>
-                </a>
-                <ul class="nav-main-submenu">
-                    <li class="nav-main-item" v-for="accuracy in [90, 95, 98]">
-                        <div class="form-check">
-                            <input
-                                class="form-check-input"
-                                type="radio"
-                                :id="'accuracy_' + accuracy"
-                                :value="accuracy"
-                                v-model="selectedAccuracy"
-                            />
-                            <label
-                                class="form-check-label small"
-                                :for="'accuracy_' + accuracy"
-                            >
-                                <span>{{ accuracy }}% aniqlik</span>
-                            </label>
-                        </div>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-main-item">
-                <a
-                    href="javascript:;"
-                    class="nav-main-link nav-main-link-submenu"
-                    @click.prevent="linkClicked($event, true)"
-                >
-                    <span class="nav-main-link-name">
-                        {{ "DSR" }}
-                    </span>
-                </a>
-                <ul class="nav-main-submenu">
-                    <li
-                        v-for="(section, index) in dsrSections"
-                        :key="`section-${index}`"
-                        class="nav-main-item"
-                    >
-                        <!-- Submenu Link -->
-                        <a
-                            href="javascript:;"
-                            class="nav-main-link"
-                            @click.prevent="onDsrClickAction(section)"
+    <!-- <BaseBlock :title="$t('Areas')" class="mb-3" btn-option-content> -->
+    <ul class="nav-main mb-3">
+        <li class="nav-main-item open">
+            <a
+                href="javascript:;"
+                class="nav-main-link nav-main-link-submenu"
+                @click.prevent="linkClicked($event, true)"
+            >
+                <span class="nav-main-link-name">
+                    {{ "OSR" }}
+                </span>
+            </a>
+            <ul class="nav-main-submenu">
+                <li class="nav-main-item" v-for="accuracy in [90, 95, 98]">
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            :id="'accuracy_' + accuracy"
+                            :value="accuracy"
+                            v-model="selectedAccuracy"
+                        />
+                        <label
+                            class="form-check-label small"
+                            :for="'accuracy_' + accuracy"
                         >
-                            <span class="nav-main-link-name">
-                                {{ section.name }}
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-main-item">
-                <!-- Submenu Link -->
-                <a
-                    href="javascript:;"
-                    class="nav-main-link nav-main-link-submenu"
-                    @click.prevent="linkClicked($event, true)"
+                            <span>{{ accuracy }}% aniqlik</span>
+                        </label>
+                    </div>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-main-item">
+            <a
+                href="javascript:;"
+                class="nav-main-link nav-main-link-submenu"
+                @click.prevent="linkClicked($event, true)"
+            >
+                <span class="nav-main-link-name">
+                    {{ "DSR" }}
+                </span>
+            </a>
+            <ul class="nav-main-submenu">
+                <li
+                    v-for="(section, index) in dsrSections"
+                    :key="`section-${index}`"
+                    class="nav-main-item"
                 >
-                    <span class="nav-main-link-name">
-                        {{ "SMR (shahar)" }}
-                    </span>
-                </a>
-                <!-- END Submenu Link -->
-                <ul class="nav-main-submenu">
-                    <li
-                        v-for="(city, index) in cities"
-                        :key="`city-${index}`"
-                        class="nav-main-item"
+                    <!-- Submenu Link -->
+                    <a
+                        href="javascript:;"
+                        class="nav-main-link"
+                        @click.prevent="onDsrClickAction(section)"
                     >
-                        <a
-                            href="javascript:;"
-                            class="nav-main-link"
-                            @click.prevent="onSmrClickAction(city, 'city')"
-                        >
-                            <span class="nav-main-link-name">
-                                {{ city.name_uz }}
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="nav-main-item">
-                <!-- Submenu Link -->
-                <a
-                    href="javascript:;"
-                    class="nav-main-link nav-main-link-submenu"
-                    @click.prevent="linkClicked($event, true)"
+                        <span class="nav-main-link-name">
+                            {{ section.name }}
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-main-item">
+            <!-- Submenu Link -->
+            <a
+                href="javascript:;"
+                class="nav-main-link nav-main-link-submenu"
+                @click.prevent="linkClicked($event, true)"
+            >
+                <span class="nav-main-link-name">
+                    {{ "SMR (shahar)" }}
+                </span>
+            </a>
+            <!-- END Submenu Link -->
+            <ul class="nav-main-submenu">
+                <li
+                    v-for="(city, index) in cities"
+                    :key="`city-${index}`"
+                    class="nav-main-item"
                 >
-                    <span class="nav-main-link-name">
-                        {{ "SMR (tuman)" }}
-                    </span>
-                </a>
-                <!-- END Submenu Link -->
-                <ul class="nav-main-submenu">
-                    <li
-                        v-for="(region, index) in regions"
-                        :key="`region-${index}`"
-                        class="nav-main-item"
+                    <a
+                        href="javascript:;"
+                        class="nav-main-link"
+                        @click.prevent="onSmrClickAction(city, 'city')"
                     >
-                        <!-- Submenu Link -->
-                        <a
-                            href="javascript:;"
-                            class="nav-main-link nav-main-link-submenu"
-                            @click.prevent="linkClicked($event, true)"
-                        >
-                            <span class="nav-main-link-name">
-                                {{ region.name_uz }}
-                            </span>
-                        </a>
-                        <!-- END Submenu Link -->
+                        <span class="nav-main-link-name">
+                            {{ city.name_uz }}
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-main-item">
+            <!-- Submenu Link -->
+            <a
+                href="javascript:;"
+                class="nav-main-link nav-main-link-submenu"
+                @click.prevent="linkClicked($event, true)"
+            >
+                <span class="nav-main-link-name">
+                    {{ "SMR (tuman)" }}
+                </span>
+            </a>
+            <!-- END Submenu Link -->
+            <ul class="nav-main-submenu">
+                <li
+                    v-for="(region, index) in regions"
+                    :key="`region-${index}`"
+                    class="nav-main-item"
+                >
+                    <!-- Submenu Link -->
+                    <a
+                        href="javascript:;"
+                        class="nav-main-link nav-main-link-submenu"
+                        @click.prevent="linkClicked($event, true)"
+                    >
+                        <span class="nav-main-link-name">
+                            {{ region.name_uz }}
+                        </span>
+                    </a>
+                    <!-- END Submenu Link -->
 
-                        <ul class="nav-main-submenu">
-                            <li
-                                v-for="(district, index) in region.districts"
-                                :key="`district-${index}`"
-                                class="nav-main-item"
+                    <ul class="nav-main-submenu">
+                        <li
+                            v-for="(district, index) in region.districts"
+                            :key="`district-${index}`"
+                            class="nav-main-item"
+                        >
+                            <!-- Submenu Link -->
+                            <a
+                                href="javascript:;"
+                                class="nav-main-link"
+                                @click.prevent="
+                                    onSmrClickAction(district, 'district')
+                                "
                             >
-                                <!-- Submenu Link -->
-                                <a
-                                    href="javascript:;"
-                                    class="nav-main-link"
-                                    @click.prevent="
-                                        onSmrClickAction(district, 'district')
-                                    "
-                                >
-                                    <span class="nav-main-link-name">
-                                        {{ district.name_uz }}
-                                    </span>
-                                </a>
-                                <!-- END Submenu Link -->
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </BaseBlock>
+                                <span class="nav-main-link-name">
+                                    {{ district.name_uz }}
+                                </span>
+                            </a>
+                            <!-- END Submenu Link -->
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-main-item">
+            <a
+                href="javascript:;"
+                class="nav-main-link"
+                @click="$emit('updateFyy')"
+            >
+                <span class="nav-main-link-name"> Faol yer yoriqlari </span>
+            </a>
+        </li>
+        <li class="nav-main-item">
+            <a
+                href="javascript:;"
+                class="nav-main-link"
+                @click="handleGruntBtnClick"
+            >
+                <span class="nav-main-link-name"> Grunt jadvali </span>
+            </a>
+        </li>
+        <li class="nav-main-item">
+            <a
+                href="javascript:;"
+                class="nav-main-link"
+                @click="onAccelerogramLinkClick"
+            >
+                <span class="nav-main-link-name"> Akselerogramma jadvali </span>
+            </a>
+        </li>
+    </ul>
+    <!-- </BaseBlock> -->
 </template>

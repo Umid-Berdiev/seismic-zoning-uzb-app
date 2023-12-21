@@ -6,10 +6,13 @@ import Input from "../Input.vue";
 
 // Component properties
 const props = withDefaults(
-    defineProps<{ layerGroup: LayerGroupTypes; zoneDisabled: boolean }>(),
+    defineProps<{
+        layerGroup: LayerGroupTypes;
+        vs30Hidden: boolean;
+    }>(),
     {
         layerGroup: "balls",
-        zoneDisabled: false,
+        vs30Hidden: false,
     }
 );
 
@@ -26,8 +29,8 @@ const selectedLayerGroup = computed({
 </script>
 
 <template>
-    <BaseBlock :title="$t('Layers')" class="mb-3 pb-3" btn-option-content>
-        <ul class="nav-main">
+    <BaseBlock :title="$t('Layers')" class="mb-3" btn-option-content>
+        <ul class="nav-main mb-3">
             <li class="nav-main-item mb-3 px-3">
                 <div class="form-check">
                     <input
@@ -51,7 +54,6 @@ const selectedLayerGroup = computed({
                         id="zone_radio"
                         value="zones"
                         v-model="selectedLayerGroup"
-                        :disabled="zoneDisabled"
                     />
                     <label class="form-check-label small" for="zone_radio">
                         {{
@@ -59,6 +61,24 @@ const selectedLayerGroup = computed({
                                 "PGA (Grunt tebranishining cho'qqi tezlanishi qiymati)"
                             )
                         }}
+                    </label>
+                </div>
+            </li>
+            <li
+                class="nav-main-item mb-3 px-3"
+                :class="[vs30Hidden && 'd-none']"
+            >
+                <div class="form-check">
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="vs30_radio"
+                        id="vs30_radio"
+                        value="vs30"
+                        v-model="selectedLayerGroup"
+                    />
+                    <label class="form-check-label small" for="vs30_radio">
+                        VS-30
                     </label>
                 </div>
             </li>

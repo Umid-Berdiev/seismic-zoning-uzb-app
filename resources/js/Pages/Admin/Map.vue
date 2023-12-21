@@ -21,6 +21,7 @@ import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import { LayerGroupTypes } from "@/utils/interfaces";
 import { inRange, isEmpty, isNull } from "lodash";
 import VueformSlider from "@vueform/slider";
+import FyyModal from "@/Components/Modals/FyyModal.vue";
 
 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -48,13 +49,14 @@ interface Zone {
     soato: string;
 }
 
-const props = defineProps({
-    canLogin: Boolean,
-    canRegister: Boolean,
-    borders: Array,
-    balls: Object,
-    zones: Array,
-});
+interface VS30 {
+    id?: number;
+    accuracy: number;
+    details: string;
+    geom: object;
+    pga_value: string;
+    soato: string;
+}
 
 const { t } = useI18n();
 const notif = useNotyf();
@@ -76,6 +78,8 @@ const tileProviders = reactive({
 });
 const ballLayers = ref<Ball[]>([]);
 const zoneLayers = ref<Zone[]>([]);
+const vs30Layers = ref<any>(null);
+const fyyLayers = ref<any>(null);
 const geojsonRegions = ref(null);
 const regionsGeojson = reactive({
     type: "FeatureCollection",
@@ -115,9 +119,12 @@ const searchForm = reactive({
     longitude: null,
 });
 const isMarkerModalOpen = ref(false);
+const isFyyModalOpen = ref(false);
+const clickedFyyProps = ref<any>({});
 const layerOpacity = ref(1);
 const ballGeoJson = ref<L.GeoJSON | null>(null);
 const zoneGeoJson = ref<L.GeoJSON | null>(null);
+const vs30GeoJson = ref<L.GeoJSON | null>(null);
 const modalInfo = reactive({
     osr: {
         balls: [],
@@ -132,6 +139,14 @@ const modalInfo = reactive({
         zones: [],
     },
 });
+const geojsonMarkerOptions = {
+    radius: 8,
+    fillColor: "#ff7800",
+    color: "#000",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8,
+};
 
 // hooks
 onMounted(async () => {
@@ -148,20 +163,17 @@ onMounted(async () => {
     pageHeaderHeight.value = `calc(100vh - ${pageHeader?.offsetHeight}px)`;
 });
 
-watch(
-    () => selectedAccuracy.value,
-    async (newVal: number | null) => {
-        if (newVal) {
-            selectedLayerGroup.value = "balls";
-            clearLayers();
-            await fetchOsrLayerData();
-            updateLayerGroup();
-        }
+watch(selectedAccuracy, async (newVal: number | null) => {
+    if (newVal) {
+        selectedLayerGroup.value = "balls";
+        clearLayers();
+        await fetchOsrLayerData();
+        updateLayerGroup();
     }
-);
+});
 
 watch(
-    () => selectedLayerGroup.value,
+    selectedLayerGroup,
     async (newVal: LayerGroupTypes) => {
         if (newVal) {
             clearLayers();
@@ -258,7 +270,7 @@ async function onDsrAreaUpdated(area: import("@/utils/interfaces").AreaData) {
 
 async function onSmrAreaUpdated(area: import("@/utils/interfaces").AreaData) {
     mapLoader.value = true;
-    selectedLayerGroup.value = "balls";
+    selectedLayerGroup.value = null;
     selectedAccuracy.value = null;
 
     if (area) {
@@ -267,8 +279,6 @@ async function onSmrAreaUpdated(area: import("@/utils/interfaces").AreaData) {
         clearLayers();
 
         if (Number(area.soato)) {
-            // console.log({ area });
-
             const foundArea =
                 area.area_type === "district"
                     ? districtsGeojson.features?.find(
@@ -421,6 +431,7 @@ async function fetchSmrLayerData() {
             ballLayers.value = result.data;
         if (selectedLayerGroup.value === "zones")
             zoneLayers.value = result.data;
+        if (selectedLayerGroup.value === "vs30") vs30Layers.value = result.data;
     } catch (error) {
         notif.error(error.message);
     } finally {
@@ -463,11 +474,22 @@ async function fetchOsrLayerData() {
         if (isEmpty(result.data))
             notif.warning("Tanlangan hududda ma'lumotlar topilmadi");
         else ballLayers.value = result.data;
+    } catch (error) {
+        notif.error(error.message);
+    } finally {
+        mapLoader.value = false;
+    }
+}
 
-        // if (selectedLayerGroup.value === "balls")
-        //     ballLayers.value = result.data;
-        // if (selectedLayerGroup.value === "zones")
-        //     zoneLayers.value = result.data;
+async function fetchFyyLayerData() {
+    try {
+        mapLoader.value = true;
+
+        const result = await axios.get("/admin/map/fyy-geodata");
+
+        if (isEmpty(result.data))
+            notif.warning("Tanlangan hududda ma'lumotlar topilmadi");
+        else fyyLayers.value = result.data;
     } catch (error) {
         notif.error(error.message);
     } finally {
@@ -541,6 +563,58 @@ function updateLayerGroup() {
             map.value.flyTo(areaBounds.getCenter(), zoneZoom);
         }
     }
+
+    if (selectedLayerGroup.value === "vs30") {
+        map.value?.createPane("vs30Pane");
+        map.value.getPane("vs30Pane").style.zIndex = 400;
+
+        if (vs30Layers.value) {
+            vs30GeoJson.value = L.geoJSON(vs30Layers.value, {
+                pane: "vs30Pane",
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, geojsonMarkerOptions);
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.Vs30) {
+                        layer.bindPopup(
+                            `<span>${feature.properties.Vs30}</span>`
+                        );
+                    }
+                },
+            }).addTo(map.value);
+
+            const areaBounds = L.latLngBounds(vs30GeoJson.value.getBounds());
+            const zoom = map.value.getBoundsZoom(areaBounds);
+            map.value.flyTo(areaBounds.getCenter(), zoom);
+        }
+    }
+
+    if (fyyLayers.value) {
+        map.value?.createPane("fyyPane");
+        map.value.getPane("fyyPane").style.zIndex = 400;
+
+        const geoJson = L.geoJSON(fyyLayers.value, {
+            pane: "fyyPane",
+            // pointToLayer: function (feature, latlng) {
+            //     return L.circleMarker(latlng, geojsonMarkerOptions);
+            // },
+            onEachFeature: function (feature, layer) {
+                layer.addEventListener("click", function (e) {
+                    isFyyModalOpen.value = true;
+                    clickedFyyProps.value = feature.properties;
+                    const confirmModal =
+                        Modal.getOrCreateInstance("#fyy-modal");
+                    confirmModal.show();
+                });
+            },
+        }).addTo(map.value);
+
+        if (geoJson && map.value) {
+            const areaBounds = L.latLngBounds(geoJson.getBounds());
+            const zoom = map.value.getBoundsZoom(areaBounds);
+            map.value.flyTo(areaBounds.getCenter(), zoom);
+        }
+    }
 }
 
 async function pointSearch() {
@@ -603,22 +677,39 @@ function setZoneColor(pga_value: string) {
 
 function clearLayers() {
     map.value?.eachLayer((layer) => {
-        // console.log({ layer });
         if (
             layer.options?.pane === "overlayPane" ||
             layer.options?.pane === "ballPane" ||
-            layer.options?.pane === "zonePane"
+            layer.options?.pane === "zonePane" ||
+            layer.options?.pane === "vs30Pane" ||
+            layer.options?.pane === "fyyPane"
         )
             layer.removeFrom(map.value);
     });
 
     ballLayers.value = [];
     zoneLayers.value = [];
+    vs30Layers.value = null;
+    fyyLayers.value = null;
 }
 
 function updateLayerOpacities(value: number) {
     ballGeoJson.value?.setStyle({ opacity: value, fillOpacity: value });
     zoneGeoJson.value?.setStyle({ opacity: value, fillOpacity: value });
+}
+
+async function onFyyUpdated() {
+    mapLoader.value = true;
+    selectedLayerGroup.value = null;
+    selectedAccuracy.value = null;
+    selectedDsrSoatos.value = [];
+    selectedSmrSoatos.value = [];
+
+    clearLayers();
+    await fetchFyyLayerData();
+    updateLayerGroup();
+
+    mapLoader.value = false;
 }
 </script>
 
@@ -630,13 +721,137 @@ function updateLayerOpacities(value: number) {
     >
         <Loader v-if="mapLoader" />
         <div id="map" style="height: inherit"></div>
+        <!-- setting button -->
+        <div class="position-absolute top-0 start-1 setting-div">
+            <button
+                class="btn btn-info"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasScrolling"
+                aria-controls="offcanvasScrolling"
+            >
+                <i class="si si-equalizer"></i>
+            </button>
+        </div>
+
+        <!-- left overlay menu -->
         <div
-            id="right_bottom_block"
-            v-if="ballLayers.length || zoneLayers.length"
+            class="offcanvas offcanvas-start"
+            data-bs-scroll="true"
+            data-bs-backdrop="false"
+            tabindex="-1"
+            id="offcanvasScrolling"
+            aria-labelledby="offcanvasScrollingLabel"
         >
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasScrollingLabel">
+                    <!-- Offcanvas with body scrolling -->
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="offcanvas-body">
+                <BorderLayersControl
+                    v-model:accuracy="selectedAccuracy"
+                    @update-dsr-area="onDsrAreaUpdated"
+                    @update-smr-area="onSmrAreaUpdated"
+                    @update-fyy="onFyyUpdated"
+                />
+                <br />
+                <div class="mb-2">Ko'rinish darajasi</div>
+                <VueformSlider
+                    v-model="layerOpacity"
+                    :min="0"
+                    :max="1"
+                    :step="0.01"
+                    :tooltips="false"
+                    :lazy="false"
+                    @update="updateLayerOpacities"
+                />
+                <BaseBlock
+                    :title="$t('Search_by_coordinates')"
+                    class="mt-4"
+                    btn-option-content
+                >
+                    <form @submit.prevent="pointSearch">
+                        <div class="d-flex gap-3">
+                            <div class="small">
+                                <InputLabel for="latitude-input">
+                                    <span>{{ $t("Latitude") }}</span>
+                                    <span class="text-danger">*</span>
+                                </InputLabel>
+                                <Input
+                                    id="latitude-input"
+                                    small
+                                    type="number"
+                                    :step="0.000000001"
+                                    :min="37"
+                                    :max="45.5"
+                                    v-model="searchForm.latitude"
+                                />
+                                <InputError
+                                    :message="searchForm.errors?.latitude"
+                                />
+                            </div>
+                            <div class="small">
+                                <InputLabel for="longitude-input">
+                                    <span>{{ $t("Longitude") }}</span>
+                                    <span class="text-danger">*</span>
+                                </InputLabel>
+                                <Input
+                                    id="longitude-input"
+                                    small
+                                    type="number"
+                                    :step="0.000000001"
+                                    :min="56"
+                                    :max="74"
+                                    v-model="searchForm.longitude"
+                                />
+                                <InputError
+                                    :message="searchForm.errors?.longitude"
+                                />
+                            </div>
+                        </div>
+                        <div class="d-flex my-3">
+                            <button
+                                class="btn btn-sm btn-warning"
+                                type="button"
+                                @click="clearMarker"
+                            >
+                                {{ $t("Clear") }}
+                            </button>
+                            <SubmitButton
+                                class="ms-auto btn-sm"
+                                :disabled="
+                                    !searchForm.latitude ||
+                                    !searchForm.longitude
+                                "
+                                >{{ $t("Search") }}</SubmitButton
+                            >
+                        </div>
+                    </form>
+                </BaseBlock>
+            </div>
+        </div>
+
+        <!-- right block -->
+        <div id="right_bottom_block">
+            <!-- qatlamlar bloki -->
+            <LayersControl
+                v-if="selectedDsrSoatos.length || selectedSmrSoatos.length"
+                v-model:layer-group="selectedLayerGroup"
+                :vs30-hidden="selectedSmrSoatos.length === 0"
+            />
+
+            <!-- shartli belgilar bloki -->
             <BaseBlock
+                v-if="ballLayers.length || zoneLayers.length || vs30Layers"
                 :title="$t('Conventional_designation')"
-                class="mb-3 pb-3"
+                class="mb-3"
                 btn-option-content
             >
                 <table class="table table-sm table-bordered border-secondary">
@@ -695,124 +910,9 @@ function updateLayerOpacities(value: number) {
                 </table>
             </BaseBlock>
         </div>
-        <div class="position-absolute top-0 start-1 setting-div">
-            <button
-                class="btn btn-info"
-                type="button"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#offcanvasScrolling"
-                aria-controls="offcanvasScrolling"
-            >
-                <i class="si si-equalizer"></i>
-            </button>
-        </div>
 
-        <div
-            class="offcanvas offcanvas-start"
-            data-bs-scroll="true"
-            data-bs-backdrop="false"
-            tabindex="-1"
-            id="offcanvasScrolling"
-            aria-labelledby="offcanvasScrollingLabel"
-        >
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasScrollingLabel">
-                    <!-- Offcanvas with body scrolling -->
-                </h5>
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="offcanvas"
-                    aria-label="Close"
-                ></button>
-            </div>
-            <div class="offcanvas-body">
-                <BaseBlock
-                    :title="$t('Search_by_coordinates')"
-                    class="mb-3 pb-3"
-                    btn-option-content
-                >
-                    <form @submit.prevent="pointSearch">
-                        <div class="d-flex gap-3">
-                            <div class="small">
-                                <InputLabel for="latitude-input">
-                                    <span>{{ $t("Latitude") }}</span>
-                                    <span class="text-danger">*</span>
-                                </InputLabel>
-                                <Input
-                                    id="latitude-input"
-                                    small
-                                    type="number"
-                                    :step="0.000000001"
-                                    :min="37"
-                                    :max="45.5"
-                                    v-model="searchForm.latitude"
-                                />
-                                <InputError
-                                    :message="searchForm.errors?.latitude"
-                                />
-                            </div>
-                            <div class="small">
-                                <InputLabel for="longitude-input">
-                                    <span>{{ $t("Longitude") }}</span>
-                                    <span class="text-danger">*</span>
-                                </InputLabel>
-                                <Input
-                                    id="longitude-input"
-                                    small
-                                    type="number"
-                                    :step="0.000000001"
-                                    :min="56"
-                                    :max="74"
-                                    v-model="searchForm.longitude"
-                                />
-                                <InputError
-                                    :message="searchForm.errors?.longitude"
-                                />
-                            </div>
-                        </div>
-                        <div class="d-flex mt-3">
-                            <button
-                                class="btn btn-sm btn-warning"
-                                type="button"
-                                @click="clearMarker"
-                            >
-                                {{ $t("Clear") }}
-                            </button>
-                            <SubmitButton
-                                class="ms-auto btn-sm"
-                                :disabled="
-                                    !searchForm.latitude ||
-                                    !searchForm.longitude
-                                "
-                                >{{ $t("Search") }}</SubmitButton
-                            >
-                        </div>
-                    </form>
-                </BaseBlock>
-                <BorderLayersControl
-                    v-model:accuracy="selectedAccuracy"
-                    @update-dsr-area="onDsrAreaUpdated"
-                    @update-smr-area="onSmrAreaUpdated"
-                />
-                <LayersControl
-                    v-model:layer-group="selectedLayerGroup"
-                    :zone-disabled="!isNull(selectedAccuracy)"
-                />
-                <br />
-                <div class="mb-2">Ko'rinish darajasi</div>
-                <VueformSlider
-                    v-model="layerOpacity"
-                    :min="0"
-                    :max="1"
-                    :step="0.01"
-                    :tooltips="false"
-                    :lazy="false"
-                    @update="updateLayerOpacities"
-                />
-            </div>
-        </div>
         <MarkerModal :search-result="modalInfo" />
+        <FyyModal :data="clickedFyyProps" />
     </div>
 </template>
 

@@ -36,6 +36,11 @@ export default {
             icon: "si si-layers",
             to: "/admin/directory/dsr-sections",
         },
+        {
+            name: "accelerogram_info",
+            icon: "si si-layers",
+            to: "/admin/accelerograms",
+        },
         // {
         //     name: "Directory",
         //     // to: "/admin/directory",

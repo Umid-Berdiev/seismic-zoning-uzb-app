@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('shape_import_logs', function (Blueprint $table) {
-            $table->unsignedBigInteger('layer_id');
-            $table->string('zipfile_path')->nullable();
-        });
+        // Schema::table('shape_import_logs', function (Blueprint $table) {
+        //     $table->unsignedBigInteger('layer_id');
+        //     $table->string('zipfile_path')->nullable();
+        // });
     }
 
     /**

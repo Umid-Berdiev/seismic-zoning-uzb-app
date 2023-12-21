@@ -1,0 +1,1 @@
+import{_ as r,b as s,c as _,g as a}from"./app.56cb7126.js";const o={};function c(e,n){return s(),_("div",null,[a("a",{href:"javascript:;",onClick:n[0]||(n[0]=(...t)=>e.printFile&&e.printFile(...t))},"\u041F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u21161")])}const l=r(o,[["render",c],["__scopeId","data-v-95667300"]]);export{l as default};

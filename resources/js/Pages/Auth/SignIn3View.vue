@@ -178,8 +178,15 @@ async function onSubmit() {
                                                 type="submit"
                                                 class="btn btn-lg btn-alt-primary"
                                             >
+                                                <span
+                                                    v-if="form.processing"
+                                                    class="spinner-border spinner-border-sm me-1 opacity-50"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                ></span>
                                                 <i
-                                                    class="fa fa-fw fa-sign-in-alt me-1 opacity-50"
+                                                    v-else
+                                                    class="fa fa-sign-in me-1 opacity-50"
                                                 ></i>
                                                 Kirish
                                             </button>

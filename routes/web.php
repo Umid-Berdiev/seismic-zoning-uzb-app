@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccelerogramController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\DsrSectionController;
 use App\Http\Controllers\MapController;
@@ -41,6 +42,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
     Route::post('profile/password', [UserController::class, 'updatePassword'])->name('update-password');
     Route::get('dashboard', fn () => redirect()->route('map'))
         ->name('dashboard');
+    Route::get('grunt', [MapController::class, 'grunt'])
+        ->name('grunt');
     Route::get('map', [MapController::class, 'index'])
         ->name('map');
     Route::get('map/smr-layer-data', [MapController::class, 'fetchSmrLayers'])
@@ -51,6 +54,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         ->name('map-search');
     Route::get('map/accuracy', [MapController::class, 'fetchLayersByAccuracy'])
         ->name('map-accuracy');
+    Route::get('map/fyy-geodata', [MapController::class, 'fetchFyyLayers'])
+        ->name('map-fyy-geodata');
     Route::get('map/point-in-polygon', [MapController::class, 'findPointInPolygon'])
         ->name('map-point-in-polygon');
     Route::get('statics', function () {
@@ -62,6 +67,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         ->name('statics');
 
     Route::resource('users', UserController::class);
+    Route::post('accelerograms/import', [AccelerogramController::class, 'import'])
+        ->name('accelerograms.import');
+    Route::get('accelerograms/charts', [AccelerogramController::class, 'charts'])
+        ->name('accelerograms.charts');
+    Route::delete('accelerograms/file/{accelerogramFile}', [AccelerogramController::class, 'removeAccelerogramFile'])
+        ->name('accelerograms.file');
+    Route::resource('accelerograms', AccelerogramController::class);
 
     Route::prefix('directory')->group(function () {
         Route::get('dsr-sections/list', function (Request $request) {

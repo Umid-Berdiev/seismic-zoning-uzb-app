@@ -41,7 +41,8 @@
         "Users": "Users",
         "Directory": "Directory",
         "Roles": "Roles",
-        "Regions": "Regions"
+        "Regions": "Regions",
+        "accelerogram_info": "Accelerogram info"
     },
     "User": "User",
     "Role": "Role",

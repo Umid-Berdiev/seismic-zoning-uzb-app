@@ -43,7 +43,8 @@
         "Roles": "Rollar",
         "Dsr_table": "DSR bo'limlari",
         "DsrSections": "DSR qatlamlar",
-        "Regions": "Viloyatlar"
+        "Regions": "Viloyatlar",
+        "accelerogram_info": "Akselerogramma ma'lumotlari"
     },
     "Import_shapefile": "Sheypfayl yuklash",
     "Import_zipped_shapefile_data": "Sheypfayllarni ziplangan formatini yuklash",
@@ -86,7 +87,5 @@
     "Latitude": "Shimoliy kenglik",
     "Longitude": "Sharqiy uzunlik",
     "Search_by_coordinates": "Koordinata nuqtalari bo'yicha qidirish",
-    "Clear": "Tozalash",
-    "": "",
-    "": ""
+    "Clear": "Tozalash"
 }

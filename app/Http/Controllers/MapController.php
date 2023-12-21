@@ -29,6 +29,11 @@ class MapController extends Controller
         ]);
     }
 
+    public function grunt()
+    {
+        return Inertia::render('Admin/Grunt');
+    }
+
     public function fetchDsrLayers(Request $request)
     {
         $soatos = $request->soatos;
@@ -71,6 +76,12 @@ class MapController extends Controller
                 ->orderBy('pga_value')
                 ->get();
 
+        if ($request->layer_group === 'vs30') {
+            // get data from /public/geojson_data/vs30_namangan.geojson
+            $geoData = json_decode(file_get_contents(public_path('geojson_data/vs30_namangan.geojson')));
+            $data = $geoData;
+        }
+
         return response()->json($data);
     }
 
@@ -86,11 +97,20 @@ class MapController extends Controller
         return response()->json($balls);
     }
 
+    public function fetchFyyLayers(Request $request)
+    {
+        // get data from /public/geojson_data/tashkent_region_fyy.geojson
+        $geoData = json_decode(file_get_contents(public_path('geojson_data/tashkent_region_fyy.geojson')));
+
+        return response()->json($geoData);
+    }
+
     public function findPointInPolygon(Request $request)
     {
         $osr = ['balls' => [], 'zones' => []];
         $dsr = ['balls' => [], 'zones' => []];
         $smr = ['balls' => [], 'zones' => []];
+        $fyy = [];
         $lat = $request->latitude;
         $lng = $request->longitude;
 
@@ -136,10 +156,22 @@ class MapController extends Controller
             }
         }
 
+        // $fyyGeoData = json_decode(file_get_contents(public_path('geojson_data/tashkent_region_fyy.geojson')));
+
+        // foreach ($fyyGeoData->features as $key => $feature) {
+        //     if ($feature->geometry->type === 'MultiLineString') {
+        //         foreach ($feature->geometry->coordinates as $key => $coordinates) {
+        //             $lineString = new LineString($coordinates);
+        //             in_array([$lng, $lat], $lineString->getCoordinates()) && $fyy[] = $feature;
+        //         }
+        //     }
+        // }
+
         return response()->json([
             'osr' => $osr,
             'dsr' => $dsr,
-            'smr' => $smr
+            'smr' => $smr,
+            'fyy' => $fyy,
         ]);
     }
 }

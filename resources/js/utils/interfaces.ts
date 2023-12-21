@@ -6,4 +6,4 @@ export interface AreaData {
     admincenter_ru?: string;
 }
 
-export type LayerGroupTypes = "balls" | "zones" | null;
+export type LayerGroupTypes = "balls" | "zones" | "vs30" | null;
